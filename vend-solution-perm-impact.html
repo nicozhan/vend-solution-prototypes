@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>VendSolution · 租户权限上线影响评估</title>
+<style>
+  :root{
+    --bg:#fafafa; --surface:#ffffff; --surface-2:#f6f6f6;
+    --border:#ececec; --border-strong:#dcdcdc;
+    --text:#18181b; --text-2:#6b7280; --text-3:#a1a1aa;
+    --accent:#2563eb; --accent-weak:#eff4ff; --accent-line:#bfd4ff;
+    --ok:#16a34a; --warn:#d97706; --danger:#dc2626; --purple:#7c3aed;
+    --radius:8px; --radius-sm:5px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    background:var(--bg);color:var(--text);font-size:13.5px;line-height:1.7;
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"PingFang SC","Microsoft YaHei",sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:1000px;margin:0 auto;padding:52px 28px 90px}
+
+  /* header */
+  .eyebrow{font-size:11.5px;letter-spacing:.06em;color:var(--accent);font-weight:600}
+  h1{font-size:27px;font-weight:660;letter-spacing:-.02em;margin-top:9px}
+  .lede{color:var(--text-2);font-size:13.5px;margin-top:10px;max-width:760px}
+  .meta{display:flex;gap:18px;flex-wrap:wrap;margin-top:16px;font-size:11.5px;color:var(--text-3)}
+  .meta b{color:var(--text-2);font-weight:500}
+
+  /* verdict */
+  .verdict{margin-top:26px;background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--accent);border-radius:var(--radius);padding:18px 20px}
+  .verdict .t{font-size:11.5px;color:var(--text-3);letter-spacing:.04em;margin-bottom:7px}
+  .verdict p{font-size:13.5px;line-height:1.8}
+  .verdict b{color:var(--accent)}
+
+  /* section */
+  section{margin-top:44px}
+  .sec-hd{display:flex;align-items:baseline;gap:10px;margin-bottom:6px}
+  .sec-no{font-size:11.5px;font-weight:700;color:var(--accent);background:var(--accent-weak);border-radius:4px;padding:1px 7px;letter-spacing:.02em}
+  h2{font-size:17px;font-weight:640;letter-spacing:-.01em}
+  .sec-sub{color:var(--text-2);font-size:12.5px;margin-bottom:18px;max-width:820px}
+
+  /* cards */
+  .cards{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:15px 16px}
+  .card .k{font-size:11.5px;color:var(--text-3);margin-bottom:6px}
+  .card .v{font-size:14px;font-weight:620;letter-spacing:-.01em}
+  .card .d{font-size:11.5px;color:var(--text-2);margin-top:7px;line-height:1.65}
+
+  /* table */
+  table{width:100%;border-collapse:collapse;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;font-size:12.5px}
+  th{text-align:left;font-weight:600;color:var(--text-2);background:var(--surface-2);padding:10px 13px;border-bottom:1px solid var(--border);font-size:12px;white-space:nowrap}
+  td{padding:11px 13px;border-bottom:1px solid var(--border);vertical-align:top;line-height:1.65}
+  tr:last-child td{border-bottom:none}
+  td b{font-weight:600}
+  .tag{display:inline-block;font-size:10.5px;padding:1px 7px;border-radius:999px;border:1px solid var(--border-strong);color:var(--text-2);white-space:nowrap;line-height:1.7}
+  .tag.own{background:#ecfdf3;border-color:#bbf7d0;color:#15803d}
+  .tag.grant{background:var(--accent-weak);border-color:var(--accent-line);color:var(--accent)}
+  .tag.none{background:#fef2f2;border-color:#fecaca;color:#b91c1c}
+
+  /* impact list */
+  .imp{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}
+  .imp + .imp{margin-top:10px}
+  .imp-hd{display:flex;align-items:center;gap:10px;padding:13px 16px;border-bottom:1px solid var(--border);background:var(--surface-2)}
+  .imp-hd .no{font-size:11px;font-weight:700;color:var(--text-3);font-variant-numeric:tabular-nums}
+  .imp-hd h3{font-size:13.5px;font-weight:620}
+  .imp-hd .sev{margin-left:auto;font-size:10.5px;padding:2px 8px;border-radius:999px;font-weight:600}
+  .sev.hi{background:#fef2f2;color:#b91c1c;border:1px solid #fecaca}
+  .sev.mid{background:#fff7ed;color:#b45309;border:1px solid #fed7aa}
+  .sev.low{background:#f4f4f5;color:#52525b;border:1px solid #e4e4e7}
+  .imp-bd{padding:14px 16px 16px}
+  .imp-bd p{font-size:12.8px;color:var(--text);margin-bottom:8px}
+  .imp-bd p:last-child{margin-bottom:0}
+  .imp-bd .lbl{color:var(--text-3);font-size:11.5px;margin-right:6px}
+  ul{list-style:none;display:flex;flex-direction:column;gap:6px;margin-top:2px}
+  ul li{display:flex;gap:8px;font-size:12.5px;color:var(--text-2);line-height:1.7}
+  ul li::before{content:"·";color:var(--accent);font-weight:700;flex:0 0 6px}
+  ul li b{color:var(--text);font-weight:600}
+
+  /* decisions */
+  .dec{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px}
+  .dec + .dec{margin-top:10px}
+  .dec .q{font-size:13px;font-weight:620;margin-bottom:7px}
+  .dec .opt{display:flex;gap:9px;font-size:12.5px;color:var(--text-2);line-height:1.7;margin-top:5px}
+  .dec .opt .rec{flex:0 0 auto;font-size:10.5px;color:var(--ok);border:1px solid #bbf7d0;background:#ecfdf3;border-radius:999px;padding:0 8px;height:19px;line-height:18px;margin-top:2px}
+
+  /* checklist */
+  .chk{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:6px 18px}
+  .chk .row{display:flex;gap:10px;align-items:flex-start;padding:10px 0;border-bottom:1px solid var(--border);font-size:12.5px}
+  .chk .row:last-child{border-bottom:none}
+  .chk .box{width:13px;height:13px;border:1.5px solid var(--border-strong);border-radius:3px;flex:0 0 13px;margin-top:4px}
+  .chk .row .who{margin-left:auto;font-size:10.5px;color:var(--text-3);white-space:nowrap;padding-top:2px}
+
+  /* layer diagram */
+  .layers{display:flex;align-items:stretch;gap:8px;flex-wrap:wrap;margin:4px 0 2px}
+  .layer{flex:1 1 150px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:11px 12px}
+  .layer .n{font-size:10.5px;color:var(--text-3);letter-spacing:.03em}
+  .layer .t{font-size:12.5px;font-weight:600;margin-top:3px}
+  .layer .d{font-size:11px;color:var(--text-2);margin-top:4px;line-height:1.6}
+  .layer.hard{border-color:var(--accent-line);background:var(--accent-weak)}
+  .layer.hard .t{color:var(--accent)}
+  .arrow{align-self:center;color:var(--text-3);font-size:14px}
+
+  footer{margin-top:48px;padding-top:18px;border-top:1px solid var(--border);font-size:11.5px;color:var(--text-3)}
+
+  @media(max-width:860px){
+    .cards{grid-template-columns:1fr}
+    .wrap{padding:36px 18px 70px}
+    table{font-size:12px}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="eyebrow">VendSolution · 租户权限</div>
+  <h1>租户权限上线影响评估</h1>
+  <p class="lede">基于「租户只能看到自己的产品、配方、原料」这条硬规则，评估它对现有租户、机器、权限与用户体系的影响，以及上线前必须先定下来的决策点。</p>
+  <div class="meta">
+    <span><b>评估对象</b> 租户权限模块（功能权限 × 机器范围）</span>
+    <span><b>新增约束</b> 产品 / 配方 / 原料 数据隔离</span>
+    <span><b>日期</b> 2026-11-06</span>
+  </div>
+
+  <div class="verdict">
+    <div class="t">一句话结论</div>
+    <p>这条规则不是给权限页加一个「数据范围」开关，而是给全平台补一条<b>数据归属主线</b>。真正的工作量不在权限配置页，而在<b>存量数据的归属补齐</b>、<b>所有查询出口的统一拦截</b>，以及<b>机器归属转移时产品/配方怎么跟着走</b>这三处。建议先只做「看不见别人的」，授权共享放到第二期灰度。</p>
+  </div>
+
+  <!-- 01 -->
+  <section>
+    <div class="sec-hd"><span class="sec-no">01</span><h2>先把「自己的」定义清楚</h2></div>
+    <p class="sec-sub">现在有三种租户，同一个产品对它们的含义并不相同。如果不区分「拥有」和「被授权使用」，规则落地后运营商侧会直接变成空列表 —— 它拿不到工厂的产品，就没法给机器上架商品。</p>
+
+    <div class="cards" style="grid-template-columns:repeat(3,1fr);margin-bottom:14px">
+      <div class="card">
+        <div class="k">工厂</div>
+        <div class="v">拥有：产品 / 配方 / 原料</div>
+        <div class="d">配方是工厂的核心资产，投料比例、工艺参数属于最敏感数据。</div>
+      </div>
+      <div class="card">
+        <div class="k">运营商</div>
+        <div class="v">被授权使用：产品规格</div>
+        <div class="d">需要知道卖什么、怎么出杯、价格与库存；通常不需要看到配方明细。</div>
+      </div>
+      <div class="card">
+        <div class="k">子运营商</div>
+        <div class="v">继承运营商的授权范围</div>
+        <div class="d">不能超出上级的品牌与产品授权，同样不该看到上游配方。</div>
+      </div>
+    </div>
+
+    <table>
+      <thead>
+        <tr><th style="width:120px">数据对象</th><th>工厂</th><th>运营商 / 子运营商</th><th>平台</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><b>产品</b>（SPU/SKU）</td>
+          <td><span class="tag own">拥有</span> 自己创建的、品牌授权范围内的</td>
+          <td><span class="tag grant">被授权</span> 只看分配给自己的产品；授权撤回即不可见</td>
+          <td>全部可见，查看留审计</td>
+        </tr>
+        <tr>
+          <td><b>配方</b></td>
+          <td><span class="tag own">拥有</span> 明细、版本、成本</td>
+          <td><span class="tag none">默认不可见</span> 只看到成品规格；如业务需要，可开「允许授权租户使用（不下发明细）」</td>
+          <td>建议默认脱敏，看明细需二次确认 + 水印</td>
+        </tr>
+        <tr>
+          <td><b>原料</b></td>
+          <td><span class="tag own">拥有</span> 生产用料、供应商、批次</td>
+          <td><span class="tag own">自己的</span> 自采耗材（杯盖、糖包、清洁剂）与工厂原料<b>不能共用同一个库</b></td>
+          <td>全部可见</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- 02 -->
+  <section>
+    <div class="sec-hd"><span class="sec-no">02</span><h2>权限模型的判断顺序要变成四层</h2></div>
+    <p class="sec-sub">现在的模板是「功能权限 × 机器范围」取交集。加上数据隔离后，判断必须按下面的顺序逐层收窄，任何一层为空结果就是空，不能靠前端隐藏。</p>
+
+    <div class="layers">
+      <div class="layer hard"><div class="n">L1 · 硬边界</div><div class="t">租户隔离</div><div class="d">tenant_id 必须在数据层强制注入，任何角色都越不过</div></div>
+      <div class="arrow">→</div>
+      <div class="layer"><div class="n">L2 · 软收窄</div><div class="t">用户数据范围</div><div class="d">当前租户 / 指定范围 / 含授权子租户</div></div>
+      <div class="arrow">→</div>
+      <div class="layer"><div class="n">L3 · 功能</div><div class="t">功能权限</div><div class="d">能不能进这个页面、能不能改</div></div>
+      <div class="arrow">→</div>
+      <div class="layer"><div class="n">L4 · 对象</div><div class="t">机器范围 × 数据范围</div><div class="d">看得到哪些机器、哪些产品/配方/原料</div></div>
+    </div>
+    <p class="sec-sub" style="margin-top:12px;margin-bottom:0">注意 L3 和 L4 是并列的两个维度：只给「产品管理」功能权限、不给数据范围，用户会进入一个空列表；反过来给了数据范围没给功能权限，则入口都进不去。这两个维度要在模板里分开配置，并在保存时校验，避免做出「有入口没数据」或「有数据没入口」的废模板。</p>
+  </section>
+
+  <!-- 03 -->
+  <section>
+    <div class="sec-hd"><span class="sec-no">03</span><h2>对现有模块的六处直接影响</h2></div>
+    <p class="sec-sub">按影响从大到小排列，前三条会改到已经定稿的交互。</p>
+
+    <div class="imp">
+      <div class="imp-hd"><span class="no">3.1</span><h3>机器归属转移</h3><span class="sev hi">影响最大</span></div>
+      <div class="imp-bd">
+        <p>机器转归属是目前唯一会跨租户搬动资产的流程，产品与配方会跟着机器一起被质疑「归谁」。</p>
+        <ul>
+          <li><b>所有权转移</b>（工厂卖给运营商）：机器上在售的产品授权应随之转移，原工厂对该机器变只读 —— 和现在「工厂变只读」的规则一致，但要补一句「产品与配方授权同步转移」。</li>
+          <li><b>仅管理权转移</b>（代管）：产品授权不变，机器仍用工厂的产品；运营商自己的配方与原料不进这台机器。</li>
+          <li>转移抽屉第二步需要多一个<b>「随机器转移的产品清单」</b>确认块，否则转移后运营商的机器上商品全部失效。</li>
+          <li>边界情况：机器上挂着已停用/已收回品牌的产品时，转移要拦截或提示先换品。</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="imp">
+      <div class="imp-hd"><span class="no">3.2</span><h3>租户权限（权限模板）</h3><span class="sev hi">影响最大</span></div>
+      <div class="imp-bd">
+        <p>模板从两个 Tab 变成三个维度，且「复制」功能会出现新的越权风险。</p>
+        <ul>
+          <li>机器范围 Tab 已有「指定机器」，产品/配方/原料如果也支持「指定范围」，模板里存的是<b>具体数据 ID</b>；跨租户复制时这些 ID 在目标租户并不存在，直接复制就是越权。</li>
+          <li>建议模板只存<b>范围规则</b>（如「本租户全部」「本租户 + 授权下级」），不存数据 ID 清单；确需指定时，复制后强制进入「重新指定」状态，标记为待确认。</li>
+          <li>功能权限树里新增节点时，要和数据范围联动提示：勾了「配方管理」但数据范围是「无配方」，保存时给警告而不是静默通过。</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="imp">
+      <div class="imp-hd"><span class="no">3.3</span><h3>品牌授权</h3><span class="sev hi">影响最大</span></div>
+      <div class="imp-bd">
+        <p>品牌授权是产品可见范围的硬上限，两者是包含关系，不是并列关系。</p>
+        <ul>
+          <li>租户可见产品 = 品牌授权 ∩ 产品归属/授权。收回品牌后，该品牌下产品立即不可见、不可绑定新机器。</li>
+          <li>已经在机器上售卖的产品如何处理需要明确策略：建议「保留售卖、禁止新增、页面标注品牌授权失效」，而不是直接下架，避免机器停摆。</li>
+          <li>新建租户时 03 品牌授权选了「全部品牌」，要确认这个「全部」是<b>当前全部</b>还是<b>含未来新增品牌</b> —— 后者会让产品可见范围随时间自动扩大，容易出事故。</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="imp">
+      <div class="imp-hd"><span class="no">3.4</span><h3>租户列表与统计口径</h3><span class="sev mid">中等</span></div>
+      <div class="imp-bd">
+        <ul>
+          <li>列表现在展示「设备数量 / 用户数量」，加上产品/原料数量后，<b>统计本身也会泄密</b>：能从数量反推对手有多少配方。建议平台侧只对平台角色展示，租户视角只展示自己的。</li>
+          <li>高级筛选里的「环境 / 状态 / 品牌」等条件，组合起来同样可以试探出别的租户是否存在某种产品，需要限制为只能筛自己的。</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="imp">
+      <div class="imp-hd"><span class="no">3.5</span><h3>用户列表（数据范围字段）</h3><span class="sev mid">中等</span></div>
+      <div class="imp-bd">
+        <ul>
+          <li>用户已有「数据范围：当前租户 / 指定范围 / 当前租户 + 授权子租户」，这条是<b>租户内的软过滤</b>，永远不能突破 L1 租户隔离。</li>
+          <li>两种范围叠加后要给出可读的结果：例如「工厂 A 的用户，数据范围含授权子租户」只能看到工厂 A 自己 + 被授权的下级运营商数据，看不到其他工厂。</li>
+          <li>批量建号时的默认数据范围建议固定为「当前租户」，不要继承创建者的范围，否则批量建出来的账号权限会莫名放大。</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="imp">
+      <div class="imp-hd"><span class="no">3.6</span><h3>远程托管（平台代维）</h3><span class="sev mid">中等</span></div>
+      <div class="imp-bd">
+        <ul>
+          <li>托管是以租户 admin 身份进入，<b>配方页会成为整条链路最敏感的页面</b>：建议配方详情进页面时二次确认、页面加水印（操作人 + 会话号 + 时间）、并强制写审计。</li>
+          <li>托管期间的导出应默认关闭，或导出文件带水印与来源标记。</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- 04 -->
+  <section>
+    <div class="sec-hd"><span class="sec-no">04</span><h2>最容易漏掉的七个点</h2></div>
+    <p class="sec-sub">这些不是「产品设计」问题，而是上线后最常被拿来验证的漏洞口子。</p>
+
+    <div class="imp">
+      <div class="imp-hd"><span class="no">4.1</span><h3>所有出口要共用一套过滤</h3><span class="sev hi">高</span></div>
+      <div class="imp-bd"><p>列表、详情、<b>导出 Excel</b>、<b>全局搜索</b>、<b>下拉选择器</b>（选产品、选原料、选机器）、报表看板、消息通知、打印/分享链接、开放 API —— 只要有一处是各页面自己写的过滤条件，就一定会漏。建议在数据访问层统一注入，页面不留手写 where。</p></div>
+    </div>
+
+    <div class="imp">
+      <div class="imp-hd"><span class="no">4.2</span><h3>编码唯一性会从全局变租户内</h3><span class="sev hi">高</span></div>
+      <div class="imp-bd"><p>SKU 编码、原料编码原来是全局唯一，加了租户后必须改成 <b>(tenant_id, code) 复合唯一</b>。这一步是数据库层面的破坏性变更：按 code 查询会返回多条、历史外部对接的编码假设会失效，需要提前和对接方确认。</p></div>
+    </div>
+
+    <div class="imp">
+      <div class="imp-hd"><span class="no">4.3</span><h3>存量数据没有归属</h3><span class="sev hi">高</span></div>
+      <div class="imp-bd"><p>已上线的产品/配方/原料没有 tenant_id 字段。上线前必须做一次归属补齐（按品牌、按机器、按创建人推断），并导出一份「无法判断归属」的清单人工确认。否则结果只有两种：全部看不见，或者互相可见 —— 后者是数据事故。</p></div>
+    </div>
+
+    <div class="imp">
+      <div class="imp-hd"><span class="no">4.4</span><h3>缓存与搜索索引</h3><span class="sev mid">中</span></div>
+      <div class="imp-bd"><p>如果产品/配方用了 Redis 缓存或 ES 搜索，key 与索引都必须带 tenant_id，并且搜索引擎的过滤要在查询层做，不能查回来再在应用层筛。</p></div>
+    </div>
+
+    <div class="imp">
+      <div class="imp-hd"><span class="no">4.5</span><h3>一个用户属于多个租户</h3><span class="sev mid">中</span></div>
+      <div class="imp-bd"><p>现在用户是单租户。如果以后支持跨租户（同一个人既在工厂又在运营商），登录后必须有「当前租户」上下文，切换租户要重新签发会话，否则权限会串。</p></div>
+    </div>
+
+    <div class="imp">
+      <div class="imp-hd"><span class="no">4.6</span><h3>租户停用 / 删除后的数据</h3><span class="sev low">低</span></div>
+      <div class="imp-bd"><p>租户被禁用后其产品是否还能被机器引用、被下级引用；租户删除后配方与原料是软删保留还是物理清理。建议：软删 + 观察期，被引用中的对象禁止物理删除。</p></div>
+    </div>
+
+    <div class="imp">
+      <div class="imp-hd"><span class="no">4.7</span><h3>「授权使用」和「复制」是两件事</h3><span class="sev mid">中</span></div>
+      <div class="imp-bd"><p>运营商拿到工厂产品，应该只是<b>引用</b>（价格、图片、销售规格），不是复制出一份自己的产品。一旦复制，配方改动无法同步、数据会漂移，后面很难治理。这条要在权限文案上写清楚：授权 ≠ 复制。</p></div>
+    </div>
+  </section>
+
+  <!-- 05 -->
+  <section>
+    <div class="sec-hd"><span class="sec-no">05</span><h2>需要你拍板的四个决策</h2></div>
+    <p class="sec-sub">这四个不定，研发做出来的东西大概率要返工。</p>
+
+    <div class="dec">
+      <div class="q">1. 运营商能不能看到配方明细？</div>
+      <div class="opt"><span class="rec">建议</span><span>默认看不到，只给「成品规格 + 出杯参数」。配方明细按需单独授权，且授权只给「使用」不给「查看与导出」。</span></div>
+    </div>
+    <div class="dec">
+      <div class="q">2. 平台侧（root）默认能不能看配方？</div>
+      <div class="opt"><span class="rec">建议</span><span>默认脱敏，查看需二次确认并全程审计；比「默认可见 + 事后追责」更容易通过客户的安全评审。</span></div>
+    </div>
+    <div class="dec">
+      <div class="q">3. 产品授权是授给「租户」还是授给「机器」？</div>
+      <div class="opt"><span class="rec">建议</span><span>一期授给租户（简单、好解释），二期再细化到机器。直接做机器级会让「转移后产品清单」变成必填项，复杂度翻倍。</span></div>
+    </div>
+    <div class="dec">
+      <div class="q">4. 「全部品牌」是否包含未来新增的品牌？</div>
+      <div class="opt"><span class="rec">建议</span><span>只包含当前全部，新增品牌需显式授权。否则产品可见范围会随品牌库增长自动扩大。</span></div>
+    </div>
+  </section>
+
+  <!-- 06 -->
+  <section>
+    <div class="sec-hd"><span class="sec-no">06</span><h2>上线前验收清单</h2></div>
+    <p class="sec-sub">用两个租户 + 一个平台账号跑这张矩阵，每格都要有明确结论。</p>
+
+    <div class="chk">
+      <div class="row"><span class="box"></span><span>租户 A 的用户在产品列表看不到租户 B 的任何产品，搜索关键词也搜不到</span><span class="who">研发自测</span></div>
+      <div class="row"><span class="box"></span><span>导出 Excel 的条数与列表一致，不含其他租户数据；导出的文件带租户标识</span><span class="who">研发自测</span></div>
+      <div class="row"><span class="box"></span><span>机器绑定产品时的下拉选择器只出现本租户可用产品</span><span class="who">研发自测</span></div>
+      <div class="row"><span class="box"></span><span>权限模板复制到另一租户后，机器/数据范围被重置为待指定，且保存前有校验</span><span class="who">产品验收</span></div>
+      <div class="row"><span class="box"></span><span>机器所有权转移后：产品授权随机器走、原工厂只读、目标租户机器上商品仍可售</span><span class="who">产品验收</span></div>
+      <div class="row"><span class="box"></span><span>收回品牌授权后：相关产品不可新增绑定，已上架机器有明确提示</span><span class="who">产品验收</span></div>
+      <div class="row"><span class="box"></span><span>平台远程托管进入租户后，配方页有二次确认与审计记录，导出被限制</span><span class="who">安全 / 产品</span></div>
+      <div class="row"><span class="box"></span><span>存量数据归属补齐完成，未归属清单已人工确认清零</span><span class="who">数据</span></div>
+    </div>
+  </section>
+
+  <footer>VendSolution · 租户权限上线影响评估 · 2026-11-06 · 基于当前 demo 中的租户、机器、权限与用户模型整理</footer>
+</div>
+</body>
+</html>
