@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>预包装商品 · 标签功能 Wireframe（供 Figma AI）</title>
+<style>
+  :root{
+    --bg:#f3f3f4; --line:#e4e4e7; --line2:#d4d4d8; --ink:#3f3f46; --ink2:#71717a;
+    --panel:#fff; --accent:#2563eb; --new:#f59e0b; --newbg:#fffbeb; --ok:#16a34a; --muted:#a1a1aa;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font-family:-apple-system,"PingFang SC","Microsoft YaHei",Segoe UI,Roboto,sans-serif;
+    font-size:13px;line-height:1.5;padding:0 0 80px}
+  .wrap{max-width:1240px;margin:0 auto;padding:0 20px}
+  /* 说明头 */
+  .hero{background:#fff;border-bottom:1px solid var(--line);padding:22px 20px}
+  .hero h1{margin:0 0 6px;font-size:18px}
+  .hero p{margin:0;color:var(--ink2);font-size:13px}
+  .legend{display:flex;gap:18px;margin-top:14px;flex-wrap:wrap;font-size:12px;color:var(--ink2)}
+  .legend span{display:inline-flex;align-items:center;gap:6px}
+  .sw{width:14px;height:14px;border:1px solid var(--line2);border-radius:3px;display:inline-block}
+  .sw.new{background:var(--newbg);border-color:var(--new)}
+  .sw.acc{background:var(--accent)}
+  /* 帧 */
+  .frame{background:var(--panel);border:1px solid var(--line);border-radius:12px;margin:26px auto;overflow:hidden;max-width:1200px}
+  .frame-name{background:#fafafa;border-bottom:1px solid var(--line);padding:9px 16px;font-weight:600;font-size:13px;display:flex;justify-content:space-between;align-items:center}
+  .frame-name .tag{font-weight:500;color:var(--ink2);font-size:12px}
+  .canvas{padding:18px}
+  .grid{display:grid;gap:12px}
+  /* 通用控件 */
+  .btn{display:inline-flex;align-items:center;justify-content:center;height:30px;padding:0 14px;border:1px solid var(--line2);background:#fff;border-radius:7px;color:var(--ink);font-size:12.5px;cursor:default}
+  .btn.accent{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:600}
+  .btn.xs{height:24px;padding:0 9px;font-size:11.5px}
+  .pill{display:inline-block;padding:1px 9px;border-radius:999px;background:#eef2ff;color:#3730a3;font-size:11.5px;border:1px solid #c7d2fe;margin:1px 3px 1px 0}
+  .pill.g{background:#ecfdf5;color:#065f46;border-color:#a7f3d0}
+  .pill.empty{background:#f4f4f5;color:var(--muted);border-color:var(--line2)}
+  .badge{display:inline-block;padding:1px 8px;border-radius:999px;font-size:11px}
+  .badge.ok{background:#ecfdf5;color:var(--ok);border:1px solid #a7f3d0}
+  .badge.muted{background:#f4f4f5;color:var(--muted);border:1px solid var(--line2)}
+  .sel{display:inline-block;height:30px;line-height:28px;padding:0 28px 0 10px;border:1px solid var(--line2);border-radius:7px;background:#fff;color:var(--ink2);font-size:12px;position:relative}
+  .sel:after{content:"";position:absolute;right:10px;top:12px;border:4px solid transparent;border-top-color:#9ca3af;border-bottom:0}
+  .chip{display:inline-flex;align-items:center;height:28px;padding:0 10px;border:1px dashed var(--line2);border-radius:7px;color:var(--ink2);font-size:12px}
+  .lnk{color:var(--accent);text-decoration:none}
+  /* 新增高亮 */
+  .new{position:relative;outline:2px solid var(--new);outline-offset:2px;border-radius:8px;background:var(--newbg)}
+  .new-tag{position:absolute;top:-10px;left:8px;background:var(--new);color:#fff;font-size:10px;font-weight:600;padding:1px 6px;border-radius:4px;z-index:2;white-space:nowrap}
+  .new-tag.r{left:auto;right:8px}
+  /* 页头 */
+  .ph{display:flex;justify-content:space-between;align-items:flex-end;gap:14px;margin-bottom:14px}
+  .ph h2{margin:0 0 3px;font-size:17px}
+  .ph p{margin:0;color:var(--ink2);font-size:12px}
+  .ph .acts{display:flex;gap:8px}
+  /* 筛选条 */
+  .filter{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:10px 12px;border:1px solid var(--line);border-radius:9px;background:#fcfcfd;margin-bottom:12px}
+  .filter .note{font-size:10px;letter-spacing:1px;color:var(--muted);margin-right:2px}
+  .filter .spacer{flex:1}
+  .filter .meta{color:var(--ink2);font-size:12px}
+  /* 表 */
+  table{width:100%;border-collapse:collapse;font-size:12.5px}
+  th,td{border:1px solid var(--line);padding:8px 10px;text-align:left}
+  thead th{background:#f8f8fa;color:var(--ink);font-weight:600}
+  tbody tr:nth-child(even) td{background:#fcfcfd}
+  .col-new{background:#fffbeb !important}
+  .col-new.h{background:#fde9b8 !important}
+  /* 两栏 */
+  .two{display:grid;grid-template-columns:300px 1fr;gap:0;border:1px solid var(--line);border-radius:10px;overflow:hidden}
+  .left{border-right:1px solid var(--line);padding:14px;background:#fcfcfd}
+  .left-hd{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+  .left-hd h3{margin:0;font-size:14px}
+  .sec{border:1px solid var(--line);border-radius:9px;background:#fff;padding:10px;margin-bottom:12px}
+  .sec-hd{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+  .sec-hd b{font-size:13px}
+  .q{width:100%;height:28px;border:1px solid var(--line2);border-radius:6px;background:#fff;padding:0 8px;color:var(--muted);font-size:12px}
+  .item{display:flex;align-items:center;gap:8px;padding:7px 8px;border:1px solid var(--line);border-radius:7px;margin-top:6px;background:#fff}
+  .item .nm{flex:1;font-weight:500}
+  .item .ct{color:var(--muted);font-size:11px}
+  .dots{border:0;background:none;font-size:15px;color:var(--ink2);cursor:default}
+  .right{padding:14px}
+  .right .ph{padding:0 0 10px}
+  /* 底部操作条 */
+  .bar{display:flex;align-items:center;gap:8px;padding:10px 14px;border:1px solid #bfdbfe;background:#eff6ff;border-radius:9px;margin-top:12px}
+  .bar .sp{flex:1}
+  .bar b{color:var(--accent)}
+  /* 浮层/抽屉 */
+  .overlay{position:relative;background:#f4f4f5;border:1px solid var(--line);border-radius:10px;padding:0;min-height:430px;margin-top:6px;overflow:hidden}
+  .dim{position:absolute;inset:0;background:rgba(17,17,26,.42);z-index:1}
+  .modal{position:absolute;z-index:3;left:50%;top:50%;transform:translate(-50%,-50%);width:420px;background:#fff;border-radius:12px;box-shadow:0 18px 50px rgba(0,0,0,.28);overflow:hidden}
+  .modal.sm{width:360px}
+  .modal .m-hd{display:flex;justify-content:space-between;align-items:flex-start;padding:16px 18px 6px}
+  .modal .m-hd h3{margin:0;font-size:15px}
+  .modal .m-sub{color:var(--ink2);font-size:12px;margin-top:2px}
+  .modal .m-body{padding:8px 18px 16px}
+  .modal .m-ft{display:flex;justify-content:flex-end;gap:8px;padding:12px 18px;border-top:1px solid var(--line)}
+  .x{border:0;background:none;font-size:20px;color:var(--muted);cursor:default}
+  .field{margin-bottom:12px}
+  .field label{display:block;font-size:12px;color:var(--ink2);margin-bottom:4px}
+  .field .inp{width:100%;height:32px;border:1px solid var(--line2);border-radius:7px;background:#fff;padding:0 10px;color:var(--ink);font-size:13px}
+  .src{height:32px;line-height:32px;border:1px dashed var(--line2);border-radius:7px;padding:0 10px;color:var(--ink2);font-size:12px}
+  .kv{border:1px solid var(--line);border-radius:7px;padding:8px 10px;font-size:12px}
+  .kv .k{color:var(--ink2)} .kv .v{float:right;font-weight:600}
+  .radio{display:inline-flex;gap:16px;margin-top:4px}
+  .drawer{position:absolute;z-index:3;right:0;top:0;bottom:0;width:440px;background:#fff;box-shadow:-12px 0 40px rgba(0,0,0,.2)}
+  .drawer .d-hd{display:flex;justify-content:space-between;align-items:flex-start;padding:16px 18px 10px;border-bottom:1px solid var(--line)}
+  .drawer .d-body{padding:14px 18px}
+  .drawer .d-ft{position:absolute;bottom:0;left:0;right:0;display:flex;justify-content:space-between;align-items:center;padding:12px 18px;border-top:1px solid var(--line);background:#fff}
+  .pop{position:absolute;z-index:4;left:50%;bottom:80px;transform:translateX(-50%);width:380px;background:#fff;border:1px solid var(--line2);border-radius:11px;box-shadow:0 16px 40px rgba(0,0,0,.22);overflow:hidden}
+  .pop .p-hd{display:flex;justify-content:space-between;align-items:center;padding:12px 14px;border-bottom:1px solid var(--line)}
+  .pop .p-list{max-height:200px;overflow:auto;padding:8px 14px}
+  .bopt{display:flex;align-items:center;gap:8px;padding:7px 0;font-size:13px;border-bottom:1px dashed var(--line)}
+  .pop .p-ft{display:flex;justify-content:flex-end;gap:8px;padding:10px 14px;border-top:1px solid var(--line)}
+  /* 提示词 */
+  .prompt{background:#0f172a;color:#e2e8f0;border-radius:12px;padding:18px 20px;margin:26px auto;max-width:1200px;font-size:12.5px;line-height:1.7;white-space:pre-wrap;font-family:"SF Mono",ui-monospace,Menlo,Consolas,monospace;overflow:auto}
+  .prompt b{color:#fbbf24}
+  .copy-hint{color:#94a3b8;font-size:11.5px;margin:0 0 8px}
+  h4.sub{margin:22px 0 8px;font-size:13px;color:var(--ink2)}
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="wrap">
+    <h1>预包装商品 · 标签/分组功能 Wireframe</h1>
+    <p>在现有「商品 / 预包装商品」列表页上<b>仅新增</b>标签与分组能力。灰框/灰线 = 沿用现有设计；<b style="color:#b45309">琥珀高亮 + 新增</b> = 本次新增内容。下方含按钮打开后的页面与交互，以及可直接粘贴给 Figma AI 的提示词。</p>
+    <div class="legend">
+      <span><i class="sw"></i> 沿用现有设计</span>
+      <span><i class="sw new"></i> 本次新增（标签/分组）</span>
+      <span><i class="sw acc"></i> 主按钮（已有样式）</span>
+    </div>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <!-- ============ 帧 1：主列表页 ============ -->
+  <div class="frame">
+    <div class="frame-name">Frame 1 · 预包装商品 列表（现有 + 新增列）<span class="tag">商品 / 预包装商品</span></div>
+    <div class="canvas">
+      <div class="ph">
+        <div>
+          <h2>商品库</h2>
+          <p>管理商品信息、包装规格与 AI 商品识别模型。</p>
+        </div>
+        <div class="acts">
+          <button class="btn">分组设置</button>
+          <button class="btn">标签设置</button>
+          <button class="btn accent">＋ 新建商品</button>
+        </div>
+      </div>
+
+      <div class="filter">
+        <span class="note">FILTER</span>
+        <span class="sel">分类</span>
+        <span class="sel">租户</span>
+        <span class="chip">标签 ▾</span>
+        <span class="chip">分组 ▾</span>
+        <button class="btn xs">清除过滤条件</button>
+        <span class="spacer"></span>
+        <span class="meta">共 8 条 · 数据更新 23:00</span>
+      </div>
+
+      <table>
+        <thead>
+          <tr>
+            <th>商品名称</th><th>租户</th><th>分类</th><th>品牌</th><th>AI识别</th><th>状态</th>
+            <th class="col-new h">分组 <span style="color:#b45309">●新增</span></th>
+            <th class="col-new h">标签 <span style="color:#b45309">●新增</span></th>
+            <th>操作</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><b>冰美式 350ml</b></td><td>佳存</td><td>饮料</td><td class="empty">—</td><td><span class="badge muted">未启用</span></td><td><span class="badge ok">启用</span></td>
+            <td class="col-new"><span class="pill g">饮料类</span></td>
+            <td class="col-new"><span class="pill">新品</span><span class="pill">热销</span></td>
+            <td><span class="lnk">查看详情</span></td>
+          </tr>
+          <tr>
+            <td><b>气泡水 青柠</b></td><td>佳存</td><td>饮料</td><td class="empty">—</td><td><span class="badge muted">未启用</span></td><td><span class="badge ok">启用</span></td>
+            <td class="col-new"><span class="pill g">饮料类</span></td>
+            <td class="col-new"><span class="pill">新品</span><span class="pill">无糖</span></td>
+            <td><span class="lnk">查看详情</span></td>
+          </tr>
+          <tr>
+            <td><b>薯片 原味</b></td><td>佳存</td><td>零食</td><td class="empty">—</td><td><span class="badge muted">未启用</span></td><td><span class="badge ok">启用</span></td>
+            <td class="col-new"><span class="pill empty">—</span></td>
+            <td class="col-new"><span class="pill">促销</span></td>
+            <td><span class="lnk">查看详情</span></td>
+          </tr>
+          <tr>
+            <td><b>能量饮料 250ml</b></td><td>佳存</td><td>饮料</td><td class="empty">—</td><td><span class="badge muted">未启用</span></td><td><span class="badge muted">停用</span></td>
+            <td class="col-new"><span class="pill empty">—</span></td>
+            <td class="col-new"><span class="pill empty">—</span></td>
+            <td><span class="lnk">查看详情</span></td>
+          </tr>
+        </tbody>
+      </table>
+      <p style="color:var(--ink2);font-size:11.5px;margin:10px 2px 0">新增说明：① 顶部在「＋ 新建商品」左侧新增「分组设置」「标签设置」两个次级按钮；② 表格在「状态」与「操作」之间新增「分组」「标签」两列（胶囊展示，可空显示「—」）；③ 筛选条新增「标签」「分组」筛选入口。</p>
+    </div>
+  </div>
+
+  <!-- ============ 帧 2：两栏设置页 ============ -->
+  <div class="frame">
+    <div class="frame-name">Frame 2 · 点击「标签设置 / 分组设置」打开的两栏设置页<span class="tag">覆盖当前内容，非跳转</span></div>
+    <div class="canvas">
+      <div class="new" style="padding:2px">
+        <span class="new-tag">新增 · 整页两栏</span>
+        <div class="two">
+          <!-- 左栏 -->
+          <div class="left">
+            <div class="left-hd">
+              <h3>预包装产品 · 分组与标签</h3>
+              <button class="btn xs">← 返回商品库</button>
+            </div>
+            <div class="sec">
+              <div class="sec-hd"><b>分组</b><button class="btn xs">＋ 新建</button></div>
+              <input class="q" value="搜索分组">
+              <div class="item"><span class="badge ok">启用</span><span class="nm">饮料类</span><span class="ct">4</span><button class="dots">⋯</button></div>
+              <div class="item"><span class="badge ok">启用</span><span class="nm">零食类</span><span class="ct">2</span><button class="dots">⋯</button></div>
+            </div>
+            <div class="sec">
+              <div class="sec-hd"><b>标签</b><button class="btn xs">＋ 新建</button></div>
+              <input class="q" value="搜索标签">
+              <div class="item"><span class="badge ok">启用</span><span class="nm">新品</span><span class="ct">3</span><button class="dots">⋯</button></div>
+              <div class="item"><span class="badge ok">启用</span><span class="nm">热销</span><span class="ct">2</span><button class="dots">⋯</button></div>
+              <div class="item"><span class="badge muted">停用</span><span class="nm">无糖</span><span class="ct">1</span><button class="dots">⋯</button></div>
+            </div>
+            <div style="text-align:center;margin-top:6px"><span class="lnk">标签分组管理 ›</span></div>
+          </div>
+          <!-- 右栏 -->
+          <div class="right">
+            <div class="ph">
+              <div><h2 style="font-size:15px">预包装产品列表</h2><p>勾选对象后，在下方批量设置或移除标签 / 分组。</p></div>
+            </div>
+            <table>
+              <thead><tr><th style="width:34px"></th><th>商品名称</th><th>租户</th><th>分类</th><th>状态</th><th>分组</th><th>标签</th></tr></thead>
+              <tbody>
+                <tr><td><span style="display:inline-block;width:14px;height:14px;border:1px solid #cbd5e1;border-radius:3px"></span></td><td><b>冰美式 350ml</b></td><td>佳存</td><td>饮料</td><td><span class="badge ok">启用</span></td><td><span class="pill g">饮料类</span></td><td><span class="pill">新品</span><span class="pill">热销</span></td></tr>
+                <tr><td><span style="display:inline-block;width:14px;height:14px;border:1px solid #cbd5e1;border-radius:3px"></span></td><td><b>气泡水 青柠</b></td><td>佳存</td><td>饮料</td><td><span class="badge ok">启用</span></td><td><span class="pill g">饮料类</span></td><td><span class="pill">新品</span><span class="pill">无糖</span></td></tr>
+                <tr><td><span style="display:inline-block;width:14px;height:14px;border:1px solid #cbd5e1;border-radius:3px;background:#2563eb"></span></td><td><b>薯片 原味</b></td><td>佳存</td><td>零食</td><td><span class="badge ok">启用</span></td><td><span class="pill empty">—</span></td><td><span class="pill">促销</span></td></tr>
+                <tr><td><span style="display:inline-block;width:14px;height:14px;border:1px solid #cbd5e1;border-radius:3px;background:#2563eb"></span></td><td><b>能量饮料 250ml</b></td><td>佳存</td><td>饮料</td><td><span class="badge muted">停用</span></td><td><span class="pill empty">—</span></td><td><span class="pill empty">—</span></td></tr>
+              </tbody>
+            </table>
+            <div class="bar">
+              <span>已选择 <b>2</b> 项</span><span class="sp"></span>
+              <button class="btn">设置标签</button>
+              <button class="btn">移除标签</button>
+              <button class="btn">设置分组</button>
+              <button class="btn">移除分组</button>
+              <button class="btn">取消</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <p style="color:var(--ink2);font-size:11.5px;margin:12px 2px 0">交互：左栏「分组/标签」列表项点击「⋯」→ 编辑 / 启用·停用 / 删除；右栏勾选商品后出现底部操作条，点击「设置标签/分组」或「移除标签/分组」弹出选择浮层（见 Frame 3-B）。左栏底部「标签分组管理 ›」进入集中管理台。点击「← 返回商品库」回到 Frame 1。</p>
+    </div>
+  </div>
+
+  <!-- ============ 帧 3：弹层与抽屉 ============ -->
+  <div class="frame">
+    <div class="frame-name">Frame 3 · 弹层 / 抽屉（沿用现有弹窗样式）<span class="tag">4 个状态</span></div>
+    <div class="canvas">
+
+      <h4 class="sub">A. 新建 / 编辑 标签（或分组）弹窗</h4>
+      <div class="overlay" style="min-height:330px">
+        <div class="dim"></div>
+        <div class="modal">
+          <div class="m-hd"><div><h3>标签 · 新建</h3><div class="m-sub">预包装产品</div></div><button class="x">×</button></div>
+          <div class="m-body">
+            <div class="field"><label>标签名称 *</label><input class="inp" value=""></div>
+            <div class="field"><label>适用对象</label><div class="src">预包装产品（不可修改）</div></div>
+            <div class="field"><label>已关联对象</label><div class="kv"><span class="k">关联数量</span><span class="v">0 个预包装产品</span></div></div>
+            <div class="field"><label>状态</label><div class="radio"><label class="bopt"><input type="radio" checked> 启用</label><label class="bopt"><input type="radio"> 停用</label></div></div>
+          </div>
+          <div class="m-ft"><button class="btn">取消</button><button class="btn accent">保存</button></div>
+        </div>
+      </div>
+
+      <h4 class="sub" style="margin-top:22px">B. 设置标签（浮层，从底部操作条触发）</h4>
+      <div class="overlay" style="min-height:300px">
+        <div class="dim"></div>
+        <div class="pop">
+          <div class="p-hd"><b>设置标签</b><input class="q" style="width:130px" value="搜索"></div>
+          <div class="p-list">
+            <label class="bopt"><input type="checkbox" checked> 新品</label>
+            <label class="bopt"><input type="checkbox"> 热销</label>
+            <label class="bopt"><input type="checkbox"> 促销</label>
+            <label class="bopt"><input type="checkbox"> 无糖</label>
+            <label class="bopt"><input type="checkbox"> 进口商品</label>
+            <label class="bopt"><input type="checkbox"> 季节限定</label>
+          </div>
+          <div class="p-ft"><button class="btn">取消</button><button class="btn accent">应用</button></div>
+        </div>
+      </div>
+
+      <div class="grid" style="grid-template-columns:1fr 1fr;margin-top:22px">
+        <div>
+          <h4 class="sub" style="margin-top:0">C. 查看关联对象（右侧抽屉）</h4>
+          <div class="overlay" style="min-height:340px">
+            <div class="dim"></div>
+            <div class="drawer">
+              <div class="d-hd"><div><h3 style="margin:0;font-size:15px">标签：新品</h3><div class="m-sub">已关联 3 个预包装产品</div></div><button class="x">×</button></div>
+              <div class="d-body">
+                <input class="q" value="按名称搜索" style="margin-bottom:10px">
+                <table>
+                  <thead><tr><th>产品名称</th><th>SKU</th><th>状态</th></tr></thead>
+                  <tbody>
+                    <tr><td>冰美式 350ml</td><td>SKU-001</td><td><span class="badge ok">启用</span></td></tr>
+                    <tr><td>气泡水 青柠</td><td>SKU-002</td><td><span class="badge ok">启用</span></td></tr>
+                    <tr><td>拿铁 250ml</td><td>SKU-003</td><td><span class="badge ok">启用</span></td></tr>
+                  </tbody>
+                </table>
+              </div>
+              <div class="d-ft"><span class="meta" style="color:var(--ink2)">共 3 个预包装产品</span><button class="btn">关闭</button></div>
+            </div>
+          </div>
+        </div>
+        <div>
+          <h4 class="sub" style="margin-top:0">D. 删除 / 停用 确认弹窗</h4>
+          <div class="overlay" style="min-height:340px">
+            <div class="dim"></div>
+            <div class="modal sm">
+              <div class="m-hd"><div><h3>删除标签</h3></div><button class="x">×</button></div>
+              <div class="m-body" style="font-size:12.5px;line-height:1.8;color:var(--ink2)">
+                删除标签「<b style="color:var(--ink)">新品</b>」？<br>
+                该操作将解除与所有对象的关联（共 <b style="color:var(--ink)">3</b> 条）。对象本身不会被删除。<br>
+                <b style="color:#dc2626">此操作不可直接恢复。</b>
+              </div>
+              <div class="m-ft"><button class="btn">取消</button><button class="btn" style="background:#dc2626;border-color:#dc2626;color:#fff">确认删除</button></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <p style="color:var(--ink2);font-size:11.5px;margin:12px 2px 0">新建/编辑弹窗字段：名称(必填) · 适用对象(预包装产品,不可改) · 已关联对象(数量+查看) · 状态(启用/停用)。删除确认弹窗会列出影响范围并强调不可直接恢复。</p>
+    </div>
+  </div>
+
+  <!-- ============ Figma AI 提示词 ============ -->
+  <h3 style="margin:34px 0 4px">可直接粘贴给 Figma AI 的提示词（仅新增标签功能，保留原列）</h3>
+  <p class="copy-hint" style="color:#71717a">提示：在现有「商品 / 预包装商品」设计稿基础上运行，请勿改动原有列与标题。</p>
+  <div class="prompt">在「商品 / 预包装商品」现有列表页设计稿的基础上，<b>仅新增「标签 / 分组」相关功能</b>，其余所有列标题、表格布局与现有控件样式保持不变（不要改动：商品名称 / 租户 / 分类 / 品牌 / AI识别 / 状态 / 操作）。具体新增内容如下：
+
+<b>1. 顶部操作区</b>：在原有「＋ 新建商品」主按钮左侧，新增两个次级按钮「分组设置」和「标签设置」，样式沿用现有次级按钮（非主按钮）。
+
+<b>2. 列表表格新增两列</b>（位置：放在「状态」列之后、「操作」列之前）：
+  · 「分组」列：展示该商品所属分组名称（胶囊/标签样式，可空，空时显示「—」）。
+  · 「标签」列：展示该商品的标签（多个标签以胶囊排列，可空显示「—」）。
+
+<b>3. 筛选区</b>：在现有筛选条件下方/之后，新增「按标签筛选」与「按分组筛选」两个入口（沿用现有筛选条样式，可用下拉或多选 chip）。
+
+<b>4. 点击「标签设置」或「分组设置」后</b>，在当前页面覆盖打开一个<b>两栏设置页</b>（不是跳转新页面）：
+  · 左栏：标题「预包装产品 · 分组与标签」，右上「← 返回商品库」；下方两个区块「分组」「标签」，每块含搜索框 + 「＋ 新建」+ 列表项（每项：启用/停用徽标 + 名称 + 关联数 + ⋯菜单：编辑 / 启用·停用 / 删除）。左栏底部有「标签分组管理 ›」入口。
+  · 右栏：标题「预包装产品列表」，表格含复选列 + 商品名称 / 租户 / 分类 / 状态 / 分组 / 标签；勾选任意商品后，底部出现操作条：设置标签 / 移除标签 / 设置分组 / 移除分组 / 取消。
+
+<b>5. 弹层与抽屉</b>（沿用现有弹窗样式，蓝色主按钮保持一致）：
+  · 新建/编辑 标签(或分组)弹窗：名称(必填) · 适用对象(显示「预包装产品」，不可修改) · 已关联对象(数量 + 「查看关联对象」按钮) · 状态(启用/停用 单选) · 取消 / 保存。
+  · 设置/移除 标签(或分组)浮层：搜索框 + 可勾选列表 + 取消 / 应用。
+  · 查看关联对象抽屉（从右侧滑出）：展示该标签(分组)关联的商品表（列：产品名称 / SKU / 状态）+ 搜索框 + 关闭。
+  · 删除/停用 确认弹窗：说明影响范围（解除与 N 个对象的关联）+ 取消 / 确认删除。
+
+<b>约束</b>：以上均为本次新增；原有列标题、宽度与现有视觉语言（按钮、表格、筛选条）请勿改动。</div>
+
+</div>
+</body>
+</html>
