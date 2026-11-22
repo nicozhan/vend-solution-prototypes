@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>VendSolution · 转移机器归属 PRD</title>
+<style>
+  :root{
+    --bg:#fafafa; --surface:#ffffff; --surface-2:#f7f7f8; --surface-3:#efeff1;
+    --border:#ececec; --border-strong:#dadade;
+    --text:#18181b; --text-2:#6b7280; --text-3:#a1a1aa; --text-4:#c4c4cc;
+    --accent:#2563eb; --accent-weak:#f0f5ff; --accent-line:#c3d7ff;
+    --ok:#15803d; --ok-weak:#ecfdf3; --ok-line:#bbf7d0;
+    --warn:#b45309; --warn-weak:#fff8ed; --warn-line:#fed7aa;
+    --radius:9px; --radius-sm:5px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    background:var(--bg);color:var(--text);font-size:13.5px;line-height:1.7;
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"PingFang SC","Microsoft YaHei",sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:1080px;margin:0 auto;padding:54px 28px 96px}
+
+  /* header */
+  .eyebrow{font-size:11px;letter-spacing:.08em;color:var(--accent);font-weight:650;text-transform:uppercase}
+  h1{font-size:28px;font-weight:660;letter-spacing:-.025em;margin-top:8px}
+  .lede{color:var(--text-2);font-size:13px;margin-top:9px;max-width:720px}
+  .meta{display:flex;gap:22px;flex-wrap:wrap;margin-top:16px;font-size:11.5px;color:var(--text-3)}
+  .meta b{color:var(--text-2);font-weight:500}
+
+  /* section */
+  section{margin-top:46px}
+  .sec-hd{display:flex;align-items:center;gap:9px;margin-bottom:16px}
+  .sec-no{font-size:10.5px;font-weight:700;color:var(--accent);background:var(--accent-weak);border:1px solid var(--accent-line);border-radius:4px;padding:1px 6px;letter-spacing:.03em;font-variant-numeric:tabular-nums}
+  h2{font-size:16.5px;font-weight:640;letter-spacing:-.01em}
+
+  /* ---------- wireframe shell ---------- */
+  .wf{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;box-shadow:0 1px 2px rgba(24,24,27,.03);display:flex;flex-direction:column}
+  .wf-top{display:flex;align-items:center;gap:7px;height:36px;padding:0 12px;background:var(--surface-2);border-bottom:1px solid var(--border);flex:0 0 auto}
+  .wf-dot{width:7px;height:7px;border-radius:50%;background:var(--text-4);flex:0 0 auto}
+  .wf-cap{margin-left:8px;font-size:10.5px;letter-spacing:.05em;color:var(--text-3);text-transform:uppercase;font-weight:600}
+  .wf-bd{padding:16px 18px 18px;flex:1 1 auto;display:flex;flex-direction:column}
+
+  .wf-head{display:flex;align-items:baseline;gap:8px;padding-bottom:12px;border-bottom:1px solid var(--border);margin-bottom:14px}
+  .wf-head .t{font-size:13.5px;font-weight:640;letter-spacing:-.01em}
+  .wf-head .s{margin-left:auto;font-size:10.5px;color:var(--text-3);font-variant-numeric:tabular-nums}
+
+  .wf-sec{margin-top:14px}
+  .wf-sec:first-of-type{margin-top:0}
+  .wf-lab{display:flex;align-items:center;gap:6px;font-size:10.5px;font-weight:600;color:var(--text-2);margin-bottom:7px}
+  .wf-lab .req{color:var(--accent);font-weight:700}
+  .wf-lab .hint{margin-left:auto;font-weight:400;color:var(--text-3)}
+
+  .wf-in{height:32px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);background:#fff;display:flex;align-items:center;gap:8px;padding:0 10px;font-size:11.5px;color:var(--text)}
+  .wf-in .ph{color:var(--text-3)}
+  .wf-in .cv{margin-left:auto;color:var(--text-3);font-size:10px;line-height:1}
+  .wf-in.dis{background:var(--surface-2);color:var(--text-3);border-style:dashed}
+  .wf-pair{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+
+  .wf-opts{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .wf-opt{border:1px solid var(--border-strong);border-radius:6px;background:#fff;padding:9px 10px;font-size:11.5px;line-height:1.5}
+  .wf-opt .n{display:flex;align-items:center;gap:6px;font-weight:600}
+  .wf-opt .n i{width:11px;height:11px;border-radius:50%;border:1px solid var(--border-strong);flex:0 0 auto;display:inline-block}
+  .wf-opt .d{color:var(--text-3);font-size:10.5px;margin-top:3px;padding-left:17px}
+  .wf-opt.sel{border-color:var(--accent-line);background:var(--accent-weak)}
+  .wf-opt.sel .n i{border:3px solid var(--accent);background:#fff}
+
+  .wf-rows{border:1px solid var(--border);border-radius:var(--radius-sm);overflow:hidden;background:#fff}
+  .wf-r{display:flex;align-items:center;gap:10px;padding:8px 10px;font-size:11.5px;border-bottom:1px solid var(--border)}
+  .wf-r:last-child{border-bottom:none}
+  .wf-r .k{color:var(--text-3);flex:0 0 78px;font-size:10.5px}
+  .wf-r .v{color:var(--text)}
+  .wf-r .tail{margin-left:auto;color:var(--text-3);font-size:10.5px}
+
+  .wf-chips{display:flex;flex-wrap:wrap;gap:6px}
+  .chip{font-size:10.5px;border:1px solid var(--border-strong);border-radius:4px;padding:2px 7px;color:var(--text-2);background:#fff;line-height:1.7}
+  .chip.ok{background:var(--ok-weak);border-color:var(--ok-line);color:var(--ok)}
+  .chip.warn{background:var(--warn-weak);border-color:var(--warn-line);color:var(--warn)}
+  .chip.acc{background:var(--accent-weak);border-color:var(--accent-line);color:var(--accent)}
+  .chip.ghost{background:var(--surface-2);color:var(--text-3)}
+
+  .wf-note{border:1px solid var(--border);background:var(--surface-2);border-radius:var(--radius-sm);padding:8px 10px;font-size:11px;color:var(--text-2);line-height:1.6}
+  .wf-note.warn{border-color:var(--warn-line);background:var(--warn-weak);color:var(--warn)}
+  .wf-note.ok{border-color:var(--ok-line);background:var(--ok-weak);color:var(--ok)}
+
+  .wf-ft{display:flex;align-items:center;gap:8px;margin-top:auto;padding-top:14px;border-top:1px solid var(--border)}
+  .wf-ft .sp{margin-left:auto}
+  .wbtn{height:30px;padding:0 12px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);background:#fff;font-size:11.5px;display:inline-flex;align-items:center;color:var(--text);white-space:nowrap}
+  .wbtn.pr{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:560}
+  .wbtn.dis{color:var(--text-4);background:var(--surface-2)}
+
+  .wf-check{display:flex;gap:7px;align-items:flex-start;font-size:11px;color:var(--text-2);line-height:1.6}
+  .wf-check + .wf-check{margin-top:7px}
+  .wf-check i{width:12px;height:12px;border:1px solid var(--border-strong);border-radius:3px;flex:0 0 auto;margin-top:2px;display:inline-block;background:#fff}
+
+  /* flow strip */
+  .flow{display:grid;grid-template-columns:repeat(4,1fr);gap:0;border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;background:#fff}
+  .flow-i{padding:14px 16px;border-right:1px solid var(--border);position:relative}
+  .flow-i:last-child{border-right:none}
+  .flow-i .n{font-size:10px;color:var(--text-4);font-weight:700;font-variant-numeric:tabular-nums}
+  .flow-i .t{font-size:12.5px;font-weight:620;margin-top:2px}
+  .flow-i .o{font-size:10.5px;color:var(--text-3);margin-top:3px}
+  .flow-i.on{background:var(--accent-weak)}
+  .flow-i.on .n{color:var(--accent)}
+  .flow-i.on .t{color:var(--accent)}
+
+  /* table */
+  table{width:100%;border-collapse:collapse;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;font-size:12.5px}
+  th{text-align:left;font-weight:600;color:var(--text-2);background:var(--surface-2);padding:9px 12px;border-bottom:1px solid var(--border);font-size:11.5px;white-space:nowrap}
+  td{padding:9px 12px;border-bottom:1px solid var(--border);vertical-align:top;line-height:1.6}
+  tr:last-child td{border-bottom:none}
+  td.mono,code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:11.5px;color:var(--text-2)}
+  td b{font-weight:600}
+
+  /* list wireframe table */
+  .wt{width:100%;border-collapse:collapse;font-size:11.5px}
+  .wt th{background:#fff;border-bottom:1px solid var(--border);padding:7px 8px;font-size:10px;color:var(--text-3);font-weight:600;letter-spacing:.02em}
+  .wt td{padding:9px 8px;border-bottom:1px solid var(--border);font-size:11.5px;vertical-align:middle}
+  .wt tr:last-child td{border-bottom:none}
+  .wt .nm{font-weight:600;font-size:11.5px}
+  .wt .sub{color:var(--text-3);font-size:10px;margin-top:1px}
+  .bar{height:8px;border-radius:3px;background:var(--surface-3)}
+  .bar.s{width:60%}
+  .bar.m{width:82%}
+
+  /* status / rules grid */
+  .g2{display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start}
+  .g3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+  .box{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:15px 16px}
+  .box .h{font-size:11px;font-weight:600;color:var(--text-3);letter-spacing:.03em;margin-bottom:10px}
+  .stat{display:flex;align-items:center;gap:8px;font-size:12px;padding:7px 0;border-bottom:1px dashed var(--border)}
+  .stat:last-child{border-bottom:none}
+  .stat .dot{width:6px;height:6px;border-radius:50%;flex:0 0 auto}
+  .stat .r{margin-left:auto;color:var(--text-3);font-size:10.5px}
+  ul{list-style:none;display:flex;flex-direction:column;gap:7px}
+  li{display:flex;gap:8px;font-size:12.5px;color:var(--text-2);line-height:1.65}
+  li::before{content:"—";color:var(--text-4);flex:0 0 10px}
+  li b{color:var(--text);font-weight:600}
+  .kv{font-size:11.5px;color:var(--text-2);line-height:1.9}
+  .kv b{color:var(--text);font-weight:600}
+  .kv .m{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:11px;color:var(--text-2)}
+  .foot{margin-top:56px;padding-top:16px;border-top:1px solid var(--border);font-size:11px;color:var(--text-3);display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+
+  @media (max-width:860px){
+    .g2,.g3,.flow{grid-template-columns:1fr}
+    .wf-opts{grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="eyebrow">PRD · 机器归属</div>
+  <h1>转移机器归属</h1>
+  <p class="lede">工厂把机器交付给运营商。配置由工厂在交付前完成，运营商只补齐工厂未做的部分。</p>
+  <div class="meta">
+    <span><b>版本</b> v1.0</span>
+    <span><b>日期</b> 2026-11-07</span>
+    <span><b>角色</b> 工厂 · 运营商 · 平台</span>
+    <span><b>依赖</b> 租户权限 / 点位 / 支付通道</span>
+  </div>
+
+  <!-- 01 流程 -->
+  <section>
+    <div class="sec-hd"><span class="sec-no">01</span><h2>流程</h2></div>
+    <div class="flow">
+      <div class="flow-i"><div class="n">01</div><div class="t">选择目标与方式</div><div class="o">工厂</div></div>
+      <div class="flow-i"><div class="n">02</div><div class="t">出厂配置</div><div class="o">工厂</div></div>
+      <div class="flow-i"><div class="n">03</div><div class="t">确认影响</div><div class="o">工厂</div></div>
+      <div class="flow-i"><div class="n">04</div><div class="t">接收并补配</div><div class="o">运营商</div></div>
+    </div>
+  </section>
+
+  <!-- 02 入口 -->
+  <section>
+    <div class="sec-hd"><span class="sec-no">02</span><h2>入口：机器列表</h2></div>
+    <div class="wf">
+      <div class="wf-top"><span class="wf-dot"></span><span class="wf-dot"></span><span class="wf-dot"></span><span class="wf-cap">Machine List</span></div>
+      <table class="wt">
+        <thead>
+          <tr>
+            <th style="width:26%">机器</th>
+            <th style="width:16%">当前归属</th>
+            <th style="width:20%">点位</th>
+            <th style="width:13%">模式</th>
+            <th style="width:13%">配置状态</th>
+            <th style="width:12%">操作</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><div class="nm">工厂 B 展厅 · 演示机 01</div><div class="sub">VS-SG-2026-0101</div></td>
+            <td>工厂 B</td>
+            <td>新加坡 · 工厂 B · 展厅</td>
+            <td><span class="chip ghost">工厂模式</span></td>
+            <td><span class="chip">可分配</span></td>
+            <td><span class="wbtn">转移归属</span></td>
+          </tr>
+          <tr>
+            <td><div class="nm">商场 A · 一层咖啡机</div><div class="sub">VS-SG-2026-0138</div></td>
+            <td>运营商 B</td>
+            <td>运营商 B · 仓库</td>
+            <td><span class="chip acc">运营商模式</span></td>
+            <td><span class="chip warn">待配置</span></td>
+            <td><span class="wbtn">完成配置</span></td>
+          </tr>
+          <tr>
+            <td><div class="nm">商场 A · 二层饮品机</div><div class="sub">VS-SG-2026-0162</div></td>
+            <td>运营商 B</td>
+            <td>新加坡 · 商场 A · 二层</td>
+            <td><span class="chip acc">租户模式</span></td>
+            <td><span class="chip ok">已配置</span></td>
+            <td><span class="wbtn">查看配置</span></td>
+          </tr>
+          <tr>
+            <td><div class="bar m"></div></td>
+            <td><div class="bar s"></div></td>
+            <td><div class="bar m"></div></td>
+            <td><div class="bar s"></div></td>
+            <td><div class="bar s"></div></td>
+            <td><div class="bar s"></div></td>
+          </tr>
+          <tr>
+            <td><div class="bar m"></div></td>
+            <td><div class="bar s"></div></td>
+            <td><div class="bar m"></div></td>
+            <td><div class="bar s"></div></td>
+            <td><div class="bar s"></div></td>
+            <td><div class="bar s"></div></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- 03 工厂侧 -->
+  <section>
+    <div class="sec-hd"><span class="sec-no">03</span><h2>工厂侧：转移向导</h2></div>
+    <div class="g2">
+
+      <!-- step 1 -->
+      <div class="wf">
+        <div class="wf-top"><span class="wf-dot"></span><span class="wf-dot"></span><span class="wf-dot"></span><span class="wf-cap">Drawer · 1/4</span></div>
+        <div class="wf-bd">
+          <div class="wf-head"><span class="t">转移机器归属</span><span class="s">1 / 4</span></div>
+
+          <div class="wf-sec">
+            <div class="wf-lab">已选机器<span class="hint">2 台 · 原归属 工厂 B</span></div>
+            <div class="wf-chips">
+              <span class="chip">演示机 01 · VS-SG-2026-0101</span>
+              <span class="chip">演示机 02 · VS-SG-2026-0102</span>
+            </div>
+          </div>
+
+          <div class="wf-sec">
+            <div class="wf-lab"><span class="req">*</span>转移方式</div>
+            <div class="wf-opts">
+              <div class="wf-opt sel"><div class="n"><i></i>所有权转移</div><div class="d">所有权与运营权同时转移</div></div>
+              <div class="wf-opt"><div class="n"><i></i>仅管理权转移</div><div class="d">所有权不变，仅转让运营权</div></div>
+            </div>
+          </div>
+
+          <div class="wf-sec">
+            <div class="wf-lab"><span class="req">*</span>目标租户</div>
+            <div class="wf-in"><span>运营商 B</span><span style="color:var(--text-3)">· 运营商 · 新加坡</span><span class="cv">▾</span></div>
+          </div>
+
+          <div class="wf-sec">
+            <div class="wf-lab"><span class="req">*</span>转移原因</div>
+            <div class="wf-pair">
+              <div class="wf-in"><span>销售交付</span><span class="cv">▾</span></div>
+              <div class="wf-in"><span class="ph">备注（选填）</span></div>
+            </div>
+          </div>
+
+          <div class="wf-ft"><span class="wbtn">取消</span><span class="sp"></span><span class="wbtn pr">下一步：出厂配置</span></div>
+        </div>
+      </div>
+
+      <!-- step 2 -->
+      <div class="wf">
+        <div class="wf-top"><span class="wf-dot"></span><span class="wf-dot"></span><span class="wf-dot"></span><span class="wf-cap">Drawer · 2/4</span></div>
+        <div class="wf-bd">
+          <div class="wf-head"><span class="t">出厂配置与交接</span><span class="s">2 / 4</span></div>
+
+          <div class="wf-sec">
+            <div class="wf-lab">交付去向</div>
+            <div class="wf-rows">
+              <div class="wf-r"><span class="k">接收租户</span><span class="v">运营商 B · 运营商</span></div>
+              <div class="wf-r"><span class="k">落地点位</span><span class="v">运营商 B · 仓库</span><span class="tail">默认点位</span></div>
+            </div>
+          </div>
+
+          <div class="wf-sec">
+            <div class="wf-lab">支付配置<span class="hint">可留空</span></div>
+            <div class="wf-pair">
+              <div class="wf-in"><span>Adyen</span><span class="cv">▾</span></div>
+              <div class="wf-in"><span>SGD</span><span class="cv">▾</span></div>
+            </div>
+          </div>
+
+          <div class="wf-sec">
+            <div class="wf-lab">库存处理</div>
+            <div class="wf-opts">
+              <div class="wf-opt sel"><div class="n"><i></i>保留库存</div><div class="d">138 件随机器转移</div></div>
+              <div class="wf-opt"><div class="n"><i></i>清空库存</div><div class="d">库存归零，记录清库流水</div></div>
+            </div>
+          </div>
+
+          <div class="wf-sec">
+            <div class="wf-lab">应用配置</div>
+            <div class="wf-opts">
+              <div class="wf-opt sel"><div class="n"><i></i>保留工厂配置</div><div class="d">广告页 / 主题 / 语言</div></div>
+              <div class="wf-opt"><div class="n"><i></i>重置为接收方默认</div><div class="d">清除工厂广告素材</div></div>
+            </div>
+          </div>
+
+          <div class="wf-sec">
+            <div class="wf-lab">随机器保留</div>
+            <div class="wf-chips">
+              <span class="chip ghost">设备参数</span>
+              <span class="chip ghost">货道与商品</span>
+              <span class="chip ghost">IoT 和告警</span>
+              <span class="chip ghost">设备日志</span>
+              <span class="chip ghost">远程升级</span>
+            </div>
+          </div>
+
+          <div class="wf-ft"><span class="wbtn">上一步</span><span class="sp"></span><span class="wbtn pr">下一步：确认影响</span></div>
+        </div>
+      </div>
+
+      <!-- step 3 -->
+      <div class="wf">
+        <div class="wf-top"><span class="wf-dot"></span><span class="wf-dot"></span><span class="wf-dot"></span><span class="wf-cap">Drawer · 3/4</span></div>
+        <div class="wf-bd">
+          <div class="wf-head"><span class="t">确认转移影响</span><span class="s">3 / 4</span></div>
+
+          <div class="wf-sec">
+            <div class="wf-rows">
+              <div class="wf-r"><span class="k">原归属</span><span class="v">工厂 B</span><span class="tail">2 台</span></div>
+              <div class="wf-r"><span class="k">转移至</span><span class="v">运营商 B · 运营商</span></div>
+            </div>
+          </div>
+
+          <div class="wf-sec">
+            <div class="wf-lab">出厂配置</div>
+            <div class="wf-rows">
+              <div class="wf-r"><span class="k">支付</span><span class="v">Adyen · SGD</span></div>
+              <div class="wf-r"><span class="k">点位</span><span class="v">运营商 B · 仓库</span></div>
+              <div class="wf-r"><span class="k">库存</span><span class="v">保留 138 件</span></div>
+              <div class="wf-r"><span class="k">应用配置</span><span class="v">保留工厂配置</span></div>
+            </div>
+          </div>
+
+          <div class="wf-sec">
+            <div class="wf-note ok">配置齐全，运营商接收后可直接投入使用。</div>
+          </div>
+
+          <div class="wf-sec">
+            <div class="wf-check"><i></i><span>已核对目标租户与机器清单，符合销售或代管协议。</span></div>
+            <div class="wf-check"><i></i><span>已了解转移后工厂对该机器只读，操作写入审计日志。</span></div>
+          </div>
+
+          <div class="wf-ft"><span class="wbtn">上一步</span><span class="sp"></span><span class="wbtn pr">确认转移（2 台）</span></div>
+        </div>
+      </div>
+
+      <!-- step 4 -->
+      <div class="wf">
+        <div class="wf-top"><span class="wf-dot"></span><span class="wf-dot"></span><span class="wf-dot"></span><span class="wf-cap">Drawer · 4/4</span></div>
+        <div class="wf-bd">
+          <div class="wf-head"><span class="t">转移完成</span><span class="s">4 / 4</span></div>
+
+          <div class="wf-sec">
+            <div class="wf-note ok"><b>2 台机器已转移至 运营商 B</b><br>单号 TR-20261107-014 · 2026-11-07</div>
+          </div>
+
+          <div class="wf-sec">
+            <div class="wf-lab">交接结果</div>
+            <div class="wf-rows">
+              <div class="wf-r"><span class="k">支付</span><span class="v">Adyen · SGD</span><span class="tail">已应用</span></div>
+              <div class="wf-r"><span class="k">点位</span><span class="v">运营商 B · 仓库</span><span class="tail">待转运</span></div>
+              <div class="wf-r"><span class="k">库存</span><span class="v">保留 138 件</span></div>
+              <div class="wf-r"><span class="k">应用配置</span><span class="v">保留工厂配置</span></div>
+            </div>
+          </div>
+
+          <div class="wf-ft"><span class="wf-note" style="padding:0;border:none;background:none">已写入审计日志</span><span class="sp"></span><span class="wbtn pr">完成</span></div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- 04 运营商侧 -->
+  <section>
+    <div class="sec-hd"><span class="sec-no">04</span><h2>运营商侧：设备配置</h2></div>
+    <div class="g2">
+      <div class="wf">
+        <div class="wf-top"><span class="wf-dot"></span><span class="wf-dot"></span><span class="wf-dot"></span><span class="wf-cap">Drawer · Machine Config</span></div>
+        <div class="wf-bd">
+          <div class="wf-head"><span class="t">商场 A · 一层咖啡机</span><span class="s">VS-SG-2026-0138</span></div>
+
+          <div class="wf-sec">
+            <div class="wf-chips">
+              <span class="chip acc">设备信息</span>
+              <span class="chip ghost">运营配置</span>
+              <span class="chip ghost">终端内容</span>
+              <span class="chip ghost">货道 &amp; 商品</span>
+              <span class="chip ghost">IoT 和告警</span>
+              <span class="chip ghost">设备日志</span>
+              <span class="chip ghost">远程升级</span>
+            </div>
+          </div>
+
+          <div class="wf-sec">
+            <div class="wf-note warn">工厂交付时未完成：支付信息、应用配置</div>
+          </div>
+
+          <div class="wf-sec">
+            <div class="wf-lab">支付信息<span class="hint">工厂未配置</span></div>
+            <div class="wf-pair">
+              <div class="wf-in"><span class="ph">支付厂家</span><span class="cv">▾</span></div>
+              <div class="wf-in"><span class="ph">结算币种</span><span class="cv">▾</span></div>
+            </div>
+          </div>
+
+          <div class="wf-sec">
+            <div class="wf-lab">点位</div>
+            <div class="wf-in"><span>运营商 B · 仓库</span><span style="color:var(--text-3);font-size:10.5px">→ 投放点位</span><span class="cv">▾</span></div>
+          </div>
+
+          <div class="wf-sec">
+            <div class="wf-lab">应用配置</div>
+            <div class="wf-in dis"><span>沿用租户默认模板</span><span class="cv">▾</span></div>
+          </div>
+
+          <div class="wf-sec">
+            <div class="wf-lab">库存</div>
+            <div class="wf-rows">
+              <div class="wf-r"><span class="k">当前</span><span class="v">0 件</span><span class="tail">已清空</span></div>
+            </div>
+          </div>
+
+          <div class="wf-ft"><span class="wbtn">取消</span><span class="sp"></span><span class="wbtn pr">保存</span></div>
+        </div>
+      </div>
+
+      <div class="box" style="align-self:start">
+        <div class="h">配置状态判定</div>
+        <div class="stat"><span class="dot" style="background:var(--text-4)"></span>可分配<span class="r">工厂持有 · 未转出</span></div>
+        <div class="stat"><span class="dot" style="background:var(--warn)"></span>待配置<span class="r">已转出，缺支付或应用配置</span></div>
+        <div class="stat"><span class="dot" style="background:var(--ok)"></span>已配置<span class="r">支付与应用配置齐全</span></div>
+
+        <div class="h" style="margin-top:20px">操作列</div>
+        <div class="stat">工厂模式<span class="r">转移归属</span></div>
+        <div class="stat">运营商模式 · 待配置<span class="r">完成配置</span></div>
+        <div class="stat">运营商 / 租户模式 · 已配置<span class="r">查看配置</span></div>
+
+        <div class="h" style="margin-top:20px">工厂已配齐时</div>
+        <div class="wf-note ok" style="font-size:10.5px">可直接投入使用，以下为可选调整。</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 05 字段 -->
+  <section>
+    <div class="sec-hd"><span class="sec-no">05</span><h2>字段</h2></div>
+    <table>
+      <thead>
+        <tr>
+          <th style="width:16%">字段</th>
+          <th style="width:13%">控件</th>
+          <th style="width:9%">必填</th>
+          <th>规则</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td><b>转移方式</b></td><td>单选</td><td>是</td><td>所有权转移：<code>ownerTenantId</code> 与 <code>managerTenantId</code> 同时变更；仅管理权转移：只变更 <code>managerTenantId</code></td></tr>
+        <tr><td><b>目标租户</b></td><td>下拉</td><td>是</td><td>仅列已启用租户；不可等于机器当前归属</td></tr>
+        <tr><td><b>转移原因</b></td><td>下拉</td><td>是</td><td>销售交付 / 租赁交付 / 内部调拨 / 服务代管 / 其他</td></tr>
+        <tr><td><b>备注</b></td><td>输入</td><td>否</td><td>≤ 100 字，写入转移单</td></tr>
+        <tr><td><b>支付厂家</b></td><td>下拉</td><td>否</td><td>Stripe / Adyen / Billplz / Worldline；留空则交付后为待配置</td></tr>
+        <tr><td><b>结算币种</b></td><td>下拉</td><td>条件</td><td>厂家已选时必填；默认取目标租户国家币种</td></tr>
+        <tr><td><b>库存处理</b></td><td>单选</td><td>是</td><td>保留 / 清空；清空只改数量，货道与商品映射不变</td></tr>
+        <tr><td><b>应用配置</b></td><td>单选</td><td>是</td><td>保留工厂配置 / 重置为接收方默认</td></tr>
+        <tr><td><b>落地点位</b></td><td>只读</td><td>—</td><td>固定为目标租户默认点位「仓库」，工厂不可选投放点位</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- 06 规则 -->
+  <section>
+    <div class="sec-hd"><span class="sec-no">06</span><h2>规则</h2></div>
+    <div class="g2">
+      <div class="box">
+        <div class="h">边界</div>
+        <ul>
+          <li>目标租户未启用、或已是当前归属时，不可提交。</li>
+          <li>只有<b>工厂模式</b>的机器可发起转移；转出后工厂侧只读。</li>
+          <li>转移不可撤回，纠正需由接收方发起反向转移并重新审计。</li>
+          <li>进行中工单随机器转交，编号不变。</li>
+        </ul>
+      </div>
+      <div class="box">
+        <div class="h">数据</div>
+        <ul>
+          <li>支付通道与结算主体绑定租户，不随机器迁移；工厂代配的厂家与币种接收后可改。</li>
+          <li>点位、货道布局、商品映射、IoT 规则、日志、固件随机器保留，不重建。</li>
+          <li>清空库存写清库流水，记录操作人、时间、原数量。</li>
+          <li>每次转移生成转移单与审计记录，含双方租户、方式、出厂配置快照。</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- 07 待确认 -->
+  <section>
+    <div class="sec-hd"><span class="sec-no">07</span><h2>待确认</h2></div>
+    <table>
+      <thead><tr><th style="width:5%">#</th><th style="width:34%">问题</th><th>当前实现</th></tr></thead>
+      <tbody>
+        <tr><td class="mono">1</td><td><b>租户模式</b>的定义</td><td>按「运营商自购自持」实现；若指客户自持、运营商仅代管，判定条件需改为按客户租户类型</td></tr>
+        <tr><td class="mono">2</td><td>支付留空是否允许交付</td><td>允许，机器标记为待配置，接收方补齐后才能收款</td></tr>
+        <tr><td class="mono">3</td><td>清空库存是否需接收方确认</td><td>由工厂单方执行，完成后通知接收方</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <div class="foot">
+    <span>VendSolution · 转移机器归属 PRD v1.0</span>
+    <span>线框对应原型：vend-solution-user-mgmt.html</span>
+  </div>
+
+</div>
+</body>
+</html>
