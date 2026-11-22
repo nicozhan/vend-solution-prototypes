@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>本地化中心 · 多语言内容对照</title>
+<style>
+  :root{
+    --ds-bg:#f1f1f1; --ds-surface:#fff; --ds-border:#e3e3e5; --ds-border-strong:#cfcfd4;
+    --ds-text:#1f1f24; --ds-text-sub:#6b6b73; --ds-text-mute:#9a9aa2;
+    --ds-brand:#3b5bdb; --ds-brand-weak:#eef2ff; --ds-brand-line:#c7d2fe;
+    --ds-ok:#16a34a; --ds-ok-weak:#eafaef; --ds-warn:#d97706; --ds-warn-weak:#fffbeb;
+    --r-sm:4px; --r-md:8px; --r-lg:12px; --r-pill:999px;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--ds-bg);color:var(--ds-text);
+    font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",Segoe UI,Roboto,sans-serif;
+    font-size:13px;line-height:1.5;min-height:100vh}
+  button,input,select{font:inherit;color:inherit}
+  button{cursor:pointer}
+  .app{max-width:1500px;margin:0 auto;background:var(--ds-surface);min-height:100vh;border-left:1px solid var(--ds-border);border-right:1px solid var(--ds-border)}
+
+  .topbar{height:52px;border-bottom:1px solid var(--ds-border);display:flex;align-items:center;justify-content:space-between;padding:0 20px;background:#fff;position:sticky;top:0;z-index:20}
+  .brand{display:flex;align-items:center;gap:9px;font-weight:700;font-size:14px}
+  .brand i{width:24px;height:24px;border-radius:6px;background:var(--ds-brand);color:#fff;display:inline-grid;place-items:center;font-style:normal;font-size:13px}
+  .topbar .right{display:flex;align-items:center;gap:14px;color:var(--ds-text-sub);font-size:12px}
+
+  .shell{display:grid;grid-template-columns:200px minmax(0,1fr);min-height:calc(100vh - 52px)}
+  .nav{border-right:1px solid var(--ds-border);background:#fafafa;padding:14px 10px}
+  .nav .cap{font-size:10.5px;letter-spacing:.6px;color:var(--ds-text-mute);padding:0 10px 8px;text-transform:uppercase}
+  .nav .item{padding:8px 10px;border-radius:var(--r-sm);font-size:12.5px;color:var(--ds-text-sub);margin-bottom:2px;display:flex;align-items:center;gap:9px;cursor:default}
+  .nav .item.on{background:var(--ds-brand-weak);color:var(--ds-brand);font-weight:600}
+  .nav .sep{height:1px;background:var(--ds-border);margin:14px 0}
+
+  .main{padding:18px 20px 28px;min-width:0}
+  .crumbs{font-size:11.5px;color:var(--ds-text-mute);margin-bottom:8px}
+  .ph{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:14px}
+  .ph h1{margin:0;font-size:18px;font-weight:650;letter-spacing:-.2px}
+  .acts{display:flex;align-items:center;gap:8px}
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;height:34px;padding:0 13px;border:1px solid var(--ds-border-strong);background:#fff;border-radius:var(--r-sm);font-size:12.5px;white-space:nowrap}
+  .btn:hover{border-color:var(--ds-brand);color:var(--ds-brand)}
+  .btn.accent{background:var(--ds-brand);border-color:var(--ds-brand);color:#fff;font-weight:600}
+  .btn.accent:hover{background:#324fc4;color:#fff}
+  .btn.sm{height:28px;padding:0 10px;font-size:11.5px}
+  .btn.ghost{border-color:transparent;background:transparent;color:var(--ds-text-sub)}
+  .btn.ghost:hover{background:#f3f4f6;color:var(--ds-text)}
+  .sel{height:34px;padding:0 28px 0 10px;border:1px solid var(--ds-border-strong);border-radius:var(--r-sm);background:#fff;font-size:12.5px;color:var(--ds-text);position:relative;appearance:none;outline:none}
+  .sel:focus{border-color:var(--ds-brand)}
+  .selwrap{position:relative;display:inline-flex}
+  .selwrap:after{content:"";position:absolute;right:11px;top:14px;border:4px solid transparent;border-top-color:var(--ds-text-sub);border-bottom:0;pointer-events:none}
+  .toggle{display:inline-flex;align-items:center;gap:7px;height:34px;padding:0 11px;border:1px solid var(--ds-border-strong);border-radius:var(--r-sm);background:#fff;font-size:12.5px}
+  .toggle.on{border-color:var(--ds-brand);color:var(--ds-brand);background:var(--ds-brand-weak)}
+  .toggle i{width:12px;height:12px;border:1.5px solid var(--ds-border-strong);border-radius:3px;display:inline-grid;place-items:center}
+  .toggle.on i{background:var(--ds-brand);border-color:var(--ds-brand)}
+  .toggle.on i:after{content:"";width:6px;height:3px;border-left:1.5px solid #fff;border-bottom:1.5px solid #fff;transform:rotate(-45deg) translateY(-1px)}
+  .aichip{display:inline-flex;align-items:center;height:18px;padding:0 6px;border-radius:var(--r-pill);background:rgba(255,255,255,.2);font-size:10px;font-weight:700;letter-spacing:.4px}
+
+  .aiwrap{position:relative}
+  .pop{position:absolute;right:0;top:40px;width:214px;background:#fff;border:1px solid var(--ds-border);border-radius:var(--r-md);box-shadow:0 12px 32px rgba(20,24,40,.14);padding:6px;z-index:30}
+  .pop[hidden]{display:none}
+  .pop-t{padding:6px 9px;font-size:11px;color:var(--ds-text-mute)}
+  .pop button.opt{display:block;width:100%;text-align:left;border:0;background:transparent;padding:9px 10px;border-radius:var(--r-sm);font-size:12.5px}
+  .pop button.opt:hover{background:var(--ds-brand-weak);color:var(--ds-brand)}
+  .pop .pop-f{border-top:1px solid var(--ds-border);margin-top:5px;padding-top:5px;display:flex;justify-content:flex-end}
+  .pop .pop-f button{border:0;background:transparent;color:var(--ds-text-sub);font-size:12px;padding:5px 8px;border-radius:var(--r-sm)}
+  .pop .pop-f button:hover{background:#f3f4f6}
+
+  .body2{display:grid;grid-template-columns:222px minmax(0,1fr);gap:14px;align-items:start}
+  .tree{border:1px solid var(--ds-border);border-radius:var(--r-lg);overflow:hidden;background:#fff}
+  .tree-h{background:#fafafa;border-bottom:1px solid var(--ds-border);padding:10px 12px;font-size:12px;font-weight:600;display:flex;justify-content:space-between;align-items:center}
+  .tree-h span:last-child{color:var(--ds-text-mute);font-weight:400;font-size:11px}
+  .grp-t{padding:9px 11px 5px;font-size:11.5px;font-weight:600;color:var(--ds-text-sub);display:flex;align-items:center;gap:7px;cursor:pointer;user-select:none}
+  .grp-t:hover{color:var(--ds-brand)}
+  .grp-t .arw{font-size:9px;color:var(--ds-text-mute);width:9px;display:inline-block}
+  .leaf{margin:1px 7px 1px 7px;padding:7px 10px 7px 24px;border-radius:var(--r-sm);font-size:12.5px;display:flex;justify-content:space-between;align-items:center;color:var(--ds-text-sub);cursor:pointer}
+  .leaf:hover{background:#f6f6f8;color:var(--ds-text)}
+  .leaf.on{background:var(--ds-brand-weak);color:var(--ds-brand);font-weight:600}
+  .leaf .ct{font-size:10.5px;color:var(--ds-text-mute);font-weight:400}
+  .leaf.on .ct{color:var(--ds-brand)}
+
+  .panel{border:1px solid var(--ds-border);border-radius:var(--r-lg);background:#fff;overflow:hidden;min-width:0}
+  .panel-h{padding:11px 13px;border-bottom:1px solid var(--ds-border);display:flex;justify-content:space-between;align-items:center;gap:10px}
+  .panel-h b{font-size:13px;font-weight:650}
+  .stat{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;color:var(--ds-text-sub);margin-left:12px}
+  .dot{width:7px;height:7px;border-radius:50%;display:inline-block}
+  .dot.ok{background:var(--ds-ok)} .dot.warn{background:var(--ds-warn)}
+  .tbar{display:flex;align-items:center;gap:8px;font-size:11.5px;color:var(--ds-text-sub)}
+  .hint{display:inline-flex;align-items:center;gap:5px;color:var(--ds-brand)}
+  .hint i{font-style:normal;background:var(--ds-brand-weak);border:1px solid var(--ds-brand-line);border-radius:3px;padding:0 4px;font-size:9px;font-weight:700}
+
+  .tw{overflow:auto}
+  table{width:100%;border-collapse:collapse;table-layout:fixed}
+  thead th{background:#f8f8fa;color:var(--ds-text-sub);font-size:11.5px;font-weight:600;height:38px;padding:0 9px;text-align:left;border-bottom:1px solid var(--ds-border);border-right:1px solid var(--ds-border)}
+  thead th:last-child,tbody td:last-child{border-right:0}
+  thead th.lang{text-align:left}
+  thead th .code{display:block;color:var(--ds-text-mute);font-size:10px;font-weight:400;line-height:1.2}
+  thead th.src{background:#f1f1f3;color:var(--ds-text)}
+  tbody td{height:52px;padding:6px 9px;border-bottom:1px solid #efeff1;border-right:1px solid #efeff1;font-size:12px;vertical-align:middle}
+  tbody tr:last-child td{border-bottom:0}
+  td.key{font-size:12px;color:var(--ds-text);font-weight:500}
+  td.key small{display:block;color:var(--ds-text-mute);font-size:10px;font-weight:400;line-height:1.3}
+  td.c{position:relative;background:#fff;cursor:text;transition:background .12s}
+  td.c:not(.src):hover{background:var(--ds-brand-weak)}
+  td.c.src{background:#f7f7f8;color:var(--ds-text);cursor:default}
+  td.c.miss{background:var(--ds-warn-weak);color:var(--ds-warn)}
+  td.c.miss .misst{font-size:11px;color:var(--ds-warn);opacity:.85}
+  td.c.ai{background:#f7f8ff}
+  .aib{position:absolute;top:3px;right:4px;font-style:normal;font-size:9px;font-weight:700;line-height:1;padding:2px 4px;border-radius:3px;background:var(--ds-brand);color:#fff;letter-spacing:.3px}
+  .hum{position:absolute;top:3px;right:4px;font-style:normal;font-size:9px;line-height:1;padding:2px 4px;border-radius:3px;background:#e8f7ee;color:var(--ds-ok)}
+  td.c .txt{display:block;padding-right:2px;overflow-wrap:anywhere}
+  td.c.ai .txt,td.c.humaned .txt{padding-right:24px}
+  .rowgrp td{background:#fafafa;font-weight:600;font-size:11.5px;color:var(--ds-text-sub);height:32px;padding:5px 9px}
+  td.editing{background:#fff!important;padding:4px 6px;box-shadow:inset 0 0 0 2px var(--ds-brand)}
+  .cin{width:100%;height:32px;border:0;outline:0;background:transparent;padding:0 2px;font-size:12px}
+  .edact{position:absolute;right:3px;bottom:2px;display:flex;gap:2px}
+  .edact button{width:20px;height:20px;border:0;border-radius:3px;background:#eef2ff;color:var(--ds-brand);font-size:11px;line-height:1;display:grid;place-items:center;padding:0}
+  .edact button:last-child{background:#f1f1f3;color:var(--ds-text-sub)}
+  .edact button:hover{filter:brightness(.95)}
+
+  .foot{padding:10px 13px;border-top:1px solid var(--ds-border);display:flex;justify-content:space-between;align-items:center;color:var(--ds-text-sub);font-size:11.5px}
+  .pg{display:inline-flex;align-items:center;gap:8px}
+  .pg .lnk{color:var(--ds-brand);cursor:pointer}
+  .pg .lnk.dis{color:var(--ds-text-mute);cursor:default}
+  .toast{position:fixed;left:50%;bottom:28px;transform:translate(-50%,14px);background:#1f2430;color:#fff;padding:10px 16px;border-radius:var(--r-md);font-size:12.5px;box-shadow:0 8px 24px rgba(0,0,0,.2);opacity:0;pointer-events:none;transition:.2s;z-index:50}
+  .toast.show{opacity:1;transform:translate(-50%,0)}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="topbar">
+    <div class="brand"><i>V</i>VendSolution</div>
+    <div class="right"><span>本地化中心</span><span style="color:var(--ds-border-strong)">|</span><span>Root Admin</span></div>
+  </div>
+  <div class="shell">
+    <div class="nav">
+      <div class="cap">平台</div>
+      <div class="item">◧ 报表与分析</div>
+      <div class="item">◧ 商品</div>
+      <div class="item">◧ 机器</div>
+      <div class="item">◧ 品牌型号与组件</div>
+      <div class="sep"></div>
+      <div class="cap">设置</div>
+      <div class="item on">◧ 本地化中心</div>
+      <div class="item">◧ 系统设置</div>
+    </div>
+
+    <div class="main">
+      <div class="crumbs">本地化中心 / 多语言内容对照</div>
+      <div class="ph">
+        <h1>多语言内容对照</h1>
+        <div class="acts">
+          <div class="selwrap"><select class="sel" id="resource"><option value="all">全部资源</option><option value="g-prod">商品</option><option value="g-made">现制商品</option><option value="g-vend">售卖机商品</option><option value="g-gw">Payment Gateway</option></select></div>
+          <button class="toggle" id="onlyMiss"><i></i>仅看缺失</button>
+          <div class="aiwrap">
+            <button class="btn accent" id="aiBtn"><span class="aichip">AI</span>翻译缺失项</button>
+            <div class="pop" id="aiPop" hidden>
+              <div class="pop-t">翻译范围</div>
+              <button class="opt" data-scope="page">仅翻译本页</button>
+              <button class="opt" data-scope="all">全局翻译</button>
+              <div class="pop-f"><button data-close>取消</button></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="body2">
+        <div class="tree" id="tree"></div>
+        <div class="panel">
+          <div class="panel-h">
+            <div><b id="ptitle"></b><span class="stat" id="pstat"></span></div>
+            <div class="tbar"><span class="hint"><i>AI</i>AI 译文</span><span>点单元格直接编辑 · Enter 跳到下一格</span></div>
+          </div>
+          <div class="tw" id="tw"><table id="matrix"></table></div>
+          <div class="foot"><span id="fstat"></span><span class="pg"><span class="lnk dis">上一页</span>1 / 1<span class="lnk dis">下一页</span></span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+const LANGS=[
+  {code:'zh-CN',name:'简体中文',src:true},
+  {code:'en-US',name:'English'},
+  {code:'ja-JP',name:'日本語'},
+  {code:'zh-TW',name:'繁體中文'},
+  {code:'th-TH',name:'ไทย'},
+  {code:'vi-VN',name:'Tiếng Việt'}
+];
+const L=LANGS.map(x=>x.code);
+
+/* AI 词库：键为源文案，值为各目标语言译文 */
+const AI={
+'冰拿铁':{'en-US':'Iced Latte','ja-JP':'アイスラテ','zh-TW':'冰拿鐵','th-TH':'ลัตเตเย็น','vi-VN':'Latte đá'},
+'卡布奇诺':{'en-US':'Cappuccino','ja-JP':'カプチーノ','zh-TW':'卡布奇諾','th-TH':'คาปูชิโน','vi-VN':'Cappuccino'},
+'抹茶拿铁':{'en-US':'Matcha Latte','ja-JP':'抹茶ラテ','zh-TW':'抹茶拿鐵','th-TH':'มัจฉะลาตเต','vi-VN':'Trà xanh latte'},
+'气泡水 青柠':{'en-US':'Sparkling Water Lime','ja-JP':'ライム炭酸水','zh-TW':'氣泡水 青檸','th-TH':'น้ำอัดลมมะนาว','vi-VN':'Nước có ga chanh'},
+'咖啡':{'en-US':'Coffee','ja-JP':'コーヒー','zh-TW':'咖啡','th-TH':'กาแฟ','vi-VN':'Cà phê'},
+'茶饮':{'en-US':'Tea Drinks','ja-JP':'ティードリンク','zh-TW':'茶飲','th-TH':'เครื่องดื่มชา','vi-VN':'Đồ uống trà'},
+'夏季主推':{'en-US':'Summer Picks','ja-JP':'夏のおすすめ','zh-TW':'夏季主推','th-TH':'สินค้าแนะนำหน้าร้อน','vi-VN':'Gợi ý mùa hè'},
+'新品':{'en-US':'New Arrival','ja-JP':'新商品','zh-TW':'新品','th-TH':'สินค้าใหม่','vi-VN':'Hàng mới'},
+'热卖':{'en-US':'Best Seller','ja-JP':'人気商品','zh-TW':'熱賣','th-TH':'สินค้าขายดี','vi-VN':'Bán chạy'},
+'杯型':{'en-US':'Cup Size','ja-JP':'カップサイズ','zh-TW':'杯型','th-TH':'ขนาดถ้วย','vi-VN':'Kích cỡ'},
+'大杯':{'en-US':'Large','ja-JP':'L','zh-TW':'大杯','th-TH':'ใหญ่','vi-VN':'Lớn'},
+'中杯':{'en-US':'Medium','ja-JP':'M','zh-TW':'中杯','th-TH':'กลาง','vi-VN':'Vừa'},
+'小杯':{'en-US':'Small','ja-JP':'S','zh-TW':'小杯','th-TH':'เล็ก','vi-VN':'Nhỏ'},
+'糖度':{'en-US':'Sweetness','ja-JP':'甘さ','zh-TW':'糖度','th-TH':'ความหวาน','vi-VN':'Độ ngọt'},
+'无糖':{'en-US':'No Sugar','ja-JP':'無糖','zh-TW':'無糖','th-TH':'ไม่ใส่น้ำตาล','vi-VN':'Không đường'},
+'半糖':{'en-US':'Half Sugar','ja-JP':'甘さ50%','zh-TW':'半糖','th-TH':'ครึ่งน้ำตาล','vi-VN':'Nửa đường'},
+'可口可乐':{'en-US':'Coca-Cola','ja-JP':'コカ・コーラ','zh-TW':'可口可樂','th-TH':'โค้ก','vi-VN':'Coca-Cola'},
+'橙味汽水':{'en-US':'Orange Soda','ja-JP':'オレンジソーダ','zh-TW':'橙味汽水','th-TH':'โซดารสส้ม','vi-VN':'Nước cam'},
+'原味薯片':{'en-US':'Plain Chips','ja-JP':'プレーンチップス','zh-TW':'原味薯片','th-TH':'มันฝรั่งรสธรรมชาติ','vi-VN':'Khoai tây vị tự nhiên'},
+'可口可乐 330ml':{'en-US':'Coca-Cola 330ml','ja-JP':'コカ・コーラ 330ml','zh-TW':'可口可樂 330ml','th-TH':'โค้ก 330ml','vi-VN':'Coca-Cola 330ml'},
+'橙味汽水 330ml':{'en-US':'Orange Soda 330ml','ja-JP':'オレンジソーダ 330ml','zh-TW':'橙味汽水 330ml','th-TH':'โซดารสส้ม 330ml','vi-VN':'Nước cam 330ml'},
+'原味薯片 40g':{'en-US':'Plain Chips 40g','ja-JP':'プレーンチップス 40g','zh-TW':'原味薯片 40g','th-TH':'มันฝรั่งรสธรรมชาติ 40g','vi-VN':'Khoai tây vị tự nhiên 40g'},
+'经典可乐，冰爽畅饮':{'en-US':'Classic cola for a refreshing boost','ja-JP':'定番のコーラ、ひんやり美味しい','zh-TW':'經典可樂，冰爽暢飲','th-TH':'โค้กคลาสสิก สดชื่น','vi-VN':'Coca-Cola cổ điển, sảng khoái'},
+'鲜橙风味，气泡十足':{'en-US':'Fresh orange flavor with lively bubbles','ja-JP':'オレンジ風味、炭酸たっぷり','zh-TW':'鮮橙風味，氣泡十足','th-TH':'รสส้มสด ชื่นใจ','vi-VN':'Hương cam tươi, sủi bọt'},
+'原味薯片，酥脆可口':{'en-US':'Plain chips, crispy and delicious','ja-JP':'プレーンチップス、サクサクおいしい','zh-TW':'原味薯片，酥脆可口','th-TH':'มันฝรั่งรสธรรมชาติ กรอบอร่อย','vi-VN':'Khoai tây vị tự nhiên, giòn ngon'},
+'微信支付':{'en-US':'WeChat Pay','ja-JP':'WeChat Pay','zh-TW':'微信支付','th-TH':'WeChat Pay','vi-VN':'WeChat Pay'},
+'使用微信完成付款':{'en-US':'Pay using WeChat','ja-JP':'WeChat で支払う','zh-TW':'使用微信完成付款','th-TH':'ชำระผ่าน WeChat','vi-VN':'Thanh toán bằng WeChat'},
+'请扫描二维码完成支付':{'en-US':'Scan the QR code to pay','ja-JP':'QR コードをスキャンしてお支払い','zh-TW':'請掃描二維碼完成支付','th-TH':'สแกน QR โค้ดเพื่อชำระเงิน','vi-VN':'Quét mã QR để thanh toán'},
+'支付宝':{'en-US':'Alipay','ja-JP':'Alipay','zh-TW':'支付寶','th-TH':'Alipay','vi-VN':'Alipay'}
+};
+
+function row(src,id,human,ai){
+  const cells={'zh-CN':{t:src,by:'src'}};
+  (human||[]).forEach(l=>{ if(AI[src]&&AI[src][l]) cells[l]={t:AI[src][l],by:'human'}; });
+  (ai||[]).forEach(l=>{ if(AI[src]&&AI[src][l]) cells[l]={t:AI[src][l],by:'ai'}; });
+  return {src,id,cells};
+}
+const ALL=L.slice(1);
+const G=['en-US','ja-JP','zh-TW','th-TH','vi-VN'];
+function grp(name){return {grp:true,name}}
+
+const FIELDS=[
+ {id:'g-prod',name:'商品',leaves:[
+   {id:'f-name',name:'名字',rows:[
+     row('冰拿铁','PROD_001',ALL),
+     row('卡布奇诺','PROD_002',['en-US','ja-JP','zh-TW','vi-VN']),
+     row('抹茶拿铁','PROD_003',['en-US','ja-JP','vi-VN']),
+     row('气泡水 青柠','PROD_004',['en-US'])
+   ]},
+   {id:'f-gtag',name:'分组',rows:[
+     row('咖啡','GRP_COFFEE',['en-US','ja-JP','zh-TW','vi-VN']),
+     row('茶饮','GRP_TEA',['en-US','ja-JP'])
+   ]},
+   {id:'f-ptag',name:'标签',rows:[
+     row('夏季主推','TAG_SUMMER',['en-US','ja-JP','zh-TW']),
+     row('新品','TAG_NEW',['en-US','ja-JP','zh-TW','vi-VN']),
+     row('热卖','TAG_HOT',['en-US'])
+   ]}
+ ]},
+ {id:'g-made',name:'现制商品',leaves:[
+   {id:'f-made',name:'二次配置',rows:[
+     grp('配置组 · 杯型 / OPT_CUPSIZE'),
+     row('杯型','OPT_CUPSIZE_NAME',['en-US','ja-JP','zh-TW','vi-VN']),
+     row('大杯','OPT_CUPSIZE_L',['en-US','ja-JP','zh-TW','vi-VN']),
+     row('中杯','OPT_CUPSIZE_M',['en-US','ja-JP','zh-TW','vi-VN']),
+     row('小杯','OPT_CUPSIZE_S',['en-US','ja-JP','zh-TW','vi-VN']),
+     grp('配置组 · 糖度 / OPT_SWEET'),
+     row('糖度','OPT_SWEET_NAME',['en-US','ja-JP','zh-TW','vi-VN']),
+     row('无糖','OPT_SWEET_0',['en-US','ja-JP','zh-TW','vi-VN']),
+     row('半糖','OPT_SWEET_50',['en-US','ja-JP','zh-TW','vi-VN'])
+   ]}
+ ]},
+ {id:'g-vend',name:'售卖机商品',leaves:[
+   {id:'f-spu',name:'SPU 名字',rows:[
+     row('可口可乐','SPU_COLA',ALL),
+     row('橙味汽水','SPU_ORANGE',['en-US','ja-JP','zh-TW','vi-VN']),
+     row('原味薯片','SPU_CHIPS',['en-US','ja-JP','zh-TW','vi-VN'])
+   ]},
+   {id:'f-sku',name:'SKU 名字',rows:[
+     row('可口可乐 330ml','SKU_COLA_330',['en-US','ja-JP','zh-TW','vi-VN']),
+     row('橙味汽水 330ml','SKU_ORANGE_330',['en-US','ja-JP','zh-TW','vi-VN']),
+     row('原味薯片 40g','SKU_CHIPS_40',['en-US','ja-JP','zh-TW','vi-VN'])
+   ]},
+   {id:'f-intro',name:'介绍',rows:[
+     row('经典可乐，冰爽畅饮','INTRO_COLA',['en-US','ja-JP','zh-TW','vi-VN']),
+     row('鲜橙风味，气泡十足','INTRO_ORANGE',['en-US','ja-JP','zh-TW']),
+     row('原味薯片，酥脆可口','INTRO_CHIPS',['en-US','ja-JP'])
+   ]}
+ ]},
+ {id:'g-gw',name:'Payment Gateway',leaves:[
+   {id:'f-gw',name:'支付方式',rows:[
+     grp('微信支付 / GW_WECHAT'),
+     row('微信支付','GW_WECHAT_NAME',ALL),
+     row('使用微信完成付款','GW_WECHAT_DESC',['en-US','ja-JP','zh-TW','vi-VN']),
+     row('请扫描二维码完成支付','GW_WECHAT_TIP',['en-US','ja-JP','zh-TW']),
+     grp('支付宝 / GW_ALIPAY'),
+     row('支付宝','GW_ALIPAY_NAME',ALL)
+   ]}
+ ]}
+];
+
+const state={field:'f-name',onlyMiss:false,filter:'all',open:{'g-prod':true},edit:null};
+const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const findField=id=>{for(const g of FIELDS)for(const f of g.leaves)if(f.id===id)return f};
+const fieldGroup=id=>FIELDS.find(g=>g.leaves.some(f=>f.id===id));
+const dataRows=()=>findField(state.field).rows.map((r,i)=>({r,i})).filter(x=>!x.r.grp);
+
+function toast(msg){const t=$('#toast');t.textContent=msg;t.classList.add('show');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('show'),2200)}
+
+function renderTree(){
+  $('#tree').innerHTML='<div class="tree-h"><span>字段导航</span><span>共 4 类</span></div>'+FIELDS.filter(g=>state.filter==='all'||g.id===state.filter).map(g=>{
+    const open=state.open[g.id];
+    return '<div class="grp-t" data-g="'+g.id+'"><span class="arw">'+(open?'▾':'▸')+'</span>'+esc(g.name)+'</div>'+
+      (open?g.leaves.map(f=>{
+        const miss=f.rows.filter(r=>!r.grp).reduce((n,r)=>n+G.filter(l=>!r.cells[l]).length,0);
+        return '<div class="leaf'+(f.id===state.field?' on':'')+'" data-f="'+f.id+'">'+esc(f.name)+'<span class="ct">'+(miss?miss+'缺':f.rows.filter(r=>!r.grp).length)+'</span></div>';
+      }).join(''):'');
+  }).join('');
+}
+
+function cellHtml(ri,li){
+  const row=findField(state.field).rows[ri], loc=L[li], c=row.cells[loc];
+  const key=ri+':'+li;
+  if(loc==='zh-CN') return '<td class="c src"><span class="txt">'+esc(c?c.t:row.src)+'</span></td>';
+  if(state.edit&&state.edit.ri===ri&&state.edit.li===li){
+    return '<td class="c editing" data-e="'+key+'"><input class="cin" value="'+esc(state.edit.val)+'" data-editin><span class="edact"><button data-commit title="确定">✓</button><button data-cancel title="取消">✕</button></span></td>';
+  }
+  if(!c) return '<td class="c miss" data-e="'+key+'"><span class="misst">缺失</span></td>';
+  const b=c.by==='ai'?'<i class="aib">AI</i>':(c.by==='manual'?'<i class="hum">人工</i>':'');
+  return '<td class="c '+(c.by==='ai'?'ai':(c.by==='manual'?'humaned':''))+'" data-e="'+key+'">'+b+'<span class="txt">'+esc(c.t)+'</span></td>';
+}
+
+function renderMatrix(){
+  const f=findField(state.field),g=fieldGroup(f.id);
+  $('#ptitle').textContent=g.name+' · '+f.name;
+  const rows=dataRows();
+  const miss=rows.reduce((n,x)=>n+G.filter(l=>!x.r.cells[l]).length,0);
+  const ai=rows.reduce((n,x)=>n+G.filter(l=>x.r.cells[l]&&x.r.cells[l].by==='ai').length,0);
+  $('#pstat').innerHTML='<span class="stat"><i class="dot ok"></i>已译 '+(rows.length*5-miss)+'</span><span class="stat"><i class="dot warn"></i>缺失 '+miss+'</span>';
+  $('#fstat').textContent=rows.length+' 个字段 · '+rows.length*5+' 个译文单元'+(ai?' · AI 译文 '+ai+' 项':'');
+  const shown=state.onlyMiss?f.rows.filter(x=>x.grp||G.some(l=>!x.r.cells[l])):f.rows;
+  let html='<colgroup><col style="width:158px">'+LANGS.map(()=>'<col>').join('')+'</colgroup><thead><tr><th>字段 / ID</th>'+
+    LANGS.map(l=>'<th class="lang'+(l.src?' src':'')+'">'+esc(l.name)+'<span class="code">'+l.code+(l.src?' · 源':'')+'</span></th>').join('')+'</tr></thead><tbody>';
+  f.rows.forEach((r,ri)=>{
+    if(shown.indexOf(r)<0)return;
+    if(r.grp){html+='<tr class="rowgrp"><td colspan="7">'+esc(r.name)+'</td></tr>';return}
+    html+='<tr><td class="key">'+esc(r.src)+'<small>'+esc(r.id)+'</small></td>'+LANGS.map((_,li)=>cellHtml(ri,li)).join('')+'</tr>';
+  });
+  $('#matrix').innerHTML=html+'</tbody>';
+  if(state.edit){const inp=$('[data-editin]');if(inp){inp.focus();inp.setSelectionRange(inp.value.length,inp.value.length)}}
+}
+
+function render(){renderTree();renderMatrix()}
+
+/* --- 编辑 --- */
+function startEdit(ri,li){
+  const r=findField(state.field).rows[ri],loc=L[li];
+  if(loc==='zh-CN'||r.grp)return;
+  const c=r.cells[loc];
+  state.edit={ri,li,val:c?c.t:''};
+  renderMatrix();
+}
+function cellList(){const out=[];dataRows().forEach(x=>G.forEach((l,li)=>out.push({ri:x.i,li:li+1})));return out}
+function nextCell(ri,li){const a=cellList(),i=a.findIndex(x=>x.ri===ri&&x.li===li);return i>=0&&i+1<a.length?a[i+1]:null}
+function commit(advance){
+  if(!state.edit)return;
+  const {ri,li,val}=state.edit, r=findField(state.field).rows[ri],loc=L[li],v=val.trim();
+  if(v) r.cells[loc]={t:v,by:'manual'}; else delete r.cells[loc];
+  const nx=advance?nextCell(ri,li):null;
+  state.edit=null;
+  if(nx&&state.onlyMiss===false){renderMatrix();startEdit(nx.ri,nx.li)}
+  else {render();if(advance)toast('已保存')}
+}
+function cancelEdit(){state.edit=null;renderMatrix()}
+
+/* --- AI 翻译 --- */
+function runAI(scope){
+  const fields=scope==='page'?[state.field]:FIELDS.flatMap(g=>g.leaves.map(f=>f.id));
+  let n=0;
+  fields.forEach(fid=>findField(fid).rows.forEach(r=>{
+    if(r.grp)return;
+    G.forEach(l=>{if(!r.cells[l]&&AI[r.src]&&AI[r.src][l]){r.cells[l]={t:AI[r.src][l],by:'ai'};n++}});
+  }));
+  render();
+  toast('已翻译 '+n+' 项'+(scope==='page'?'（仅本页）':'（全局）'));
+}
+
+/* --- 事件 --- */
+document.addEventListener('click',e=>{
+  const aiBtn=e.target.closest('#aiBtn');
+  if(aiBtn){$('#aiPop').hidden=!$('#aiPop').hidden;return}
+  const sc=e.target.closest('[data-scope]');
+  if(sc){$('#aiPop').hidden=true;const b=$('#aiBtn');b.disabled=true;b.innerHTML='<span class="aichip">AI</span>翻译中…';setTimeout(()=>{b.disabled=false;b.innerHTML='<span class="aichip">AI</span>翻译缺失项';runAI(sc.dataset.scope)},600);return}
+  if(e.target.closest('[data-close]')||(!e.target.closest('.aiwrap')&&!$('#aiPop').hidden)){$('#aiPop').hidden=true;return}
+  const g=e.target.closest('[data-g]');
+  if(g){state.open[g.dataset.g]=!state.open[g.dataset.g];renderTree();return}
+  const f=e.target.closest('[data-f]');
+  if(f){state.field=f.dataset.f;state.edit=null;render();return}
+  if(e.target.closest('[data-commit]')){commit(false);return}
+  if(e.target.closest('[data-cancel]')){cancelEdit();return}
+  const om=e.target.closest('#onlyMiss');
+  if(om){state.onlyMiss=!state.onlyMiss;om.classList.toggle('on',state.onlyMiss);state.edit=null;render();return}
+  const cell=e.target.closest('td.c[data-e]');
+  if(cell&&!state.edit){const a=cell.dataset.e.split(':').map(Number);startEdit(a[0],a[1])}
+});
+document.addEventListener('input',e=>{
+  if(e.target.matches('[data-editin]')&&state.edit)state.edit.val=e.target.value;
+});
+document.addEventListener('change',e=>{
+  if(e.target.id==='resource'){
+    state.filter=e.target.value;
+    if(state.filter!=='all'){state.open[state.filter]=true;const f=FIELDS.find(g=>g.id===state.filter).leaves[0];state.field=f.id}
+    state.edit=null;render();
+  }
+});
+document.addEventListener('keydown',e=>{
+  if(!state.edit||!e.target.matches('[data-editin]'))return;
+  if(e.key==='Enter'){e.preventDefault();commit(true)}
+  if(e.key==='Escape'){e.preventDefault();cancelEdit()}
+});
+render();
+</script>
+</body>
+</html>
