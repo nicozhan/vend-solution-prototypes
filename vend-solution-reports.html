@@ -43,6 +43,34 @@
   .app{display:grid;grid-template-columns:var(--nav-w) var(--sub-w) minmax(0,1fr);min-height:100vh}
   body.nav-rail{--nav-w:var(--rail-w)}
   body.sub-collapsed{--sub-w:0px}
+  /* 商品页：取消右侧二级菜单，子项放到一级菜单下伸缩显示（Shopify 风格） */
+  body.catalog-inline .app{grid-template-columns:var(--nav-w) minmax(0,1fr)}
+  body.catalog-inline .subnav{display:none}
+  .nav-children{display:none;flex-direction:column;margin:1px 0 5px;padding:2px 0 2px 20px}
+  body.catalog-inline .nav-children{display:flex}
+  .nav-child{display:flex;align-items:center;gap:7px;width:100%;text-align:left;padding:6px 10px;border:0;background:none;border-radius:var(--radius-sm);color:var(--text-2);cursor:pointer;font-family:inherit;font-size:12.5px;line-height:18px}
+  .nav-child:hover{background:var(--surface-2);color:var(--text)}
+  .nav-child.active{background:var(--accent-weak);color:var(--accent);font-weight:600}
+  .nav-child .nc-dot{width:5px;height:5px;border-radius:50%;background:var(--text-3);flex:0 0 auto}
+  .nav-child.active .nc-dot{background:var(--accent)}
+  .nav-caret{margin-left:auto;font-size:11px;color:var(--text-3);transition:transform .15s}
+  .nav-item.catalog-open .nav-caret{transform:rotate(90deg)}
+  body.catalog-inline.nav-rail{--nav-w:212px}
+  body.catalog-inline .nav{overflow-y:auto;padding:14px 10px}
+  body.catalog-inline .brand{justify-content:flex-start;padding:0 8px 14px}
+  body.catalog-inline .brand .logo{width:22px;height:22px}
+  body.catalog-inline .brand-name{display:inline}
+  body.catalog-inline .nav-sec{height:auto;line-height:normal;font-size:11px;padding:16px 10px 6px;margin:0}
+  body.catalog-inline .nav-sec:before{display:none}
+  body.catalog-inline .nav-item{justify-content:flex-start;height:auto;padding:8px 10px;margin:0 0 1px;border-left:0;border-radius:var(--radius-sm)}
+  body.catalog-inline .nav-item .nav-label,body.catalog-inline .nav-item .dot{display:inline}
+  body.catalog-inline .nav-item .ic{width:17px;height:17px}
+  body.catalog-inline .nav-item[data-tip]:hover:after{display:none}
+  body.catalog-inline .rail-toggle{display:none}
+  body.catalog-inline .nav-collapse{display:grid}
+  body.catalog-inline .nav-children{padding-left:20px}
+  body.catalog-inline .nav-child{justify-content:flex-start;padding:6px 10px;font-size:12.5px;text-align:left}
+  body.catalog-inline .nav-child .nc-dot{display:block}
 
   /* 一级菜单 */
   .nav{position:sticky;top:0;height:100vh;overflow-y:auto;background:var(--surface);border-right:1px solid var(--border);padding:14px 10px}
@@ -102,12 +130,21 @@
   .topbar{height:54px;flex:0 0 54px;position:sticky;top:0;z-index:20;background:var(--surface);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 24px;gap:14px}
   .crumbs{color:var(--text-2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .crumbs b{color:var(--text);font-weight:600}
-  .top-right{display:flex;align-items:center;gap:14px;color:var(--text-2);font-size:12px;flex:0 0 auto}
+  .top-right{display:none;align-items:center;gap:14px;color:var(--text-2);font-size:12px;flex:0 0 auto}
   .role-sel{border:1px solid var(--border-strong);border-radius:var(--radius-sm);padding:5px 8px;background:var(--surface);font-family:inherit;font-size:12px;color:var(--text);cursor:pointer}
   .tog{display:flex;align-items:center;gap:6px;cursor:pointer;color:var(--text-2)}
   .tog input{accent-color:var(--accent);width:13px;height:13px;cursor:pointer}
   .avatar{width:28px;height:28px;border-radius:50%;background:var(--accent-weak);color:var(--accent);display:grid;place-items:center;font-weight:600;font-size:12px}
   .content{flex:1;padding:24px;max-width:1520px;width:100%}
+  /* 现制商品：按 Phase-1 规范重建，文案与截图一致 */
+  .oldui-eyebrow{font-size:10px;letter-spacing:.1em;color:var(--text-3);font-weight:600}
+  .oldui-sel{height:36px;border:1px solid var(--ds-border-input);border-radius:var(--r-sm);padding:0 11px;font-family:inherit;font-size:13px;color:var(--ds-text);background:var(--ds-surface);cursor:pointer;max-width:150px}
+  .oldui-drag{margin-left:auto;color:var(--text-3);letter-spacing:-1px;font-size:12px}
+  /* 现制商品：过滤/刷新/清除/列设置图标按页面密度收紧 */
+  .oldui-page .fbar-ops{gap:4px}
+  .oldui-page .btn.ico{width:24px;height:24px;border-radius:5px}
+  .oldui-page .btn.ico svg{width:13px;height:13px}
+  .lnk.danger{color:var(--ds-critical-text)}
   .page{animation:fade .18s ease}
   @keyframes fade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
 
@@ -118,6 +155,8 @@
   .page-hd p{color:var(--text-2);font-size:12.5px;margin-top:4px;max-width:720px}
   .hd-act{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
   .btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;height:36px;padding:0 14px;border-radius:var(--r-sm);border:1px solid var(--ds-border-input);background:var(--ds-surface);box-shadow:var(--sh-card);cursor:pointer;font-family:inherit;font-size:13px;line-height:20px;font-weight:600;color:var(--ds-text);white-space:nowrap;flex:0 0 auto;transition:background .12s,border-color .12s}
+  .btn.ico{width:28px;height:28px;padding:0;border-radius:var(--r-sm)}
+  .btn.active{background:var(--accent-weak);border-color:var(--accent-line);color:var(--accent)}
   .btn:hover{background:var(--ds-surface-2);border-color:var(--ds-border-hover);color:var(--ds-text)}
   .btn.accent{background:var(--ds-brand);color:#fff;border-color:var(--ds-brand)}
   .btn.accent:hover{background:var(--ds-brand-hover);border-color:var(--ds-brand-hover);color:#fff}
@@ -133,6 +172,10 @@
   .tab{padding:9px 13px;font-size:12.5px;color:var(--text-2);cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap}
   .tab:hover{color:var(--text)}
   .tab.active{color:var(--accent);border-bottom-color:var(--accent);font-weight:600}
+  /* 本地化和语言：hub 顶部 tab（子页标题由 tab 承载，隐藏重复标题与 P0） */
+  .loc-hub-hd{margin-bottom:14px}
+  .loc-hub .page-hd{padding-top:2px}
+  .loc-hub .page-hd .ttl{display:none}
 
   /* 筛选条 */
   .filterbar{display:flex;align-items:center;gap:9px 12px;flex-wrap:wrap;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:11px 14px;margin-bottom:14px;position:relative}
@@ -142,6 +185,7 @@
   .fitem select:focus{outline:none;border-color:var(--ds-brand);box-shadow:var(--ds-focus)}
   .fitem.lock select{background:var(--ds-surface-2);color:var(--ds-text-disabled);cursor:not-allowed;border-color:var(--ds-border)}
   .fbar-spacer{flex:1}
+  .fbar-ops{display:inline-flex;align-items:center;gap:6px;flex:0 0 auto}
   .fbar-meta{font-size:11px;color:var(--text-3)}
 
   /* 标注 */
@@ -306,6 +350,17 @@
   /* 商品 / 机器 页面（极简） */
   .cell-stack{display:flex;flex-direction:column;gap:1px}
   .cell-stack .sub{font-size:11px;color:var(--text-3)}
+  .oldui-namecell{display:flex;align-items:center;gap:10px}
+  .oldui-namecell .oldui-thumb{width:36px;height:36px;flex:0 0 36px;border-radius:var(--r-sm);border:1px solid var(--border);background:var(--surface-2);object-fit:cover;display:block}
+  /* 预包装商品库 */
+  .pre-search{position:relative;display:inline-flex;align-items:center;width:340px;max-width:100%}
+  .pre-search .ps-ico{position:absolute;left:11px;display:inline-flex;color:var(--text-3);pointer-events:none}
+  .pre-search input{height:36px;border:1px solid var(--ds-border-input);border-radius:var(--r-sm);padding:0 11px 0 34px;font-family:inherit;font-size:13px;width:100%;background:var(--ds-surface);color:var(--ds-text)}
+  .lnk.pre-clear{border-bottom:0;white-space:nowrap}
+  .pre-more{color:var(--text-3);letter-spacing:1px}
+  .pre-page .page-hd .ttl{display:block}
+  .pre-page .page-hd .oldui-eyebrow{display:block;margin-bottom:3px}
+  .pre-clear{background:transparent;border:0;padding:0;color:var(--accent);font-size:12.5px;cursor:pointer;font-family:inherit}
   .row-actions{display:flex;gap:12px;align-items:center}
   .row-actions .lnk{border-bottom:0}
   .row-actions .lnk.danger{color:var(--danger)}
@@ -589,7 +644,11 @@
   .set-right .tbl-panel{border:none;border-radius:0;margin:0}
   .set-bar{position:sticky;bottom:0;display:flex;align-items:center;gap:8px;padding:10px 18px;background:var(--surface);border-top:1px solid var(--border-strong);box-shadow:0 -4px 14px rgba(0,0,0,.06);z-index:20}
   .set-bar .sp{flex:1}
+  .set-bar.bulk-inline{position:relative;bottom:auto;margin:0 0 12px;border:1px solid var(--accent-line);border-radius:var(--r-sm);background:var(--accent-weak);box-shadow:none;z-index:1}
+  .set-bar.bulk-inline b{color:var(--accent)}
   .set-pop{position:absolute;right:18px;bottom:calc(100% + 8px);width:268px;background:var(--surface);border:1px solid var(--border-strong);border-radius:var(--radius);box-shadow:0 14px 34px rgba(0,0,0,.18);z-index:40;overflow:hidden}
+  .set-bar.bulk-inline .set-pop{bottom:auto;top:calc(100% + 8px)}
+  .set-bar.bulk-inline .set-pop .set-pop-ft{position:sticky;bottom:0;background:var(--surface)}
   .set-pop-hd{display:flex;align-items:center;gap:8px;padding:10px 12px;border-bottom:1px solid var(--border);font-size:13px}
   .set-pop-q{margin-left:auto;border:1px solid var(--border-strong);border-radius:var(--radius-sm);padding:4px 8px;font-family:inherit;font-size:12px;width:120px;box-sizing:border-box}
   .set-pop-list{display:flex;flex-direction:column;gap:2px;padding:8px 10px;max-height:240px;overflow:auto}
@@ -623,70 +682,71 @@
   .tr-subgroup .h{display:flex;justify-content:space-between;align-items:center;cursor:pointer;font-size:12.5px;font-weight:600;margin-bottom:8px}
   .tr-alert{display:flex;align-items:center;gap:8px;background:var(--ds-warning-bg,#fff7ed);border:1px solid var(--ds-warning-border,#fed7aa);color:var(--ds-warning-text,#9a3412);border-radius:var(--r-sm);padding:9px 12px;font-size:12.5px;margin-bottom:12px}
 
-  /* 本地化中心 · 多语言内容对照 */
-  .mx2-wrap{display:grid;grid-template-columns:222px minmax(0,1fr);gap:14px;align-items:start}
-  .mx2-tree{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}
-  .mx2-tree-hd{display:flex;justify-content:space-between;align-items:center;padding:10px 12px;background:var(--surface-2);border-bottom:1px solid var(--border);font-size:12px;font-weight:600}
-  .mx2-tree-hd span:last-child{font-weight:400;color:var(--text-3);font-size:11px}
-  .mx2-cat{display:flex;align-items:center;gap:7px;padding:10px 11px 3px;font-size:12.5px;font-weight:700;color:var(--text);cursor:pointer;user-select:none;border-top:1px solid var(--border)}
+  /* 本地化中心 · 多语言内容对照（Phase 1 · P2 规范） */
+  .mx2-page .page-hd h2{font-size:20px;line-height:28px}
+  .mx2-page .page-hd p{font-size:12.5px;line-height:18px}
+  .mx2-wrap{display:grid;grid-template-columns:222px minmax(0,1fr);gap:16px;align-items:start}
+  .mx2-tree{background:var(--ds-surface);border:1px solid var(--ds-border);border-radius:var(--r-lg);box-shadow:var(--sh-card);overflow:hidden}
+  .mx2-tree-hd{display:flex;justify-content:space-between;align-items:center;height:38px;padding:0 16px;background:var(--ds-surface-2);border-bottom:1px solid var(--ds-border);font-size:12px;line-height:16px;font-weight:600;color:var(--ds-text-2)}
+  .mx2-tree-hd span:last-child{font-weight:400;color:var(--ds-text-3)}
+  .mx2-cat{display:flex;align-items:center;gap:8px;padding:12px 12px 4px;font-size:13px;line-height:20px;font-weight:600;color:var(--ds-text);cursor:pointer;user-select:none;border-top:1px solid var(--ds-border)}
   .mx2-cat:first-of-type{border-top:0}
-  .mx2-cat:hover{color:var(--accent)}
-  .mx2-cat .arw{width:9px;font-size:9px;color:var(--text-3)}
-  .mx2-grp{display:flex;align-items:center;gap:7px;padding:9px 11px 5px 22px;font-size:11.5px;font-weight:600;color:var(--text-2);cursor:pointer;user-select:none}
-  .mx2-grp:hover{color:var(--accent)}
-  .mx2-grp .arw{width:9px;font-size:9px;color:var(--text-3)}
-  .mx2-leaf{display:flex;justify-content:space-between;align-items:center;margin:1px 7px;padding:7px 10px 7px 34px;border-radius:var(--r-xs);font-size:12.5px;color:var(--text-2);cursor:pointer}
-  .mx2-leaf:hover{background:var(--surface-2);color:var(--text)}
-  .mx2-leaf.on{background:var(--accent-weak);color:var(--accent);font-weight:600}
-  .mx2-leaf .ct{font-size:10.5px;font-weight:400;color:var(--text-3)}
-  .mx2-leaf.on .ct{color:var(--accent)}
-  .mx2-panel{min-width:0}
-  .mx2-panel .tbl-hd{padding-right:16px}
-  .mx2-tbar{display:flex;align-items:center;gap:12px;flex-wrap:wrap;font-size:11.5px;color:var(--text-2)}
-  .mx2-hint{display:inline-flex;align-items:center;gap:5px;color:var(--accent)}
-  .mx2-hint i{font-style:normal;font-size:9px;font-weight:700;letter-spacing:.3px;background:var(--accent-weak);border:1px solid var(--accent-line);border-radius:3px;padding:0 4px}
+  .mx2-cat:hover,.mx2-grp:hover{color:var(--ds-brand)}
+  .mx2-cat .arw,.mx2-grp .arw{width:12px;font-size:12px;line-height:16px;color:var(--ds-text-3);flex:0 0 auto}
+  .mx2-grp{display:flex;align-items:center;gap:8px;padding:8px 12px 4px 24px;font-size:12.5px;line-height:18px;font-weight:600;color:var(--ds-text-2);cursor:pointer;user-select:none}
+  .mx2-leaf{display:flex;justify-content:space-between;align-items:center;margin:2px 8px;padding:6px 12px 6px 36px;border-radius:var(--r-sm);font-size:12.5px;line-height:18px;color:var(--ds-text-2);cursor:pointer}
+  .mx2-leaf:hover{background:var(--ds-surface-2);color:var(--ds-text)}
+  .mx2-leaf.on{background:var(--ds-brand-bg);color:var(--ds-brand);font-weight:600}
+  .mx2-leaf .ct{display:inline-flex;align-items:center;height:18px;padding:0 6px;border-radius:var(--r-pill);background:var(--ds-surface-2);font-size:12px;font-weight:400;line-height:16px;color:var(--ds-text-3)}
+  .mx2-leaf.on .ct{background:var(--ds-surface);color:var(--ds-brand)}
+  .mx2-panel{min-width:0;box-shadow:var(--sh-card)}
+  .mx2-panel .tbl-hd{padding:12px 20px;padding-right:20px}
+  .mx2-panel .tbl-hd .t{font-size:15px;line-height:22px}
+  .mx2-tbar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:12.5px;line-height:18px;color:var(--ds-text-2)}
+  .mx2-hint{display:inline-flex;align-items:center;gap:6px;color:var(--ds-brand)}
+  .mx2-hint i{display:inline-flex;align-items:center;justify-content:center;height:24px;padding:0 9px;border-radius:var(--r-sm);background:var(--ds-brand-bg);border:1px solid var(--ds-brand-border);font-style:normal;font-size:12px;font-weight:600;line-height:16px}
   .mx2-table{table-layout:fixed}
-  .mx2-table th,.mx2-table td{white-space:normal;padding:6px 9px;border-right:1px solid var(--border)}
+  .mx2-table th,.mx2-table td{white-space:normal;padding:8px 12px;border-right:1px solid var(--ds-border)}
   .mx2-table th:last-child,.mx2-table td:last-child{border-right:0}
   .mx2-table th.lang{text-align:left}
-  .mx2-table th.src{background:var(--surface-2);color:var(--text)}
-  .mx2-table th .code{display:block;font-size:10px;font-weight:400;line-height:1.2;color:var(--text-3)}
-  .mx2-table td.key{font-size:12px;font-weight:500;color:var(--text)}
-  .mx2-table td.key small{display:block;font-size:10px;font-weight:400;line-height:1.3;color:var(--text-3)}
-  .mx2-table td.mx2-cell{position:relative;cursor:text;background:var(--surface)}
-  .mx2-table td.mx2-cell:hover{background:var(--accent-weak)}
-  .mx2-table td.mx2-src{position:relative;background:var(--surface-2);cursor:default}
+  .mx2-table th.src{background:var(--ds-surface-2);color:var(--ds-text)}
+  .mx2-table th .code{display:block;font-size:12px;font-weight:400;line-height:16px;color:var(--ds-text-3)}
+  .mx2-table td.key{font-size:13px;font-weight:600;line-height:20px;color:var(--ds-text)}
+  .mx2-table td.key small{display:block;font-size:12px;font-weight:400;line-height:16px;color:var(--ds-text-3)}
+  .mx2-table td.mx2-cell{position:relative;cursor:text;background:var(--ds-surface)}
+  .mx2-table td.mx2-cell:hover{background:var(--ds-brand-bg)}
+  .mx2-table td.mx2-src{position:relative;background:var(--ds-surface-2);cursor:default}
   .mx2-table td.mx2-miss{background:var(--ds-caution-bg);color:var(--ds-caution-text)}
-  .mx2-table td.mx2-miss .t{font-size:11.5px;opacity:.85}
-  .mx2-table td.mx2-ai{background:var(--accent-weak)}
-  .mx2-table td.mx2-ai .t,.mx2-table td.mx2-human .t,.mx2-table td.mx2-manual .t{display:block;overflow-wrap:anywhere}
-  .mx2-table td.mx2-ai .t,.mx2-table td.mx2-manual .t{padding-right:26px}
+  .mx2-table td.mx2-miss .t{font-size:12.5px;line-height:18px}
+  .mx2-table td.mx2-ai{background:var(--ds-brand-bg)}
+  .mx2-table td.mx2-ai .t,.mx2-table td.mx2-human .t,.mx2-table td.mx2-manual .t{display:block;overflow-wrap:anywhere;font-size:12.5px;line-height:18px;padding-right:42px}
   .mx2-table td.mx2-ai .t{color:var(--ds-info-text)}
   .mx2-table td.mx2-human .t,.mx2-table td.mx2-manual .t{color:var(--ds-success-text)}
-  .mx2-aib,.mx2-hum{position:absolute;top:3px;right:4px;font-style:normal;font-size:9px;font-weight:700;line-height:1;padding:2px 4px;border-radius:3px;letter-spacing:.3px}
-  .mx2-aib{background:var(--accent);color:#fff}
+  .mx2-aib,.mx2-hum{position:absolute;top:4px;right:6px;display:inline-flex;align-items:center;justify-content:center;height:24px;padding:0 7px;border-radius:var(--r-sm);font-style:normal;font-size:12px;font-weight:600;line-height:16px}
+  .mx2-aib{background:var(--ds-brand);color:var(--ds-surface)}
   .mx2-hum{background:var(--ds-success-bg);color:var(--ds-success-text)}
-  .mx2-table td.mx2-editing{padding:4px 6px;box-shadow:inset 0 0 0 2px var(--accent);background:var(--surface)!important}
-  .mx2-inp{width:100%;height:32px;border:0;outline:0;background:transparent;font-family:inherit;font-size:12px;color:var(--text);padding:0 2px}
-  .mx2-edit-act{position:absolute;right:3px;bottom:2px;display:flex;gap:2px}
-  .mx2-edit-act button{width:20px;height:20px;border:0;border-radius:3px;background:var(--accent-weak);color:var(--accent);font-size:11px;line-height:1;display:grid;place-items:center;cursor:pointer;padding:0}
-  .mx2-edit-act button:last-child{background:var(--surface-2);color:var(--text-2)}
-  .mx2-table tr.mx2-grp-row td{background:var(--surface-2);font-weight:600;font-size:11.5px;color:var(--text-2);height:32px}
-  .mx2-aichip{display:inline-flex;align-items:center;height:18px;padding:0 6px;border-radius:var(--r-pill);background:rgba(255,255,255,.22);font-size:10px;font-weight:700;letter-spacing:.4px}
+  .mx2-table td.mx2-editing{padding:6px 8px;box-shadow:inset 0 0 0 2px var(--ds-brand);background:var(--ds-surface)!important}
+  .mx2-inp{width:100%;height:36px;border:0;outline:0;background:transparent;font-family:inherit;font-size:13px;line-height:20px;color:var(--ds-text);padding:0 11px}
+  .mx2-edit-act{position:absolute;right:4px;bottom:4px;display:flex;gap:4px}
+  .mx2-edit-act button{width:20px;height:20px;border:0;border-radius:var(--r-xs);background:var(--ds-brand-bg);color:var(--ds-brand);font-size:12px;line-height:16px;display:grid;place-items:center;cursor:pointer;padding:0}
+  .mx2-edit-act button:last-child{background:var(--ds-surface-2);color:var(--ds-text-2)}
+  .mx2-table tr.mx2-grp-row td{background:var(--ds-surface-2);font-weight:600;font-size:12.5px;line-height:18px;color:var(--ds-text-2);height:38px}
+  .mx2-aichip{display:inline-flex;align-items:center;justify-content:center;height:20px;padding:0 7px;border-radius:var(--r-pill);background:rgba(255,255,255,.22);font-size:12px;font-weight:600;line-height:16px}
   .mx2-aiwrap{position:relative}
-  .mx2-pop{position:absolute;right:0;top:40px;width:212px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r-sm);box-shadow:var(--sh-pop);padding:6px;z-index:30}
+  .mx2-pop{position:absolute;right:0;top:40px;width:220px;background:var(--ds-surface);border:1px solid var(--ds-border);border-radius:var(--r-lg);box-shadow:var(--sh-pop);padding:8px;z-index:30}
   .mx2-pop[hidden]{display:none}
-  .mx2-pop-t{padding:6px 9px;font-size:11px;color:var(--text-3)}
-  .mx2-pop button.opt{display:block;width:100%;text-align:left;border:0;background:transparent;padding:9px 10px;border-radius:var(--r-xs);font-family:inherit;font-size:12.5px;color:var(--text);cursor:pointer}
-  .mx2-pop button.opt:hover{background:var(--accent-weak);color:var(--accent)}
-  .mx2-pop .f{border-top:1px solid var(--border);margin-top:5px;padding-top:5px;display:flex;justify-content:flex-end}
-  .mx2-pop .f button{border:0;background:transparent;color:var(--text-2);font-family:inherit;font-size:12px;padding:5px 8px;border-radius:var(--r-xs);cursor:pointer}
-  .mx2-pop .f button:hover{background:var(--surface-2)}
-  .mx2-toggle{display:inline-flex;align-items:center;gap:7px;height:36px;padding:0 11px;border:1px solid var(--ds-border-input);border-radius:var(--r-sm);background:var(--surface);font-family:inherit;font-size:13px;color:var(--text);cursor:pointer}
-  .mx2-toggle.on{border-color:var(--accent);color:var(--accent);background:var(--accent-weak)}
-  .mx2-toggle i{width:12px;height:12px;border:1.5px solid var(--ds-border-input);border-radius:3px;display:inline-grid;place-items:center}
-  .mx2-toggle.on i{background:var(--accent);border-color:var(--accent)}
-  .mx2-toggle.on i:after{content:"";width:6px;height:3px;border-left:1.5px solid #fff;border-bottom:1.5px solid #fff;transform:rotate(-45deg) translateY(-1px)}
+  .mx2-pop-t{padding:8px 12px;font-size:12px;line-height:16px;color:var(--ds-text-3)}
+  .mx2-pop button.opt{display:block;width:100%;text-align:left;border:0;background:transparent;padding:8px 12px;border-radius:var(--r-sm);font-family:inherit;font-size:12.5px;line-height:18px;color:var(--ds-text);cursor:pointer}
+  .mx2-pop button.opt:hover{background:var(--ds-brand-bg);color:var(--ds-brand)}
+  .mx2-pop .f{border-top:1px solid var(--ds-border);margin-top:8px;padding-top:8px;display:flex;justify-content:flex-end}
+  .mx2-pop .f button{border:0;background:transparent;color:var(--ds-text-2);font-family:inherit;font-size:12.5px;line-height:18px;padding:6px 10px;border-radius:var(--r-sm);cursor:pointer}
+  .mx2-pop .f button:hover{background:var(--ds-surface-2);color:var(--ds-text)}
+  .mx2-toggle{display:inline-flex;align-items:center;gap:8px;height:26px;padding:0 10px;border:1px solid var(--ds-border-input);border-radius:var(--r-pill);background:var(--ds-surface);font-family:inherit;font-size:12px;line-height:16px;color:var(--ds-text);cursor:pointer}
+  .mx2-toggle:hover{border-color:var(--ds-border-hover)}
+  .mx2-toggle.on{border-color:var(--ds-brand);color:var(--ds-brand);background:var(--ds-brand-bg);font-weight:600}
+  .mx2-toggle i{width:12px;height:12px;border:1.5px solid var(--ds-border-input);border-radius:var(--r-xs);display:inline-grid;place-items:center}
+  .mx2-toggle.on i{background:var(--ds-brand);border-color:var(--ds-brand)}
+  .mx2-toggle.on i:after{content:"";width:6px;height:3px;border-left:1.5px solid var(--ds-surface);border-bottom:1.5px solid var(--ds-surface);transform:rotate(-45deg) translateY(-1px)}
 
   /* 添加语言 · 国家/地区候选表 */
   .loc-add-grid{border:1px solid var(--border);border-radius:var(--r-sm);overflow:hidden}
@@ -719,13 +779,16 @@
     <div class="nav-sec">运营</div>
     <button class="nav-item" data-mod="dashboard" data-tip="数据看板"><svg class="ic"><use href="#i-dash"/></svg><span class="nav-label">数据看板</span></button>
     <button class="nav-item" data-mod="tenant" data-tip="租户管理"><svg class="ic"><use href="#i-tenant"/></svg><span class="nav-label">租户管理</span></button>
-    <button class="nav-item" data-mod="catalog" data-tip="商品"><svg class="ic"><use href="#i-catalog"/></svg><span class="nav-label">商品</span></button>
+    <button class="nav-item" data-mod="catalog" data-tip="商品"><svg class="ic"><use href="#i-catalog"/></svg><span class="nav-label">商品</span><span class="nav-caret">›</span></button>
+    <div class="nav-children" id="catalogChildren">
+      <button class="nav-child" data-catsub="prepack"><span class="nc-dot"></span><span>预包装商品</span></button>
+      <button class="nav-child" data-catsub="freshmadeui"><span class="nc-dot"></span><span>现制商品</span></button>
+    </div>
     <button class="nav-item" data-mod="machine" data-tip="机器"><svg class="ic"><use href="#i-machine"/></svg><span class="nav-label">机器</span></button>
     <button class="nav-item" data-mod="analytics" data-tip="报表与分析"><svg class="ic"><use href="#i-analytics"/></svg><span class="nav-label">报表与分析</span></button>
     <div class="nav-sec">平台</div>
     <button class="nav-item" data-mod="devicecfg" data-tip="品牌型号与组件"><svg class="ic"><use href="#i-device"/></svg><span class="nav-label">品牌型号与组件</span></button>
     <button class="nav-item" data-mod="settings" data-tip="系统设置"><svg class="ic"><use href="#i-settings"/></svg><span class="nav-label">系统设置</span></button>
-    <button class="nav-item" data-mod="localization" data-tip="本地化中心"><svg class="ic"><use href="#i-globe"/></svg><span class="nav-label">本地化中心</span></button>
   </nav>
 
   <!-- 二级菜单 -->
@@ -880,16 +943,11 @@ const SECTIONS={
   analytics:{name:'报表与分析',sub:'7 个模块 · 按优先级开放',foot:'P0 基础统计 · P1 需数据前提<br />P2 自定义分析',
     subs:MODULES.map(m=>({id:m.id,name:m.name,pri:m.pri}))},
   catalog:{name:'商品',sub:'预包装商品 · 现制商品',foot:'商品库 · 配方',
-    subs:[{id:'prepack',name:'预包装商品'},{id:'freshmade',name:'现制商品'}]},
+    subs:[{id:'prepack',name:'预包装商品'},{id:'freshmadeui',name:'现制商品'}]},
   machine:{name:'机器',sub:'设备资产 · 机器模板',foot:'设备资产<br />模板配置',
     subs:[{id:'list',name:'机器列表'},{id:'template',name:'机器模板'}]},
-  localization:{name:'本地化中心',sub:'多语言管理中心 · P0',foot:'业务数据与语言内容分离<br />字段级回退 · 多租户隔离',
-    subs:[
-      {id:'lang',name:'语言设置',pri:'P0'},
-      {id:'matrix',name:'多语言内容对照',pri:'P0'}
-    ]},
-  settings:{name:'系统设置',sub:'标签 / 翻译 / AI 配置',foot:'统一管理<br />业务内容',
-    subs:[{id:'taggroup',name:'标签分组管理',pri:'P0'},{id:'translate',name:'翻译与适配'},{id:'aiconfig',name:'AI 服务配置'}]},
+  settings:{name:'系统设置',sub:'',foot:'',
+    subs:[{id:'taggroup',name:'标签&分组管理'},{id:'lang',name:'本地化和语言'}]},
   devicecfg:{name:'品牌型号与组件',sub:'品牌 · 型号 · 组件',foot:'全局组件复用<br />型号与组件双向关联',
     subs:[{id:'brand',name:'品牌'},{id:'model',name:'型号'},{id:'component',name:'组件'},{id:'browse',name:'适配浏览'}]}
 };
@@ -1905,15 +1963,20 @@ function openMx(type,key){
    商品 / 机器 页面（极简 Demo）
    ============================================================ */
 const PREPACK_ROWS=[
-  {id:'PK-001',name:'冰美式 350ml',sku:'SKU-001',tenant:'佳存',cat:'饮料',brand:'—',ai:'未启用',status:'启用'},
-  {id:'PK-002',name:'气泡水 青柠',sku:'SKU-002',tenant:'佳存',cat:'饮料',brand:'—',ai:'未启用',status:'启用'},
-  {id:'PK-003',name:'拿铁 250ml',sku:'SKU-003',tenant:'佳存',cat:'饮料',brand:'—',ai:'未启用',status:'启用'},
-  {id:'PK-004',name:'薯片 原味',sku:'SKU-004',tenant:'佳存',cat:'零食',brand:'—',ai:'未启用',status:'启用'},
-  {id:'PK-005',name:'能量饮料 250ml',sku:'SKU-005',tenant:'佳存',cat:'饮料',brand:'—',ai:'未启用',status:'停用'},
-  {id:'PK-006',name:'蛋白粉饮',sku:'SKU-006',tenant:'佳存',cat:'饮料',brand:'—',ai:'未启用',status:'启用'},
-  {id:'PK-007',name:'矿泉水 550ml',sku:'SKU-007',tenant:'佳存',cat:'饮料',brand:'—',ai:'未启用',status:'启用'},
-  {id:'PK-008',name:'柠檬苏打 330ml',sku:'SKU-008',tenant:'佳存',cat:'饮料',brand:'—',ai:'未启用',status:'启用'}
+  {id:'PK-001',name:'怡宝矿泉水',sku:'SKU-001',tenant:'MVP Default Operator',cat:'BEVERAGE',brand:'YIBAO',ai:'未启用',status:'启用',date:'2026/11/23',creator:'admin'},
+  {id:'PK-002',name:'可口可乐 330ml',sku:'SKU-002',tenant:'MVP Default Operator',cat:'BEVERAGE',brand:'Coca-Cola',ai:'已启用',status:'启用',date:'2026/11/23',creator:'admin'}
 ];
+const PRE={q:'',cat:'',tenant:'',tag:'',updater:'',cols:{img:true,name:true,tenant:true,cat:true,tag:true,ai:true,status:true,date:true,creator:true},colOpen:false};
+const PRE_COLS=[['img','图片'],['name','名称'],['tenant','租户'],['cat','分组'],['tag','标签'],['ai','AI 识别'],['status','状态'],['date','更新日期'],['creator','更新者']];
+function preColCfgHTML(){
+  if(!PRE.colOpen) return '';
+  return '<div class="mx-mask" data-precolmask><div class="mx w480">'+
+    '<div class="mx-hd"><div><h3>自定义表头</h3></div><button class="mx-x" data-precolclose aria-label="关闭">×</button></div>'+
+    '<div class="mx-bd"><div style="display:flex;flex-direction:column;gap:4px">'+
+      PRE_COLS.map(function(d){ return '<label class="bopt" style="justify-content:flex-start"><input type="checkbox" data-precol="'+d[0]+'"'+(PRE.cols[d[0]]?' checked':'')+'><span>'+d[1]+'</span></label>'; }).join('')+
+    '</div></div>'+
+    '<div class="mx-ft" style="display:flex;justify-content:space-between;gap:8px;padding:14px 20px;border-top:1px solid var(--border)"><button class="btn" data-precolreset>恢复默认</button><button class="btn accent" data-precolclose>完成</button></div></div></div>';
+}
 const FRESHMADE_ROWS=[
   {id:'MT-001',name:'Protein Chocolate (nóng)',code:'RCP-001',cat:'咖啡',cup:'标准杯 / 12 Oz',machine:'现制饮品机 B-300',tenant:'BINH TAY FOOD COMPANY',brand:'VendSolution',img:'🍫',status:'启用',date:'2026/11/11',scope:'BINH TAY FOOD COMPANY -BIFOCO'},
   {id:'MT-002',name:'Protein Banana (nóng)',code:'RCP-002',cat:'咖啡',cup:'标准杯',machine:'现制饮品机 B-300',tenant:'BINH TAY FOOD COMPANY',brand:'VendSolution',img:'🍌',status:'启用',date:'2026/11/11',scope:'BINH TAY FOOD COMPANY -BIFOCO'},
@@ -2022,9 +2085,6 @@ const TAG={ type:'PACKAGED_PRODUCT', q:'', status:'ALL', page:1, pageSize:8,
 const SET={ open:false, type:'PACKAGED_PRODUCT', kind:'TAG', q:'', status:'ALL', page:1, pageSize:8, sel:{},
   grpQ:'', tagQ:'', leftSel:{}, objSel:{}, inlineEdit:null,
   edit:null, confirm:null, drawer:null, drawerQ:'', popup:null };
-/* 现制商品页：筛选与列设置状态 */
-const FRESH={ q:'', tenant:'', brand:'', machine:'', cat:'', tag:'',
-  cols:{img:true,name:true,cat:true,tag:true,machine:true,tenant:true,date:true,op:true}, colOpen:false };
 function normTag(s){ return String(s||'').trim().toLowerCase(); }
 function todayStr(){ return '2026-11-12'; }
 function tagBindCount(id){ return (TAG_BIND[id]||[]).length; }
@@ -2541,10 +2601,10 @@ function setPaneHTML(type, opts){
     head='<tr>'+cbHead+'<th>机器</th><th>品牌型号</th><th>点位</th><th>状态</th><th>分组</th><th>标签</th></tr>';
     body=rows.map(function(r){ return '<tr>'+cbCell(r)+'<td><span class="strong">'+esc(r.name)+'</span></td><td>'+esc(r.model)+'</td><td>'+esc(r.loc)+'</td><td>'+stBadge(r.status)+'</td>'+gCell(r)+tCell(r)+'</tr>'; }).join('');
   } else if(type==='PACKAGED_PRODUCT'){
-    head='<tr>'+cbHead+'<th>商品名称</th><th>租户</th><th>分类</th><th>状态</th><th>分组</th><th>标签</th></tr>';
+    head='<tr>'+cbHead+'<th>商品名称</th><th>租户</th><th>品类</th><th>状态</th><th>分组</th><th>标签</th></tr>';
     body=rows.map(function(r){ return '<tr>'+cbCell(r)+'<td><span class="strong">'+esc(r.name)+'</span></td><td>'+esc(r.tenant)+'</td><td>'+esc(r.cat)+'</td><td>'+stBadge(r.status)+'</td>'+gCell(r)+tCell(r)+'</tr>'; }).join('');
   } else if(type==='MADE_TO_ORDER_PRODUCT'){
-    head='<tr>'+cbHead+'<th>商品名称</th><th>分类</th><th>适用杯型</th><th>状态</th><th>分组</th><th>标签</th></tr>';
+    head='<tr>'+cbHead+'<th>商品名称</th><th>品类</th><th>适用杯型</th><th>状态</th><th>分组</th><th>标签</th></tr>';
     body=rows.map(function(r){ return '<tr>'+cbCell(r)+'<td><div class="cell-stack"><span class="strong">'+esc(r.name)+'</span><span class="sub">'+esc(r.code)+'</span></div></td><td>'+esc(r.cat)+'</td><td>'+esc(r.cup)+'</td><td>'+stBadge(r.status)+'</td>'+gCell(r)+tCell(r)+'</tr>'; }).join('');
   } else if(type==='TENANT'){
     head='<tr>'+cbHead+'<th>租户名称</th><th>套餐</th><th>区域</th><th>运行状态</th><th>分组</th><th>标签</th></tr>';
@@ -2557,8 +2617,8 @@ function setPaneHTML(type, opts){
     '<button class="btn" data-setbar="setTag">设置标签</button><button class="btn" data-setbar="removeTag">移除标签</button>'+
     '<button class="btn" data-setbar="setGroup">设置分组</button><button class="btn" data-setbar="removeGroup">移除分组</button>'+
     '<button class="btn" data-setbarclear>取消</button>'+(SET.popup?setPopupHTML():'')+'</div>' : '';
-  const leftHd='<div class="set-left-hd"><h3>'+esc(TT.name)+' · 分组与标签</h3>'+(opts.back?'<button class="btn" data-setback>← 返回'+(opts.backLabel||'')+'</button>':'')+'</div>';
-  const leftFt= opts.mgmt? '<div class="set-left-ft"><span class="lnk" data-setmgmt>标签分组管理 ›</span></div>':'';
+  const leftHd='<div class="set-left-hd">'+(opts.noTitle?'':'<h3>'+esc(TT.name)+' · 分组与标签</h3>')+(opts.back?'<button class="btn" data-setback>← 返回'+(opts.backLabel||'')+'</button>':'')+'</div>';
+  const leftFt= opts.mgmt? '<div class="set-left-ft"><span class="lnk" data-setmgmt>标签&分组管理 ›</span></div>':'';
   return '<div class="set-left">'+leftHd+left+leftFt+'</div>'+
     '<div class="set-right"><div class="page-hd"><div><h2>'+esc(TT.name)+'列表</h2><p>勾选对象后，在下方批量设置或移除标签 / 分组。</p></div></div>'+
     '<div class="tbl-panel"><span class="note">TABLE</span><div class="tbl-hd"><span class="t">'+esc(TT.name)+'列表</span><span class="a">共 '+rows.length+' 项</span></div>'+
@@ -2566,7 +2626,7 @@ function setPaneHTML(type, opts){
 }
 function settingsPage(){
   const type=SET.type, TT=TAG_TYPES[type], sl=tagSourceLabel();
-  return '<div class="set-page">'+setPaneHTML(type,{back:true,backLabel:sl.label,mgmt:true})+'</div>'+setModalHTML();
+  return '<div class="set-page">'+setPaneHTML(type,{back:true,backLabel:sl.label,mgmt:true,noTitle:type==='MADE_TO_ORDER_PRODUCT'})+'</div>'+setModalHTML();
 }
 
 function adminPager(pages){ return pageCtl(SET.page,pages,'adminpage'); }
@@ -2579,106 +2639,187 @@ function adminBulkFn(op){
   if(op==='disable'){ SET.confirm={kind:kind,op:'disable',ids}; rerender(); return; }
   if(op==='delete'){ SET.confirm={kind:kind,op:'delete',ids}; rerender(); return; }
 }
-/* 标签分组管理（集中管理控制台）：覆盖预包装/现制/机器/租户/点位 的标签与分组 */
+/* 标签&分组管理（集中管理控制台）：覆盖预包装/现制/机器/租户/点位 的标签与分组 */
 function tagGroupAdminPage(){
-  const type=SET.type||'PACKAGED_PRODUCT', TT=TAG_TYPES[type];
-  const types=[['PACKAGED_PRODUCT','预包装商品'],['MADE_TO_ORDER_PRODUCT','现制商品'],['MACHINE','机器'],['TENANT','租户'],['POINT','点位']];
+  let type=SET.type||'PACKAGED_PRODUCT';
+  const types=[['PACKAGED_PRODUCT','预包装商品'],['MADE_TO_ORDER_PRODUCT','现制商品'],['POINT','点位']];
+  if(!types.some(function(t){return t[0]===type;})) type=SET.type='PACKAGED_PRODUCT';
+  const TT=TAG_TYPES[type];
   const typeTabs='<div class="tabs">'+types.map(function(t){ return '<div class="tab'+(t[0]===type?' active':'')+'" data-admintype="'+t[0]+'">'+t[1]+'</div>'; }).join('')+'</div>';
   return '<div class="page">'+
-    '<div class="page-hd"><div><h2>标签分组管理</h2><p>集中管理各业务对象的标签与分组：预包装商品、现制商品、机器、租户与点位。左侧勾选分组 / 标签，右侧勾选对象后批量设置。</p></div></div>'+
+    '<div class="page-hd"><div><h2>标签&分组管理</h2></div></div>'+
     typeTabs+
     '<div class="set-page">'+setPaneHTML(type,{})+'</div>'+
     setModalHTML()+
   '</div>';
 }
 
-function freshFilteredRows(){
-  return FRESHMADE_ROWS.filter(function(r){
-    if(FRESH.q && (r.name+' '+r.code).toLowerCase().indexOf(FRESH.q.toLowerCase())<0) return false;
-    if(FRESH.tenant && r.tenant!==FRESH.tenant) return false;
-    if(FRESH.brand && r.brand!==FRESH.brand) return false;
-    if(FRESH.machine && r.machine!==FRESH.machine) return false;
-    if(FRESH.cat && r.cat!==FRESH.cat) return false;
-    if(FRESH.tag && (TAG_BIND[FRESH.tag]||[]).indexOf(r.id)<0) return false;
-    if(!tagFilterPass('MADE_TO_ORDER_PRODUCT',r.id) || !groupFilterPass('MADE_TO_ORDER_PRODUCT',r.id)) return false;
-    return true;
-  });
-}
-function freshColCfgHTML(){
-  if(!FRESH.colOpen) return '';
-  const defs=[['img','图片'],['name','名称'],['cat','分类'],['tag','标签'],['machine','机器'],['tenant','租户'],['date','更新日期'],['op','操作']];
-  return '<div class="mx-mask" data-freshcolmask><div class="mx w480">'+
-    '<div class="mx-hd"><div><h3>列设置</h3><div class="mx-sub">选择列表中显示的列</div></div><button class="mx-x" data-freshcolclose aria-label="关闭">×</button></div>'+
-    '<div class="mx-bd"><div style="display:grid;grid-template-columns:1fr 1fr;gap:10px 18px">'+
-      defs.map(function(d){ return '<label class="bopt"><input type="checkbox" data-freshcol="'+d[0]+'"'+(FRESH.cols[d[0]]?' checked':'')+'><span>'+d[1]+'</span></label>'; }).join('')+
+/* 现制商品：按现有 UI 规范重建，文案与原快照逐字一致，去掉自带侧边栏 */
+const OLDUI_COLS=[['name','名称'],['cat','分组'],['tag','标签'],['brand','机器品牌'],['tenant','租户'],['date','更新日期'],['creator','更新者'],['customer','客户']];
+const OLDUI={q:'',cat:'',tag:'',updater:'',brand:'',cols:{name:true,cat:true,tag:true,brand:true,tenant:true,date:true,creator:true,customer:true},colOpen:false,confirm:null};
+function oldUIVisibleCols(){ return OLDUI_COLS.filter(function(c){ return c[0]!=='customer'||state.role==='root'; }); }
+function oldUIColCfgHTML(){
+  if(!OLDUI.colOpen) return '';
+  return '<div class="mx-mask" data-olduimask><div class="mx w480">'+
+    '<div class="mx-hd"><div><h3>自定义表头</h3></div><button class="mx-x" data-olduicolclose aria-label="关闭">×</button></div>'+
+    '<div class="mx-bd"><div style="display:flex;flex-direction:column;gap:4px">'+
+      oldUIVisibleCols().map(function(d){ return '<label class="bopt" style="justify-content:flex-start"><input type="checkbox" data-olduicol="'+d[0]+'"'+(OLDUI.cols[d[0]]?' checked':'')+'><span>'+d[1]+'</span><span class="oldui-drag">⋮⋮</span></label>'; }).join('')+
     '</div></div>'+
-    '<div class="mx-ft" style="display:flex;justify-content:flex-end;gap:8px;padding:14px 20px;border-top:1px solid var(--border)"><button class="btn" data-freshcolclose>取消</button><button class="btn accent" data-freshcolclose>完成</button></div></div></div>';
+    '<div class="mx-ft" style="display:flex;justify-content:space-between;gap:8px;padding:14px 20px;border-top:1px solid var(--border)"><button class="btn" data-olduicolreset>恢复默认</button><button class="btn accent" data-olduicolclose>完成</button></div></div></div>';
+}
+function oldUIConfirmHTML(){
+  const c=OLDUI.confirm; if(!c) return '';
+  const n=c.ids.length;
+  const title=c.op==='stop'?'停用现制商品':c.op==='disable'?'批量禁用现制商品':'批量删除现制商品';
+  const body=c.op==='stop'
+    ? '确认停用「<b>'+esc(c.name||'')+'</b>」？<br>停用后该配方将不在应用中展示，已有数据不受影响。'
+    : c.op==='disable'
+      ? '确认禁用选中的 <b>'+n+'</b> 个现制商品？<br>禁用后这些配方将不在应用中展示，已有数据不受影响。'
+      : '确认删除选中的 <b>'+n+'</b> 个现制商品？<br><b style="color:var(--danger)">此操作不可直接恢复。</b>';
+  const ok=c.op==='stop'?'确认停用':c.op==='disable'?'确认禁用':'确认删除';
+  return '<div class="mx-mask" data-olduicfmask><div class="mx">'+
+    '<div class="mx-hd"><div><h3>'+title+'</h3></div><button class="mx-x" data-olduicfclose aria-label="关闭">×</button></div>'+
+    '<div class="mx-bd" style="font-size:13px;line-height:1.8;color:var(--text-2)">'+body+'</div>'+
+    '<div class="mx-ft" style="display:flex;justify-content:flex-end;gap:8px;padding:14px 20px;border-top:1px solid var(--border)"><button class="btn" data-olduicfclose>取消</button><button class="btn danger" data-olduicfok>'+ok+'</button></div></div></div>';
+}
+const OLDUI_IMG='data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA0MCA0MCI+PHJlY3Qgd2lkdGg9IjQwIiBoZWlnaHQ9IjQwIiByeD0iNCIgZmlsbD0iI2Y1ZWZlNyIvPjxwYXRoIGQ9Ik0xMCAxNWgxNnYxMWE1IDUgMCAwIDEtNSA1aC02YTUgNSAwIDAgMS01LTV6IiBmaWxsPSIjZmZmIiBzdHJva2U9IiNiMDhkNmEiIHN0cm9rZS13aWR0aD0iMS42Ii8+PHBhdGggZD0iTTI2IDE4aDIuMmEzLjggMy44IDAgMCAxIDAgNy42SDI2IiBmaWxsPSJub25lIiBzdHJva2U9IiNiMDhkNmEiIHN0cm9rZS13aWR0aD0iMS42IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz48ZWxsaXBzZSBjeD0iMTgiIGN5PSIxNiIgcng9IjciIHJ5PSIyIiBmaWxsPSIjYzE5YTcyIi8+PHBhdGggZD0iTTE0IDEyLjVjMC0xLjggMS42LTEuOCAxLjYtMy42TTE5LjUgMTIuNWMwLTEuOCAxLjYtMS44IDEuNi0zLjYiIHN0cm9rZT0iI2M5YWI4YSIgc3Ryb2tlLXdpZHRoPSIxLjIiIGZpbGw9Im5vbmUiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPjwvc3ZnPg==';
+const OLDUI_ROWS=[
+  {id:'OR-001',name:'Cappuccino (đá)',code:'RCP-006',cat:'咖啡',tags:['热销','冷饮'],brand:'VendSolution',tenant:'Aurora Vending',status:'启用',date:'2026/11/23',creator:'admin',scope:'Smart Home Depot'},
+  {id:'OR-002',name:'Cà phê sữa đưa Pea Protein (nóng)',code:'RCP-008',cat:'咖啡',tags:['新品'],brand:'VendSolution',tenant:'Aurora Vending',status:'启用',date:'2026/11/23',creator:'admin',scope:'BINH TAY FOOD COMPANY -BIFOCO'},
+  {id:'OR-003',name:'Americano (đá)',code:'RCP-002',cat:'咖啡',tags:['热销','无糖'],brand:'VendSolution',tenant:'Aurora Vending',status:'启用',date:'2026/11/23',creator:'admin',scope:'Smart Home Depot'},
+  {id:'OR-004',name:'americano (nóng)',code:'RCP-001',cat:'咖啡',tags:[],brand:'VendSolution',tenant:'Aurora Vending',status:'启用',date:'2026/11/23',creator:'admin',scope:'Smart Home Depot'},
+  {id:'OR-005',name:'Cappuccino (nóng)',code:'RCP-005',cat:'咖啡',tags:['推荐'],brand:'VendSolution',tenant:'Aurora Vending',status:'启用',date:'2026/11/23',creator:'admin',scope:'Smart Home Depot'}
+];
+function oldUIPage(){
+  state.listType='MADE_TO_ORDER_PRODUCT';
+  const rows=OLDUI_ROWS.filter(function(r){
+    const hay=(r.name+' '+r.code+' '+r.cat+' '+(r.tags||[]).join(' ')+' '+r.creator+' '+(r.brand||'')).toLowerCase();
+    return (!OLDUI.q || hay.indexOf(OLDUI.q.toLowerCase())>=0) &&
+      (!OLDUI.cat || r.cat===OLDUI.cat) &&
+      (!OLDUI.tag || (r.tags||[]).indexOf(OLDUI.tag)>=0) &&
+      (!OLDUI.updater || r.creator===OLDUI.updater) &&
+      (!OLDUI.brand || r.brand===OLDUI.brand);
+  });
+  const cols=oldUIVisibleCols().filter(function(c){return OLDUI.cols[c[0]];});
+  const cell=function(r,k){
+    if(k==='name') return '<td><div class="oldui-namecell"><img class="oldui-thumb" src="'+esc(r.img||OLDUI_IMG)+'" alt=""><div class="cell-stack"><span class="strong">'+esc(r.name)+'</span><span class="sub">'+esc(r.code)+'</span></div></div></td>';
+    if(k==='tag') return '<td>'+((r.tags&&r.tags.length)?'<div class="tagcell">'+r.tags.map(function(t){return '<span class="tagpill">'+esc(t)+'</span>';}).join('')+'</div>':'<span class="muted">—</span>')+'</td>';
+    if(k==='customer') return '<td>'+esc(r.scope||'')+'</td>';
+    if(k==='tenant') return '<td>'+esc(r.tenant||'')+'</td>';
+    return '<td>'+esc(r[k]||'')+'</td>';
+  };
+  const cbHead='<th style="width:34px"><input type="checkbox" data-olduicheckall'+(rows.length&&rows.every(r=>SET.objSel[r.id])?' checked':'')+' aria-label="全选"></th>';
+  const cbCell=function(r){ return '<td><input type="checkbox" data-olduicheck="'+r.id+'"'+(SET.objSel[r.id]?' checked':'')+' aria-label="选择"></td>'; };
+  const head='<tr>'+cbHead+cols.map(function(c){return '<th>'+esc(c[1])+'</th>';}).join('')+'<th>操作</th></tr>';
+  const body=rows.map(function(r){
+    return '<tr'+(SET.objSel[r.id]?' style="background:var(--accent-weak)"':'')+'>'+cbCell(r)+cols.map(function(c){return cell(r,c[0]);}).join('')+
+      '<td><div class="row-actions"><span class="lnk" data-olduicopy="'+esc(r.id)+'">复制</span><span class="lnk'+(r.status==='停用'?' muted':'')+'" data-olduistop="'+esc(r.id)+'">'+(r.status==='停用'?'启用':'停用')+'</span><span class="lnk danger" data-olduidelete="'+esc(r.id)+'">删除</span></div></td></tr>';
+  }).join('');
+  const sv=function(d){ return '<svg viewBox="0 0 20 20" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">'+d+'</svg>'; };
+  const icoFilter=sv('<path d="M3 4.5h14l-5.4 6.3v4.6l-3.2 1.6v-6.2L3 4.5z"/>');
+  const icoRefresh=sv('<path d="M16.6 9.2a6.7 6.7 0 1 0 .8 4.3"/><path d="M17.3 4.3v5h-5"/>');
+  const icoClear=sv('<path d="M3 4.5h14l-5.4 6.3v4.6l-3.2 1.6v-6.2L3 4.5z"/><path d="M3.5 3.2l13.2 13.2"/>');
+  const icoCols=sv('<rect x="3" y="4.5" width="14" height="11" rx="1.5"/><path d="M8 4.5v11M13 4.5v11"/>');
+  const uniq=function(a){ return a.filter(function(v,i){ return v&&a.indexOf(v)===i; }); };
+  const dimSel=function(key,label,opts,cur){
+    return '<label class="fitem"><select class="oldui-sel" data-olduidim="'+key+'" aria-label="'+label+'">'+
+      '<option value="">'+label+'（全部）</option>'+
+      opts.map(function(v){ return '<option value="'+esc(v)+'"'+(cur===v?' selected':'')+'>'+esc(v)+'</option>'; }).join('')+'</select></label>';
+  };
+  const catOpts=uniq(OLDUI_ROWS.map(function(r){return r.cat;}));
+  const tagOpts=uniq(OLDUI_ROWS.reduce(function(a,r){return a.concat(r.tags||[]);},[]));
+  const updaterOpts=uniq(OLDUI_ROWS.map(function(r){return r.creator;}));
+  const brandOpts=uniq(OLDUI_ROWS.map(function(r){return r.brand;}));
+  const search='<label class="fitem"><input data-olduiq value="'+esc(OLDUI.q)+'" placeholder="输入商品名称或商品编码" style="height:36px;border:1px solid var(--ds-border-input);border-radius:var(--r-sm);padding:0 11px;font-family:inherit;font-size:13px;width:230px"></label>'+
+    dimSel('cat','分组',catOpts,OLDUI.cat)+
+    dimSel('tag','标签',tagOpts,OLDUI.tag)+
+    dimSel('updater','更新者',updaterOpts,OLDUI.updater)+
+    dimSel('brand','机器品牌',brandOpts,OLDUI.brand);
+  const ops='<span class="fbar-spacer"></span><span class="fbar-ops">'+
+    '<button class="btn ico" data-olduifilter title="过滤" aria-label="过滤">'+icoFilter+'</button>'+
+    '<button class="btn ico" data-olduirefresh title="刷新" aria-label="刷新">'+icoRefresh+'</button>'+
+    '<button class="btn ico" data-olduiclear title="清除过滤" aria-label="清除过滤">'+icoClear+'</button></span>';
+  const pager='<div class="pager"><button class="pg" disabled>‹</button><button class="pg cur">1</button><button class="pg">2</button><button class="pg">3</button><button class="pg">4</button><button class="pg">›</button></div>';
+  const selKeys=rows.filter(r=>SET.objSel[r.id]).map(r=>r.id);
+  const bulk= selKeys.length? '<div class="set-bar bulk-inline"><span>已选择 <b>'+selKeys.length+'</b> 项</span><span class="sp"></span>'+
+    '<button class="btn'+(SET.popup&&SET.popup.kind==='setGroup'?' active':'')+'" data-olduibulk="group">分组 ▾</button>'+
+    '<button class="btn'+(SET.popup&&SET.popup.kind==='setTag'?' active':'')+'" data-olduibulk="tag">标签 ▾</button>'+
+    '<button class="btn" data-olduibulk="disable">批量禁用</button>'+
+    '<button class="btn danger" data-olduibulk="delete">批量删除</button>'+
+    (SET.popup?setPopupHTML():'')+'</div>' : '';
+  return '<div class="page oldui-page">'+
+    '<div class="page-hd"><div><h2>现制商品</h2></div>'+
+    '<div class="hd-act"><button class="btn" data-olduigroup>分组&标签</button><button class="btn accent">+新建</button></div></div>'+
+    '<div class="filterbar">'+search+ops+'</div>'+
+    bulk+
+    '<div class="tbl-panel">'+
+    '<div class="tbl-hd"><span class="t">现制商品</span><span class="a"><button class="btn ico" data-olduicolopen title="列设置" aria-label="列设置">'+icoCols+'</button></span></div>'+
+    '<div class="tbl-wrap"><table><thead>'+head+'</thead><tbody>'+body+'</tbody></table></div>'+
+    '<div class="tbl-ft"><span>显示 1-20 / 71 个配方</span>'+pager+'</div></div>'+
+    oldUIColCfgHTML()+oldUIConfirmHTML()+
+  '</div>';
 }
 function catalogPage(){
-  const prep=state.mod==='prepack';
-  const type= prep?'PACKAGED_PRODUCT':'MADE_TO_ORDER_PRODUCT';
+  const type='PACKAGED_PRODUCT';
   state.listType=type;
-  const title=prep?'商品库':'现制商品';
-  const desc=prep?'管理商品信息、包装规格与 AI 商品识别模型。':'管理饮品制作配方，一个配方可绑定多个杯型。';
-  const newLabel=prep?'＋ 新建商品':'＋ 创建现制商品';
-  if(prep){
-    const rows=PREPACK_ROWS.slice().filter(r=>tagFilterPass(type,r.id) && groupFilterPass(type,r.id));
-    const tagHead='<th>分组</th><th>标签</th>', tagCell=r=>'<td>'+groupCellHTML(type,r.id)+'</td><td>'+tagCellHTML(type,r.id)+'</td>';
-    const head='<tr><th>商品名称</th><th>租户</th><th>分类</th><th>品牌</th><th>AI识别</th><th>状态</th>'+tagHead+'<th>操作</th></tr>';
-    const body=rows.map(r=>'<tr><td><span class="strong">'+esc(r.name)+'</span></td><td>'+esc(r.tenant)+'</td><td>'+esc(r.cat)+
-        '</td><td class="muted">'+esc(r.brand)+'</td><td><span class="badge muted">'+esc(r.ai)+'</span></td>'+
-        '<td><span class="badge ok">'+esc(r.status)+'</span></td>'+tagCell(r)+'<td><span class="lnk" data-act="view">查看详情</span></td></tr>').join('');
-    const filters='<label class="fitem">分类<select><option>全部</option><option>零食</option><option>饮料</option><option>日用品</option></select></label>'+
-      '<label class="fitem">租户<select><option>全部</option><option>佳存</option></select></label>';
-    return '<div class="page">'+
-      '<div class="page-hd"><div><div class="ttl"><h2>'+esc(title)+'</h2></div><p>'+esc(desc)+'</p></div>'+
-      '<div class="hd-act"><button class="btn" data-setopen="GROUP">分组设置</button><button class="btn" data-setopen="TAG">标签设置</button><button class="btn accent" data-act="new">'+esc(newLabel)+'</button></div></div>'+
-      '<div class="filterbar"><span class="note">FILTER</span>'+filters+tagListFilterHTML(type)+groupListFilterHTML(type)+
-      '<button class="btn" data-act="clear">清除过滤条件</button><span class="fbar-spacer"></span>'+
-      '<span class="fbar-meta">共 '+rows.length+' 条 · 数据更新 23:00</span></div>'+
-      '<div class="tbl-panel"><span class="note">TABLE</span>'+
-      '<div class="tbl-hd"><span class="t">'+esc(title)+'列表</span><span class="a"><button class="btn" data-act="export">导出</button></span></div>'+
-      '<div class="tbl-wrap"><table><thead>'+head+'</thead><tbody>'+body+'</tbody></table></div>'+
-      '<div class="tbl-ft"><span>共 '+rows.length+' 条</span><span>导出继承当前筛选条件</span></div></div>'+
-    '</div>';
-  }
-  /* 现制商品：指定列 / 新筛选 / 多选批量 / 列设置 */
-  const rows=freshFilteredRows();
-  const cols=[['img','图片'],['name','名称'],['cat','分类'],['tag','标签'],['machine','机器'],['tenant','租户'],['date','更新日期'],['op','操作']].filter(function(c){ return FRESH.cols[c[0]]!==false; });
-  const cbHead='<th style="width:34px"><input type="checkbox" data-setobjselall'+(rows.length && rows.every(r=>SET.objSel[r.id])?' checked':'')+'></th>';
-  const cbCell=function(r){ return '<td><input type="checkbox" data-setobjsel="'+r.id+'"'+(SET.objSel[r.id]?' checked':'')+'></td>'; };
+  const title='预包装商品';
+  const newLabel='+新建';
+  const uniq=function(k){ return PREPACK_ROWS.map(r=>r[k]).filter((v,i,a)=>v&&v!=='—'&&a.indexOf(v)===i); };
+  const rows=PREPACK_ROWS.slice().filter(function(r){
+    const hay=(r.name+' '+(r.sku||'')).toLowerCase();
+    return (!PRE.q||hay.indexOf(PRE.q.toLowerCase())>=0) &&
+      (!PRE.cat||r.cat===PRE.cat) && (!PRE.tenant||r.tenant===PRE.tenant) &&
+      (!PRE.updater||r.creator===PRE.updater) &&
+      (!PRE.tag||objTagsOf(type,r.id).some(t=>t.id===PRE.tag)) &&
+      tagFilterPass(type,r.id) && groupFilterPass(type,r.id);
+  });
+  const dimSel=function(key,label,opts){
+    const items=opts.map(function(v){ return Array.isArray(v)?v:[v,v]; });
+    return '<label class="fitem"><select class="oldui-sel" data-predim="'+key+'" aria-label="'+label+'"><option value="">'+label+' ▾</option>'+
+      items.map(function(it){ return '<option value="'+esc(it[0])+'"'+(PRE[key]===it[0]?' selected':'')+'>'+esc(it[1])+'</option>'; }).join('')+'</select></label>'; };
+  const sv=function(d){ return '<svg viewBox="0 0 20 20" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">'+d+'</svg>'; };
+  const icoFilter=sv('<path d="M3 4.5h14l-5.4 6.3v4.6l-3.2 1.6v-6.2L3 4.5z"/>');
+  const icoRefresh=sv('<path d="M16.6 9.2a6.7 6.7 0 1 0 .8 4.3"/><path d="M17.3 4.3v5h-5"/>');
+  const icoClear=sv('<path d="M3 4.5h14l-5.4 6.3v4.6l-3.2 1.6v-6.2L3 4.5z"/><path d="M3.5 3.2l13.2 13.2"/>');
+  const icoCols=sv('<rect x="3" y="4.5" width="14" height="11" rx="1.5"/><path d="M8 4.5v11M13 4.5v11"/>');
+  const icoSearch=sv('<circle cx="8.5" cy="8.5" r="4.5"/><path d="M12 12l4 4"/>');
+  const search='<label class="fitem pre-search"><span class="ps-ico">'+icoSearch+'</span><input data-preq value="'+esc(PRE.q)+'" placeholder="搜索商品名称 / 条码..." aria-label="搜索商品名称 / 条码..."></label>';
+  const tagOpts=enabledOf('TAG',type).map(t=>[t.id,t.name]);
+  const filters=dimSel('cat','分组',uniq('cat'))+dimSel('tenant','租户',uniq('tenant'))+
+    dimSel('tag','标签',tagOpts)+dimSel('updater','更新者',uniq('creator'));
+  const ops='<span class="fbar-spacer"></span><span class="fbar-ops">'+
+    '<button class="btn ico" data-prefilter title="过滤" aria-label="过滤">'+icoFilter+'</button>'+
+    '<button class="btn ico" data-prerefresh title="刷新" aria-label="刷新">'+icoRefresh+'</button>'+
+    '<button class="btn ico" data-preclear title="清除过滤" aria-label="清除过滤">'+icoClear+'</button></span>';
+  const cols=PRE_COLS.filter(function(c){return PRE.cols[c[0]];});
+  const badgeDot=function(on,text){ return '<span class="badge '+(on?'ok':'muted')+'">'+(on?'● ':'○ ')+esc(text)+'</span>'; };
   const cell=function(r,k){
-    if(k==='img') return '<td><span style="display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--surface-2);font-size:20px">'+esc(r.img||'🥤')+'</span></td>';
-    if(k==='name') return '<td><div class="cell-stack"><span class="strong">'+esc(r.name)+'</span><span class="sub">'+esc(r.code)+'</span></div></td>';
-    if(k==='cat') return '<td>'+esc(r.cat)+'</td>';
+    if(k==='img') return '<td><img class="oldui-thumb" src="'+esc(r.img||OLDUI_IMG)+'" alt=""></td>';
+    if(k==='name') return '<td><span class="strong">'+esc(r.name)+'</span></td>';
     if(k==='tag') return '<td>'+tagCellHTML(type,r.id)+'</td>';
-    if(k==='machine') return '<td class="muted">'+esc(r.machine)+'</td>';
-    if(k==='tenant') return '<td>'+esc(r.tenant)+'</td>';
-    if(k==='date') return '<td>'+esc(r.date)+'</td>';
-    return '<td><div class="row-actions"><span class="lnk" data-freshstatus="'+r.id+'">'+(r.status==='启用'?'停用':'启用')+'</span></div></td>';
+    if(k==='ai') return '<td>'+badgeDot(r.ai==='已启用',r.ai)+'</td>';
+    if(k==='status') return '<td>'+badgeDot(r.status==='启用',r.status)+'</td>';
+    return '<td class="muted">'+esc(r[k]||'')+'</td>';
   };
-  const head='<tr>'+cbHead+cols.map(c=>'<th>'+c[1]+'</th>').join('')+'</tr>';
-  const body=rows.map(r=>'<tr'+(SET.objSel[r.id]?' style="background:var(--accent-weak)"':'')+'>'+cbCell(r)+cols.map(c=>cell(r,c[0])).join('')+'</tr>').join('');
-  const uniq=function(k){ return FRESHMADE_ROWS.map(r=>r[k]).filter((v,i,a)=>v&&v!=='—'&&a.indexOf(v)===i); };
-  const selFilter=function(key,label,opts){ return '<label class="fitem">'+label+'<select data-freshfilter="'+key+'"><option value="">全部</option>'+opts.map(function(v){ return '<option value="'+esc(v)+'"'+(FRESH[key]===v?' selected':'')+'>'+esc(v)+'</option>'; }).join('')+'</select></label>'; };
-  const tagOpts=enabledOf('TAG',type);
-  const filters='<label class="fitem">搜索名称 <input data-freshq value="'+esc(FRESH.q)+'" placeholder="输入名称" style="height:36px;border:1px solid var(--ds-border-input);border-radius:var(--r-sm);padding:0 11px;font-family:inherit;font-size:13px;width:190px"></label>'+
-    selFilter('tenant','客户',uniq('tenant'))+selFilter('brand','品牌',uniq('brand'))+selFilter('machine','机器',uniq('machine'))+selFilter('cat','分类',uniq('cat'))+
-    '<label class="fitem">标签<select data-freshfilter="tag"><option value="">全部</option>'+tagOpts.map(function(t){ return '<option value="'+t.id+'"'+(FRESH.tag===t.id?' selected':'')+'>'+esc(t.name)+'</option>'; }).join('')+'</select></label>';
+  const cbHead='<th style="width:34px"><input type="checkbox" data-preselall'+(rows.length&&rows.every(r=>SET.objSel[r.id])?' checked':'')+' aria-label="全选"></th>';
+  const cbCell=function(r){ return '<td><input type="checkbox" data-presel="'+r.id+'"'+(SET.objSel[r.id]?' checked':'')+' aria-label="选择"></td>'; };
+  const head='<tr>'+cbHead+cols.map(function(c){return '<th>'+esc(c[1])+'</th>';}).join('')+'<th>操作</th><th style="width:34px"><button class="btn ico" data-precolopen title="列设置" aria-label="列设置">'+icoCols+'</button></th></tr>';
+  const body=rows.map(function(r){
+    return '<tr'+(SET.objSel[r.id]?' style="background:var(--accent-weak)"':'')+'>'+cbCell(r)+cols.map(function(c){return cell(r,c[0]);}).join('')+
+      '<td><div class="row-actions"><span class="lnk" data-precopy="'+esc(r.id)+'">复制</span><span class="lnk" data-prestatus="'+esc(r.id)+'">'+(r.status==='启用'?'禁用':'启用')+'</span><span class="lnk danger" data-predel="'+esc(r.id)+'">删除</span></div></td><td></td></tr>';
+  }).join('');
   const selKeys=rows.filter(r=>SET.objSel[r.id]).map(r=>r.id);
-  const bulk= selKeys.length? '<div class="set-bar"><span class="sp"></span>'+
+  const bulk=selKeys.length? '<div class="set-bar bulk-inline"><span>已选择 <b>'+selKeys.length+'</b> 项</span><span class="sp"></span>'+
     '<button class="btn" data-setbar="setBoth">分组&标签</button>'+(SET.popup?setPopupHTML():'')+'</div>' : '';
-  return '<div class="page">'+
-    '<div class="page-hd"><div><div class="ttl"><h2>'+esc(title)+'</h2></div><p>'+esc(desc)+'</p></div>'+
+  return '<div class="page pre-page">'+
+    '<div class="page-hd"><div><div class="ttl"><h2>'+esc(title)+'</h2></div></div>'+
     '<div class="hd-act"><button class="btn" data-setopen="BOTH">分组&标签</button><button class="btn accent" data-act="new">'+esc(newLabel)+'</button></div></div>'+
-    '<div class="filterbar"><span class="note">FILTER</span>'+filters+
-    '<span style="display:inline-flex;gap:7px"><button class="btn" data-freshact="filter">过滤</button><button class="btn" data-freshact="refresh">刷新</button></span>'+
-    '<span class="fbar-spacer"></span><span class="fbar-meta">共 '+rows.length+' 条 · 数据更新 23:00</span></div>'+
-    '<div class="tbl-panel"><span class="note">TABLE</span>'+
-    '<div class="tbl-hd"><span class="t">'+esc(title)+'列表</span><span class="a"><button class="btn" data-freshcolopen title="列设置">列设置 <span style="font-size:14px">⚙</span></button><button class="btn" data-act="export">导出</button></span></div>'+
-    '<div class="tbl-wrap"><table><thead>'+head+'</thead><tbody>'+body+'</tbody></table></div>'+bulk+
-    '<div class="tbl-ft"><span>共 '+rows.length+' 条</span><span>导出继承当前筛选条件</span></div></div>'+
-    freshColCfgHTML()+
+    '<div class="filterbar">'+search+filters+ops+'</div>'+
+    bulk+
+    '<div class="tbl-panel">'+
+    '<div class="tbl-wrap"><table><thead>'+head+'</thead><tbody>'+body+'</tbody></table></div>'+
+    '</div>'+
+    preColCfgHTML()+
   '</div>';
 }
 
@@ -3340,21 +3481,15 @@ const MX_FIELDS=[
      {id:'f-made',name:'二次配置',rows:[mxGrp('配置组 · 杯型 / OPT_CUPSIZE'),mxRow('杯型','OPT_CUPSIZE_NAME',['en-US','ja-JP','zh-TW','vi-VN']),mxRow('大杯','OPT_CUPSIZE_L',['en-US','ja-JP','zh-TW','vi-VN']),mxRow('中杯','OPT_CUPSIZE_M',['en-US','ja-JP','zh-TW','vi-VN']),mxRow('小杯','OPT_CUPSIZE_S',['en-US','ja-JP','zh-TW','vi-VN']),mxGrp('配置组 · 糖度 / OPT_SWEET'),mxRow('糖度','OPT_SWEET_NAME',['en-US','ja-JP','zh-TW','vi-VN']),mxRow('无糖','OPT_SWEET_0',['en-US','ja-JP','zh-TW','vi-VN']),mxRow('半糖','OPT_SWEET_50',['en-US','ja-JP','zh-TW','vi-VN'])]}
    ]},
    {id:'g-pre',name:'预包装类',leaves:[
-     {id:'f-spu',name:'名字SPU',rows:[mxRow('可口可乐','SPU_COLA',MX_T),mxRow('橙味汽水','SPU_ORANGE',['en-US','ja-JP','zh-TW','vi-VN']),mxRow('原味薯片','SPU_CHIPS',['en-US','ja-JP','zh-TW','vi-VN'])]},
-     {id:'f-sku',name:'SKU',rows:[mxRow('可口可乐 330ml','SKU_COLA_330',['en-US','ja-JP','zh-TW','vi-VN']),mxRow('橙味汽水 330ml','SKU_ORANGE_330',['en-US','ja-JP','zh-TW','vi-VN']),mxRow('原味薯片 40g','SKU_CHIPS_40',['en-US','ja-JP','zh-TW','vi-VN'])]},
+     {id:'f-spu',name:'SKU 名字',rows:[mxRow('可口可乐','SPU_COLA',MX_T),mxRow('橙味汽水','SPU_ORANGE',['en-US','ja-JP','zh-TW','vi-VN']),mxRow('原味薯片','SPU_CHIPS',['en-US','ja-JP','zh-TW','vi-VN'])]},
+     {id:'f-sku',name:'SKU 名字',rows:[mxRow('可口可乐 330ml','SKU_COLA_330',['en-US','ja-JP','zh-TW','vi-VN']),mxRow('橙味汽水 330ml','SKU_ORANGE_330',['en-US','ja-JP','zh-TW','vi-VN']),mxRow('原味薯片 40g','SKU_CHIPS_40',['en-US','ja-JP','zh-TW','vi-VN'])]},
      {id:'f-intro',name:'介绍',rows:[mxRow('经典可乐，冰爽畅饮','INTRO_COLA',['en-US','ja-JP','zh-TW','vi-VN']),mxRow('鲜橙风味，气泡十足','INTRO_ORANGE',['en-US','ja-JP','zh-TW']),mxRow('原味薯片，酥脆可口','INTRO_CHIPS',['en-US','ja-JP'])]},
-     {id:'f-pre-ing',name:'原料',rows:[mxRow('纯净水','MAT_WATER',['en-US','ja-JP','zh-TW','vi-VN']),mxRow('白砂糖','MAT_SUGAR',['en-US','ja-JP','zh-TW','vi-VN']),mxRow('二氧化碳','MAT_CO2',['en-US','ja-JP','zh-TW','vi-VN'])]},
      {id:'f-pre-gtag',name:'分组',rows:[mxRow('饮料','GRP_DRINK',['en-US','ja-JP','zh-TW','vi-VN']),mxRow('零食','GRP_SNACK',['en-US','ja-JP','vi-VN'])]},
      {id:'f-pre-ptag',name:'标签',rows:[mxRow('夏季主推','TAG_SUMMER_PRE',['en-US','ja-JP','zh-TW']),mxRow('新品','TAG_NEW_PRE',['en-US','ja-JP','zh-TW','vi-VN'])]}
    ]}
- ]},
- {id:'c-pay',name:'支付',children:[
-   {id:'g-pay',name:'支付方式',leaves:[
-     {id:'f-gw',name:'支付方式',rows:[mxGrp('微信支付 / GW_WECHAT'),mxRow('微信支付','GW_WECHAT_NAME',MX_T),mxRow('使用微信完成付款','GW_WECHAT_DESC',['en-US','ja-JP','zh-TW','vi-VN']),mxRow('请扫描二维码完成支付','GW_WECHAT_TIP',['en-US','ja-JP','zh-TW']),mxGrp('支付宝 / GW_ALIPAY'),mxRow('支付宝','GW_ALIPAY_NAME',MX_T),mxGrp('支付宝国际 / GW_ALIPAYPLUS'),mxRow('支付宝国际','GW_ALIPAYPLUS_NAME',MX_T)]}
-   ]}
  ]}
 ];
-const MX={field:'f-name',onlyMiss:false,filter:'all',open:{'c-goods':true,'g-made':true,'g-pay':true},edit:null,aiPop:false,busy:false};
+const MX={field:'f-name',onlyMiss:false,filter:'c-goods',open:{'c-goods':true,'g-made':true},edit:null,aiPop:false,busy:false};
 const mxFind=id=>{ for(const c of MX_FIELDS) for(const g of c.children) for(const f of g.leaves) if(f.id===id) return f; };
 const mxGroup=id=>{ for(const c of MX_FIELDS) for(const g of c.children) if(g.leaves.some(f=>f.id===id)) return g; };
 const mxRows=()=>mxFind(MX.field).rows.map((r,i)=>({r,i})).filter(x=>!x.r.grp);
@@ -3385,7 +3520,7 @@ function locMatrix(){
   const f=mxFind(MX.field),g=mxGroup(f.id),rows=mxRows();
   const miss=rows.reduce((n,x)=>n+mxMiss(x.r),0),ai=rows.reduce((n,x)=>n+MX_T.filter(l=>x.r.cells[l]&&x.r.cells[l].by==='ai').length,0);
   const shown=MX.onlyMiss?f.rows.filter(x=>x.grp||mxMiss(x.r)):f.rows;
-  const opts=[['all','全部资源'],['c-goods','商品'],['c-pay','支付']]
+  const opts=[['c-goods','商品']]
     .map(o=>'<option value="'+o[0]+'"'+(MX.filter===o[0]?' selected':'')+'>'+o[1]+'</option>').join('');
   let body='<colgroup><col style="width:158px">'+MX_LANGS.map(()=>'<col>').join('')+'</colgroup><thead><tr><th>字段 / ID</th>'+
     MX_LANGS.map(l=>'<th class="lang'+(l.src?' src':'')+'">'+esc(l.name)+'<span class="code">'+l.code+(l.src?' · 源':'')+'</span></th>').join('')+'</tr></thead><tbody>';
@@ -3396,12 +3531,11 @@ function locMatrix(){
   });
   body+='</tbody>';
   const acts='<span class="fitem"><select data-mx2-resource style="max-width:160px">'+opts+'</select></span>'+
-    '<button class="mx2-toggle'+(MX.onlyMiss?' on':'')+'" data-mx2-only><i></i>仅看缺失</button>'+
     '<span class="mx2-aiwrap"><button class="btn accent" data-mx2-ai'+(MX.busy?' disabled':'')+'><span class="mx2-aichip">AI</span>'+(MX.busy?'翻译中…':'翻译缺失项')+'</button>'+
     '<div class="mx2-pop" data-mx2-pop'+(MX.aiPop?'':' hidden')+'><div class="mx2-pop-t">翻译范围</div>'+
     '<button class="opt" data-mx2-scope="page">仅翻译本页</button><button class="opt" data-mx2-scope="all">全局翻译</button>'+
     '<div class="f"><button data-mx2-close>取消</button></div></div></span>';
-  return '<div class="page"><div class="page-hd"><div><div class="ttl"><h2>多语言内容对照</h2></div></div><div class="hd-act">'+acts+'</div></div>'+
+  return '<div class="page mx2-page"><div class="page-hd"><div><div class="ttl"><h2>多语言内容对照</h2></div></div><div class="hd-act">'+acts+'</div></div>'+
     '<div class="mx2-wrap">'+mxTreeHTML()+
     '<div class="tbl-panel mx2-panel"><div class="tbl-hd"><span class="t">'+esc(g.name)+' · '+esc(f.name)+'</span>'+
     '<span class="a mx2-tbar"><span class="mx2-hint"><i>AI</i>AI 译文</span><span>点单元格直接编辑 · Enter 跳到下一格</span></span></div>'+
@@ -3478,7 +3612,7 @@ function locLangSetting(){
       '<td><button class="btn" data-loc-langedit="'+l.locale+'">编辑</button></td></tr>';
   }).join('');
   const addBtn = LOC.addOpen ? '' : '<button class="btn accent" data-loc-add>+ 添加语言</button>';
-  let html='<div class="page">'+locHead('语言设置','Languages & Localization','管理租户可用语言及默认语言。业务数据与语言内容分离，关闭语言不会删除已有翻译。')+
+  let html='<div class="page">'+locHead('语言设置','','')+
     '<div class="loc-default"><div><div class="lbl">默认语言</div><div class="val">'+esc(def.name)+'<small>'+esc(def.locale)+'</small></div></div>'+
     '<div class="lbl" style="text-align:right">终端默认展示此语言 · 缺失翻译按字段回退至此</div></div>'+
     '<div class="tbl-panel"><div class="tbl-hd"><span class="t">可用语言</span><span class="a">'+addBtn+'</span></div>'+
@@ -3684,7 +3818,14 @@ function locTerminal(){
 }
 function localizationPage(){
   const m=state.mod;
-  if(m==='matrix') return locMatrix();
+  if(m==='matrix'||m==='lang'){
+    const tabs='<div class="tabs loc-hub-tabs">'+
+      '<div class="tab'+(m==='lang'?' active':'')+'" data-lochtab="lang">语言设置</div>'+
+      '<div class="tab'+(m==='matrix'?' active':'')+'" data-lochtab="matrix">多语言内容对照</div>'+
+      '</div>';
+    return '<div class="loc-hub"><div class="loc-hub-hd">'+tabs+'</div>'+
+      (m==='matrix'?locMatrix():locLangSetting())+'</div>';
+  }
   if(m==='translate') return locTranslate();
   if(m==='product') return locProduct();
   if(m==='master') return locMaster();
@@ -4262,10 +4403,15 @@ function renderNav(){
   document.getElementById('subnavHd').textContent=(state.role==='root'&&state.sec==='analytics')?'平台级视图':sec.name;
   document.getElementById('subnavSub').textContent=sub;
   document.getElementById('subFoot').innerHTML=foot;
+  const actMod=(state.sec==='settings'&&(state.mod==='lang'||state.mod==='matrix'))?'lang':state.mod;
   document.getElementById('subItems').innerHTML=list.map(m=>
-    '<div class="sub-item'+(m.id===state.mod?' active':'')+'" data-mod="'+m.id+'"><span>'+esc(m.name)+'</span>'+
-    (m.pri?'<span class="pri '+m.pri.toLowerCase()+'">'+m.pri+'</span>':'')+'</div>').join('');
+    '<div class="sub-item'+(m.id===actMod?' active':'')+'" data-mod="'+m.id+'"><span>'+esc(m.name)+'</span></div>').join('');
   document.querySelectorAll('.nav-item[data-mod]').forEach(n=>n.classList.toggle('active', n.dataset.mod===state.sec));
+  document.querySelectorAll('.nav-child[data-catsub]').forEach(n=>n.classList.toggle('active', state.sec==='catalog'&&n.dataset.catsub===state.mod));
+  const catalog=state.sec==='catalog';
+  document.body.classList.toggle('catalog-inline',catalog);
+  const catalogNav=document.querySelector('.nav-item[data-mod="catalog"]');
+  if(catalogNav) catalogNav.classList.toggle('catalog-open',catalog);
   if(state.role==='root') document.querySelectorAll('.sub-item .pri').forEach(e=>e.textContent='ROOT');
 }
 
@@ -4273,11 +4419,10 @@ function contentHTML(){
   if(state.tagOpen) return tagsPage();
   if(SET.open) return settingsPage();
   if(state.sec==='devicecfg') return deviceConfigPage();
-  if(state.sec==='settings') return state.mod==='translate'?translatePage():(state.mod==='aiconfig'?aiConfigPage():tagGroupAdminPage());
-  if(state.sec==='localization') return localizationPage();
+  if(state.sec==='settings') return (state.mod==='lang'||state.mod==='matrix')?localizationPage():tagGroupAdminPage();
   if(state.role==='root') return pageHTML();
   if(state.sec==='analytics') return pageHTML();
-  if(state.sec==='catalog') return catalogPage();
+  if(state.sec==='catalog') return state.mod==='freshmadeui'?oldUIPage():catalogPage();
   if(state.sec==='machine') return state.mod==='template'?machineTemplatePage():machinePage();
   return '';
 }
@@ -4305,7 +4450,7 @@ function render(){
   }
   const sec=currentSec();
   let crumb,title;
-  if(state.sec==='devicecfg'||(state.sec==='settings'&&(state.mod==='translate'||state.mod==='aiconfig'))){
+  if(state.sec==='devicecfg'){
     const sub=sec.subs.find(s=>s.id===state.mod);
     crumb=sec.name+' / <b>'+esc(sub?sub.name:'')+'</b>'; title='VendSolution · '+sec.name;
   }else if(state.role==='root'){
@@ -4316,7 +4461,8 @@ function render(){
     crumb=sec.name+' / <b>'+esc(m?m.name:'')+'</b> / '+esc(tname[1]);
     title='VendSolution · '+(m?m.name:'')+(tname[1]?' / '+tname[1]:'');
   }else{
-    const sub=sec.subs.find(s=>s.id===state.mod);
+    const subId=(state.sec==='settings'&&(state.mod==='lang'||state.mod==='matrix'))?'lang':state.mod;
+    const sub=sec.subs.find(s=>s.id===subId);
     crumb=sec.name+' / <b>'+esc(sub?sub.name:'')+'</b>';
     title='VendSolution · '+esc(sub?sub.name:sec.name);
   }
@@ -4406,17 +4552,29 @@ document.addEventListener('click',e=>{
   if(rrole){ state.rootRole=rrole.dataset.rrole; rootGo(); return; }
   const rtab=e.target.closest('[data-rtab]');
   if(rtab){ state.rootTab=rtab.dataset.rtab; rootGo(); return; }
+  const catSub=e.target.closest('[data-catsub]');
+  if(catSub){ gotoSub(catSub.dataset.catsub); return; }
   const nav=e.target.closest('.nav-item');
   if(nav){
     const id=nav.dataset.mod;
+    if(id==='catalog'&&state.sec==='catalog'){
+      document.body.classList.toggle('catalog-inline');
+      nav.classList.toggle('catalog-open',document.body.classList.contains('catalog-inline'));
+      return;
+    }
     if(SECTIONS[id]) setSection(id);
     else toast('「'+nav.textContent.trim()+'」模块不在本次 Demo 范围');
     return;
   }
   const sub=e.target.closest('.sub-item');
   if(sub){ gotoSub(sub.dataset.mod); return; }
+  /* 本地化和语言：顶部 tab 切换 */
+  if(state.sec==='settings'){
+    const lochTab=e.target.closest('[data-lochtab]');
+    if(lochTab){ state.mod=lochTab.dataset.lochtab; MX.edit=null; MX.aiPop=false; render(); return; }
+  }
   /* 本地化中心 · 多语言内容对照 */
-  if(state.sec==='localization'&&state.mod==='matrix'){
+  if(state.sec==='settings'&&state.mod==='matrix'){
     if(MX.aiPop&&!e.target.closest('.mx2-aiwrap')){ MX.aiPop=false; mxRender(); return; }
     const mxFieldEl=e.target.closest('[data-mx2-field]');
     if(mxFieldEl){ MX.field=mxFieldEl.dataset.mx2Field; MX.edit=null; mxRender(); return; }
@@ -4428,8 +4586,6 @@ document.addEventListener('click',e=>{
     if(mxCloseBtn){ MX.aiPop=false; mxRender(); return; }
     const mxScopeBtn=e.target.closest('[data-mx2-scope]');
     if(mxScopeBtn){ MX.aiPop=false; MX.busy=true; mxRender(); setTimeout(()=>mxRunAI(mxScopeBtn.dataset.mx2Scope),600); return; }
-    const mxOnlyBtn=e.target.closest('[data-mx2-only]');
-    if(mxOnlyBtn){ MX.onlyMiss=!MX.onlyMiss; MX.edit=null; mxRender(); return; }
     const mxOkBtn=e.target.closest('[data-mx2-ok]');
     if(mxOkBtn){ mxCommit(false); return; }
     const mxCancelBtn=e.target.closest('[data-mx2-cancel]');
@@ -4791,7 +4947,7 @@ document.addEventListener('click',e=>{
   const setOpen=e.target.closest('[data-setopen]');
   if(setOpen){
     SET.open=true;
-    SET.type = state.listType || (state.sec==='machine' ? 'MACHINE' : (state.mod==='freshmade' ? 'MADE_TO_ORDER_PRODUCT' : 'PACKAGED_PRODUCT'));
+    SET.type = state.listType || (state.sec==='machine' ? 'MACHINE' : 'PACKAGED_PRODUCT');
     SET.grpQ='';SET.tagQ='';SET.leftSel={};SET.objSel={};SET.popup=null;SET.inlineEdit=null;SET.edit=null;SET.confirm=null;SET.drawer=null;
     rerender(); return;
   }
@@ -4829,7 +4985,7 @@ document.addEventListener('click',e=>{
   if(setSaveBtn){ setSave(); return; }
   const setConfirm=e.target.closest('[data-setconfirm]');
   if(setConfirm){ setConfirmDo(); return; }
-  /* 标签分组管理控制台 */
+  /* 标签&分组管理控制台 */
   const adminType=e.target.closest('[data-admintype]');
   if(adminType){ SET.type=adminType.dataset.admintype; SET.objSel={}; SET.leftSel={}; SET.grpQ='';SET.tagQ=''; SET.popup=null; SET.q='';SET.status='ALL';SET.page=1;SET.sel={}; rerender(); return; }
   const adminKind=e.target.closest('[data-adminkind]');
@@ -4840,29 +4996,65 @@ document.addEventListener('click',e=>{
   if(adminNew){ SET.edit={kind:SET.kind,id:'NEW'}; rerender(); return; }
   const adminBulk=e.target.closest('[data-adminbulk]');
   if(adminBulk){ adminBulkFn(adminBulk.dataset.adminbulk); return; }
-  /* 现制商品页交互 */
-  const freshColOpen=e.target.closest('[data-freshcolopen]');
-  if(freshColOpen){ FRESH.colOpen=true; rerender(); return; }
-  const freshColClose=e.target.closest('[data-freshcolclose]');
-  if(freshColClose){ FRESH.colOpen=false; rerender(); return; }
-  const freshColMask=e.target.closest('[data-freshcolmask]');
-  if(freshColMask && e.target===freshColMask){ FRESH.colOpen=false; rerender(); return; }
-  const freshAct=e.target.closest('[data-freshact]');
-  if(freshAct){
-    const a=freshAct.dataset.freshact;
-    if(a==='filter') toast('已应用筛选条件');
-    if(a==='refresh'){ FRESH.q='';FRESH.tenant='';FRESH.brand='';FRESH.machine='';FRESH.cat='';FRESH.tag=''; SET.objSel={}; SET.popup=null; rerender(); toast('已刷新并重置筛选'); return; }
-    rerender(); return;
+  /* 预包装商品库：列设置 / 过滤栏 / 多选批量 */
+  if(state.sec==='catalog'&&state.mod==='prepack'){
+    if(e.target.closest('[data-precolopen]')){ PRE.colOpen=true; rerender(); return; }
+    if(e.target.closest('[data-precolclose]')){ PRE.colOpen=false; rerender(); return; }
+    const pm=e.target.closest('[data-precolmask]');
+    if(pm&&e.target===pm){ PRE.colOpen=false; rerender(); return; }
+    if(e.target.closest('[data-precolreset]')){ PRE_COLS.forEach(function(c){PRE.cols[c[0]]=true;}); rerender(); return; }
+    if(e.target.closest('[data-preclear]')){ PRE.q='';PRE.cat='';PRE.tenant='';PRE.tag='';PRE.updater=''; rerender(); toast('已清除过滤条件'); return; }
+    if(e.target.closest('[data-prefilter]')){ toast('已应用筛选条件'); return; }
+    if(e.target.closest('[data-prerefresh]')){ PRE.q='';PRE.cat='';PRE.tenant='';PRE.tag='';PRE.updater='';SET.objSel={};SET.popup=null; rerender(); toast('已刷新'); return; }
+    const pc=e.target.closest('[data-precopy]');
+    if(pc){ const r=PREPACK_ROWS.find(x=>x.id===pc.dataset.precopy); if(r){ PREPACK_ROWS.push({id:'PK-'+Date.now(),name:r.name+'（副本）',sku:r.sku+'-COPY',tenant:r.tenant,cat:r.cat,brand:r.brand,ai:r.ai,status:'启用',date:todayStr(),creator:r.creator||'admin'}); toast('已复制 '+r.name); rerender(); } return; }
+    const ps=e.target.closest('[data-prestatus]');
+    if(ps){ const r=PREPACK_ROWS.find(x=>x.id===ps.dataset.prestatus); if(r){ r.status=r.status==='启用'?'停用':'启用'; toast(r.name+' 已'+(r.status==='启用'?'启用':'禁用')); rerender(); } return; }
+    const pd=e.target.closest('[data-predel]');
+    if(pd){ const i=PREPACK_ROWS.findIndex(x=>x.id===pd.dataset.predel); if(i>=0){ const n=PREPACK_ROWS[i].name; PREPACK_ROWS.splice(i,1); delete SET.objSel[pd.dataset.predel]; toast('已删除 '+n); rerender(); } return; }
   }
-  const freshStatus=e.target.closest('[data-freshstatus]');
-  if(freshStatus){
-    const r=FRESHMADE_ROWS.find(x=>x.id===freshStatus.dataset.freshstatus);
-    if(r){ r.status= r.status==='启用'?'停用':'启用'; toast(r.name+' 已'+(r.status==='启用'?'启用':'停用')); rerender(); }
-    return;
+  /* 现制商品：列设置 / 过滤栏 / 多选批量 / 复制删除 */
+  if(state.sec==='catalog'&&state.mod==='freshmadeui'){
+    if(e.target.closest('[data-olduicolopen]')){ OLDUI.colOpen=true; rerender(); return; }
+    if(e.target.closest('[data-olduicolclose]')){ OLDUI.colOpen=false; rerender(); return; }
+    const om=e.target.closest('[data-olduimask]');
+    if(om&&e.target===om){ OLDUI.colOpen=false; rerender(); return; }
+    if(e.target.closest('[data-olduicolreset]')){ oldUIVisibleCols().forEach(function(c){OLDUI.cols[c[0]]=true;}); rerender(); return; }
+    if(e.target.closest('[data-olduiclear]')){ OLDUI.q='';OLDUI.cat='';OLDUI.tag='';OLDUI.updater='';OLDUI.brand=''; rerender(); toast('已清除过滤条件'); return; }
+    if(e.target.closest('[data-olduifilter]')){ toast('已应用筛选条件'); return; }
+    if(e.target.closest('[data-olduirefresh]')){ OLDUI.q='';OLDUI.cat='';OLDUI.tag='';OLDUI.updater='';OLDUI.brand='';SET.objSel={};SET.popup=null; rerender(); toast('已刷新'); return; }
+    if(e.target.closest('[data-olduigroup]')){ state.listType='MADE_TO_ORDER_PRODUCT'; SET.open=true; SET.type='MADE_TO_ORDER_PRODUCT'; SET.grpQ='';SET.tagQ='';SET.leftSel={};SET.objSel={};SET.popup=null;SET.inlineEdit=null;SET.edit=null;SET.confirm=null;SET.drawer=null; rerender(); return; }
+    const oc=e.target.closest('[data-olduicopy]');
+    if(oc){ const r=OLDUI_ROWS.find(x=>x.id===oc.dataset.olduicopy); if(r){ OLDUI_ROWS.push({id:'OR-'+Date.now(),name:r.name+'（副本）',code:r.code+'-COPY',cat:r.cat,tags:(r.tags||[]).slice(),brand:r.brand,tenant:r.tenant,status:'启用',date:todayStr(),creator:r.creator,scope:r.scope}); toast('已复制 '+r.name); rerender(); } return; }
+    const ost=e.target.closest('[data-olduistop]');
+    if(ost){ const r=OLDUI_ROWS.find(x=>x.id===ost.dataset.olduistop); if(r){ if(r.status==='停用'){ r.status='启用'; toast('已启用 '+r.name); rerender(); } else { OLDUI.confirm={op:'stop',ids:[r.id],name:r.name}; rerender(); } } return; }
+    const od=e.target.closest('[data-olduidelete]');
+    if(od){ OLDUI.confirm={op:'delete',ids:[od.dataset.olduidelete]}; rerender(); return; }
+    const ob=e.target.closest('[data-olduibulk]');
+    if(ob){
+      const op=ob.dataset.olduibulk, ids=Object.keys(SET.objSel).filter(k=>SET.objSel[k]&&OLDUI_ROWS.some(r=>r.id===k));
+      if(!ids.length) return;
+      if(op==='group'||op==='tag'){
+        SET.type='MADE_TO_ORDER_PRODUCT';
+        if(SET.popup&&SET.popup.kind===(op==='group'?'setGroup':'setTag')) SET.popup=null;
+        else SET.popup={kind:op==='group'?'setGroup':'setTag',q:'',checked:{}};
+        rerender(); return;
+      }
+      OLDUI.confirm={op:op,ids:ids}; rerender(); return;
+    }
+    if(e.target.closest('[data-olduicfclose]')){ OLDUI.confirm=null; rerender(); return; }
+    const cfm=e.target.closest('[data-olduicfmask]');
+    if(cfm&&e.target===cfm){ OLDUI.confirm=null; rerender(); return; }
+    if(e.target.closest('[data-olduicfok]')){
+      const c=OLDUI.confirm; if(!c) return;
+      if(c.op==='delete'){ for(let i=OLDUI_ROWS.length-1;i>=0;i--){ if(c.ids.indexOf(OLDUI_ROWS[i].id)>=0) OLDUI_ROWS.splice(i,1); } toast('已删除 '+c.ids.length+' 个现制商品'); }
+      else { OLDUI_ROWS.forEach(function(r){ if(c.ids.indexOf(r.id)>=0) r.status='停用'; }); toast((c.op==='stop'?'已停用 ':'已禁用 ')+c.ids.length+' 个现制商品'); }
+      OLDUI.confirm=null; SET.objSel={}; SET.popup=null; rerender(); return;
+    }
   }
 });
 document.addEventListener('keydown',e=>{
-  if(state.sec==='localization'&&state.mod==='matrix'&&MX.edit&&e.target.dataset&&e.target.dataset.mx2Input!==undefined){
+  if(state.sec==='settings'&&state.mod==='matrix'&&MX.edit&&e.target.dataset&&e.target.dataset.mx2Input!==undefined){
     if(e.key==='Enter'){ e.preventDefault(); mxCommit(true); }
     else if(e.key==='Escape'){ e.preventDefault(); MX.edit=null; mxRender(); }
     return;
@@ -4877,6 +5069,14 @@ document.addEventListener('keydown',e=>{
   else if(e.key==='Escape'){ e.preventDefault(); SET.inlineEdit=null; rerender(); }
 });
 document.addEventListener('change',e=>{
+  if(e.target.dataset.predim!==undefined){ PRE[e.target.dataset.predim]=e.target.value; SET.objSel={}; rerender(); return; }
+  if(e.target.dataset.precol!==undefined){ PRE.cols[e.target.dataset.precol]=e.target.checked; rerender(); return; }
+  if(e.target.dataset.presel!==undefined){ const id=e.target.dataset.presel; if(e.target.checked) SET.objSel[id]=true; else delete SET.objSel[id]; rerender(); return; }
+  if(e.target.dataset.preselall!==undefined){ const on=e.target.checked; PREPACK_ROWS.forEach(function(r){ if(on) SET.objSel[r.id]=true; else delete SET.objSel[r.id]; }); rerender(); return; }
+  if(e.target.dataset.olduicol!==undefined){ OLDUI.cols[e.target.dataset.olduicol]=e.target.checked; rerender(); return; }
+  if(e.target.dataset.olduicheck!==undefined){ const id=e.target.dataset.olduicheck; if(e.target.checked) SET.objSel[id]=true; else delete SET.objSel[id]; rerender(); return; }
+  if(e.target.dataset.olduicheckall!==undefined){ const on=e.target.checked; OLDUI_ROWS.forEach(function(r){ if(on) SET.objSel[r.id]=true; else delete SET.objSel[r.id]; }); rerender(); return; }
+  if(e.target.dataset.olduidim!==undefined){ OLDUI[e.target.dataset.olduidim]=e.target.value; SET.objSel={}; rerender(); return; }
   if(e.target.id==='roleSel'){ setRole(e.target.value); return; }
   if(e.target.dataset.rsort!==undefined){ state.rootSort=e.target.value; document.getElementById('content').innerHTML=rootPage(); return; }
   if(e.target.dataset.rdate){ toast('已应用自定义日期：'+document.querySelector('[data-rdate="start"]').value+' 至 '+document.querySelector('[data-rdate="end"]').value+'（demo）'); return; }
@@ -4890,7 +5090,7 @@ document.addEventListener('change',e=>{
   }
   if(e.target.id==='noteTog'){ document.body.classList.toggle('no-note',!e.target.checked); return; }
   if(e.target.dataset.b){ updateBuilder(); return; }
-  if(state.sec==='localization'&&state.mod==='matrix'&&e.target.dataset.mx2Resource!==undefined){
+  if(state.sec==='settings'&&state.mod==='matrix'&&e.target.dataset.mx2Resource!==undefined){
     MX.filter=e.target.value;
     if(MX.filter!=='all'){
       const c=MX_FIELDS.find(x=>x.id===MX.filter);
@@ -4921,19 +5121,15 @@ document.addEventListener('change',e=>{
   if(e.target.dataset.setleftq!==undefined){ const k=e.target.dataset.setleftq; if(k==='GROUP') SET.grpQ=e.target.value; else SET.tagQ=e.target.value; rerender(); return; }
   if(e.target.dataset.setobjfilter!==undefined){ const id=e.target.dataset.setobjfilter, type=state.listType; if(!TAG.objFilter[type]) TAG.objFilter[type]={}; TAG.objFilter[type][id]=e.target.checked; rerender(); return; }
   if(e.target.dataset.setobjsel!==undefined){ const id=e.target.dataset.setobjsel; if(e.target.checked) SET.objSel[id]=true; else delete SET.objSel[id]; rerender(); return; }
-  if(e.target.dataset.setobjselall!==undefined){ const on=e.target.checked, list=(state.sec==='catalog'&&state.mod==='freshmade')?freshFilteredRows():objRowsOf(SET.type); list.forEach(function(r){ if(on) SET.objSel[r.id]=true; else delete SET.objSel[r.id]; }); rerender(); return; }
+  if(e.target.dataset.setobjselall!==undefined){ const on=e.target.checked, list=objRowsOf(SET.type); list.forEach(function(r){ if(on) SET.objSel[r.id]=true; else delete SET.objSel[r.id]; }); rerender(); return; }
   if(e.target.dataset.setpopupitem!==undefined){ const id=e.target.dataset.setpopupitem; if(!SET.popup) return; if(e.target.checked) SET.popup.checked[id]=true; else delete SET.popup.checked[id]; rerender(); return; }
   if(e.target.dataset.setpopupq!==undefined){ if(SET.popup) SET.popup.q=e.target.value; rerender(); return; }
   if(e.target.dataset.setdrawerq!==undefined){ SET.drawerQ=e.target.value; rerender(); return; }
-  /* 标签分组管理控制台 change */
+  /* 标签&分组管理控制台 change */
   if(e.target.dataset.adminq!==undefined){ SET.q=e.target.value; SET.page=1; rerender(); return; }
   if(e.target.dataset.adminstatus!==undefined){ SET.status=e.target.value; SET.page=1; rerender(); return; }
   if(e.target.dataset.adminsel!==undefined){ const id=e.target.dataset.adminsel; if(e.target.checked) SET.sel[id]=true; else delete SET.sel[id]; rerender(); return; }
   if(e.target.dataset.adminall!==undefined){ const on=e.target.checked; defsOf(SET.kind).filter(t=>t.t===SET.type).forEach(t=>{ if(on) SET.sel[t.id]=true; else delete SET.sel[t.id]; }); rerender(); return; }
-  /* 现制商品页：筛选 / 列设置 */
-  if(e.target.dataset.freshq!==undefined){ FRESH.q=e.target.value; rerender(); return; }
-  if(e.target.dataset.freshfilter!==undefined){ const k=e.target.dataset.freshfilter; FRESH[k]=e.target.value; rerender(); return; }
-  if(e.target.dataset.freshcol!==undefined){ const k=e.target.dataset.freshcol; FRESH.cols[k]=e.target.checked; rerender(); return; }
   /* 机器模板 */
   if(state.sec==='machine'&&state.mod==='template'){
     const t=e.target.dataset;
@@ -4994,7 +5190,21 @@ document.addEventListener('change',e=>{
   if(e.target.dataset.dcimgfile!==undefined){ dcReadImage(e.target.files&&e.target.files[0]); return; }
 });
 document.addEventListener('input',e=>{
-  if(state.sec==='localization'&&state.mod==='matrix'&&e.target.dataset.mx2Input!==undefined){
+  if(e.target.dataset.preq!==undefined){
+    PRE.q=e.target.value; SET.objSel={};
+    rerender();
+    const el=document.querySelector('[data-preq]');
+    if(el){ el.focus(); el.setSelectionRange(el.value.length,el.value.length); }
+    return;
+  }
+  if(e.target.dataset.olduiq!==undefined){
+    OLDUI.q=e.target.value; SET.objSel={};
+    rerender();
+    const el=document.querySelector('[data-olduiq]');
+    if(el){ el.focus(); el.setSelectionRange(el.value.length,el.value.length); }
+    return;
+  }
+  if(state.sec==='settings'&&state.mod==='matrix'&&e.target.dataset.mx2Input!==undefined){
     if(MX.edit) MX.edit.val=e.target.value;
     return;
   }
@@ -5007,7 +5217,7 @@ document.addEventListener('input',e=>{
     }
     return;
   }
-  if(state.sec==='localization'&&state.mod==='translate'&&e.target.dataset.locSearch!==undefined){
+  if(state.sec==='settings'&&state.mod==='translate'&&e.target.dataset.locSearch!==undefined){
     LOC.q=e.target.value;
     document.getElementById('content').innerHTML=localizationPage();
     const el=document.querySelector('[data-loc-search]');
@@ -5580,6 +5790,8 @@ function dcCreateNewComp(){
 /* 初始路由 */
 (function(){
   const h=location.hash.match(/#\/([a-z]+)\/([a-z]+)(?:\/([a-z]+))?(?:\/([a-z]+))?/);
+  /* 兼容旧路由：本地化中心已并入系统设置 */
+  if(h && h[1]==='localization'){ h[1]='settings'; }
   if(h && SECTIONS[h[1]]){
     const secId=h[1];
     state.sec=secId;
@@ -5597,7 +5809,8 @@ function dcCreateNewComp(){
       render(); return;
     }
     const sec=SECTIONS[secId];
-    state.mod=sec.subs.some(s=>s.id===h[2])?h[2]:sec.subs[0].id;
+    const extraMods=secId==='settings'?['matrix']:[];
+    state.mod=(sec.subs.some(s=>s.id===h[2])||extraMods.indexOf(h[2])>=0)?h[2]:sec.subs[0].id;
     render(); return;
   }
   state.sec='analytics'; state.mod='overview'; state.tab='sales';
