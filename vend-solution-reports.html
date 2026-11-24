@@ -448,7 +448,7 @@
   /* 下钻弹层 */
   .mx-mask{position:fixed;inset:0;background:rgba(26,26,26,.45);display:flex;align-items:center;justify-content:center;z-index:80;padding:24px}
   .mx{background:var(--ds-surface);border-radius:var(--r-lg);max-width:620px;width:100%;max-height:82vh;overflow:auto;box-shadow:var(--sh-modal);animation:mxin .16s ease}
-  .mx.w480{max-width:480px}.mx.w620{max-width:620px}
+  .mx.w480{max-width:480px}.mx.w620{max-width:620px}.mx.w820{max-width:820px}
   @keyframes mxin{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
   .mx-hd{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;padding:16px 20px;border-bottom:1px solid var(--border);position:sticky;top:0;background:var(--surface);z-index:1}
   .mx-hd h3{font-size:15px;font-weight:600}
@@ -4595,6 +4595,32 @@ document.addEventListener('click',e=>{
   }
   /* 品牌型号与组件 */
   if(state.sec==='devicecfg'){
+    /* 数据点子弹窗与复制弹窗（优先于编辑弹窗遮罩处理） */
+    const dptMask=e.target.closest('[data-dcptmask]');
+    if(dptMask && e.target===dptMask){ DC.pointEdit=null; rerender(); return; }
+    const dptClose=e.target.closest('[data-dcptclose]');
+    if(dptClose){ DC.pointEdit=null; rerender(); return; }
+    const dptSave=e.target.closest('[data-dcptsave]');
+    if(dptSave){ dcSavePoint(); return; }
+    const dptEnumDel=e.target.closest('[data-dcptenumdel]');
+    if(dptEnumDel){ dcPointEnumDel(Number(dptEnumDel.dataset.dcptenumdel)); return; }
+    const dptEnumAdd=e.target.closest('[data-dcptenumadd]');
+    if(dptEnumAdd){ dcPointEnumAdd(); return; }
+    const cpMask=e.target.closest('[data-dccopymask]');
+    if(cpMask && e.target===cpMask){ DC.copyFrom=null; rerender(); return; }
+    const cpClose=e.target.closest('[data-dccopyclose]');
+    if(cpClose){ DC.copyFrom=null; rerender(); return; }
+    const cpSave=e.target.closest('[data-dccopysave]');
+    if(cpSave){ dcSaveCopyPoints(); return; }
+    /* 组件编辑弹窗内：数据点管理区按钮 */
+    const dpNew=e.target.closest('[data-dcpointnew]');
+    if(dpNew){ DC.pointEdit={mode:'new',draft:dcBlankPoint()}; rerender(); return; }
+    const dpEdit=e.target.closest('[data-dcpointedit]');
+    if(dpEdit){ const pid=dpEdit.dataset.dcpointedit; const pt=(DC.edit&&DC.edit.points||[]).find(x=>x.pid===pid); if(pt){ DC.pointEdit={mode:'edit',draft:dcClonePoint(pt)}; rerender(); } return; }
+    const dpDel=e.target.closest('[data-dcpointdel]');
+    if(dpDel){ const pid=dpDel.dataset.dcpointdel; if(DC.edit) DC.edit.points=(DC.edit.points||[]).filter(x=>x.pid!==pid); rerender(); return; }
+    const dpCopyOpen=e.target.closest('[data-dccopypoints]');
+    if(dpCopyOpen){ DC.copyFrom={src:'',checked:{}}; rerender(); return; }
     const dcMask=e.target.closest('[data-dcmask]');
     if(dcMask && e.target===dcMask){ dcCloseAll(); rerender(); return; }
     const dcClose=e.target.closest('[data-dcclose]');
@@ -5188,6 +5214,14 @@ document.addEventListener('change',e=>{
   if(e.target.dataset.dcpickcmd!==undefined){ DC.picker.cmd[e.target.dataset.dcpickcmd]=e.target.value; return; }
   if(e.target.dataset.dccmdinput!==undefined){ if(DC.cmdEdit) DC.cmdEdit.value=e.target.value; return; }
   if(e.target.dataset.dcimgfile!==undefined){ dcReadImage(e.target.files&&e.target.files[0]); return; }
+  /* 数据点子弹窗字段 */
+  if(e.target.dataset.dcpttype!==undefined){ if(DC.pointEdit){ DC.pointEdit.draft.type=e.target.value; if(e.target.value!=='enum') DC.pointEdit.draft.enumVals=DC.pointEdit.draft.enumVals||[]; } rerender(); return; }
+  if(e.target.dataset.dcptenumval!==undefined){ const i=Number(e.target.dataset.dcptenumval); if(DC.pointEdit){ DC.pointEdit.draft.enumVals=DC.pointEdit.draft.enumVals||[]; DC.pointEdit.draft.enumVals[i]=e.target.value; } return; }
+  /* 数据点启停（管理区行内） */
+  if(e.target.dataset.dcpointenable!==undefined){ const pid=e.target.dataset.dcpointenable; if(DC.edit){ const pt=(DC.edit.points||[]).find(x=>x.pid===pid); if(pt) pt.enabled=e.target.checked; } rerender(); return; }
+  /* 复制数据点弹窗 */
+  if(e.target.dataset.dccopysrc!==undefined){ DC.copyFrom.src=e.target.value; DC.copyFrom.checked={}; rerender(); return; }
+  if(e.target.dataset.dccopypick!==undefined){ const pid=e.target.dataset.dccopypick; if(e.target.checked) DC.copyFrom.checked[pid]=true; else delete DC.copyFrom.checked[pid]; return; }
 });
 document.addEventListener('input',e=>{
   if(e.target.dataset.preq!==undefined){
@@ -5310,6 +5344,53 @@ const DC_CMD_PRESET={
 };
 DC_LINK.forEach(function(l){ if(!l[2]) l[2]=DC_CMD_PRESET[l[0]+'|'+l[1]]||('cmd_'+l[1].replace(/^C-/,'').toLowerCase()); });
 function dcDefaultCmd(cid){ return 'cmd_'+String(cid||'').replace(/^C-/,'').toLowerCase(); }
+/* ============================================================
+   组件数据点（传感器）：对齐涂鸦物模型
+   类型：bool 开关 / value 数字 / enum 状态 / string 字符串 / raw 透传
+   ============================================================ */
+const DC_POINT_TYPES=[['bool','开关'],['value','数字'],['enum','状态'],['string','字符串'],['raw','透传']];
+function dcPointTypeLabel(t){ const f=DC_POINT_TYPES.find(x=>x[0]===t); return f?f[1]:String(t||''); }
+function dcPointTypeTone(t){ return ({bool:'neutral',value:'info',enum:'success',string:'warn',raw:'muted'})[t]||'neutral'; }
+function dcClonePoint(pt){
+  return {
+    pid:pt.pid, code:pt.code||'', name:pt.name||'', type:pt.type||'value', unit:pt.unit||'',
+    min:pt.min==null?'':String(pt.min), max:pt.max==null?'':String(pt.max),
+    step:pt.step==null?'':String(pt.step), scale:pt.scale==null?'':String(pt.scale),
+    enumVals:(pt.enumVals||[]).slice(), def:pt.def==null?'':String(pt.def),
+    required:!!pt.required, enabled:pt.enabled!==false
+  };
+}
+function dcNewPointId(){ return 'pt-'+Date.now()+'-'+Math.floor(Math.random()*1000); }
+function dcBlankPoint(){ return dcClonePoint({pid:'',code:'',name:'',type:'value',enumVals:[],def:'',required:false,enabled:true}); }
+/* 预置真实数据点：体现「具体组件的传感器范围」 */
+const DC_POINTS_PRESET={
+  'C-GRIND':[
+    {pid:'pt-C-GRIND-1',code:'grind_time',name:'研磨时间',type:'value',unit:'s',min:'0',max:'99',step:'1',scale:'0',enumVals:[],def:'20',required:true,enabled:true},
+    {pid:'pt-C-GRIND-2',code:'bean_weight',name:'豆原料量',type:'value',unit:'g',min:'0',max:'36.0',step:'0.1',scale:'1',enumVals:[],def:'9.5',required:false,enabled:true},
+    {pid:'pt-C-GRIND-3',code:'grind_speed',name:'研磨转速',type:'enum',unit:'',min:'',max:'',step:'',scale:'',enumVals:['低速','中速','高速'],def:'中速',required:false,enabled:true},
+    {pid:'pt-C-GRIND-4',code:'grind_on',name:'研磨开关',type:'bool',unit:'',min:'',max:'',step:'',scale:'',enumVals:[],def:'false',required:true,enabled:true}
+  ],
+  'C-PUMP':[
+    {pid:'pt-C-PUMP-1',code:'hot_water',name:'热水量',type:'value',unit:'ml',min:'0',max:'150',step:'1',scale:'0',enumVals:[],def:'80',required:true,enabled:true},
+    {pid:'pt-C-PUMP-2',code:'pump_state',name:'水泵状态',type:'enum',unit:'',min:'',max:'',step:'',scale:'',enumVals:['运行','停止','故障'],def:'停止',required:false,enabled:true},
+    {pid:'pt-C-PUMP-3',code:'pump_power',name:'电源开关',type:'bool',unit:'',min:'',max:'',step:'',scale:'',enumVals:[],def:'false',required:true,enabled:true}
+  ],
+  'C-MIXL':[
+    {pid:'pt-C-MIXL-1',code:'mix_level',name:'搅拌强度',type:'value',unit:'',min:'1',max:'5',step:'1',scale:'0',enumVals:[],def:'2',required:true,enabled:true},
+    {pid:'pt-C-MIXL-2',code:'mix_time',name:'搅拌时间',type:'value',unit:'s',min:'0',max:'99.9',step:'0.1',scale:'1',enumVals:[],def:'12.0',required:false,enabled:true},
+    {pid:'pt-C-MIXL-3',code:'mix_on',name:'搅拌开关',type:'bool',unit:'',min:'',max:'',step:'',scale:'',enumVals:[],def:'false',required:true,enabled:true}
+  ],
+  'C-BEAN':[
+    {pid:'pt-C-BEAN-1',code:'stir_level',name:'搅拌强度',type:'value',unit:'',min:'1',max:'5',step:'1',scale:'0',enumVals:[],def:'2',required:false,enabled:true},
+    {pid:'pt-C-BEAN-2',code:'stir_time',name:'搅拌时间',type:'value',unit:'s',min:'0',max:'99',step:'1',scale:'0',enumVals:[],def:'10',required:false,enabled:true},
+    {pid:'pt-C-BEAN-3',code:'stir_on',name:'运行开关',type:'bool',unit:'',min:'',max:'',step:'',scale:'',enumVals:[],def:'false',required:true,enabled:true}
+  ],
+  'C-DROP':[
+    {pid:'pt-C-DROP-1',code:'drop_on',name:'落杯开关',type:'bool',unit:'',min:'',max:'',step:'',scale:'',enumVals:[],def:'false',required:true,enabled:true},
+    {pid:'pt-C-DROP-2',code:'drop_state',name:'落杯状态',type:'enum',unit:'',min:'',max:'',step:'',scale:'',enumVals:['运行','停止','故障'],def:'停止',required:false,enabled:true}
+  ]
+};
+DC_COMP.forEach(function(c){ c.points = DC_POINTS_PRESET[c.id] ? DC_POINTS_PRESET[c.id].map(dcClonePoint) : []; });
 /* 组件分类：选项（两级 optgroup）/ 标签渲染 */
 function dcCatOptions(sel){
   let h='<option value="">未分类</option>';
@@ -5343,7 +5424,7 @@ function dcCatFilterOptions(sel){
   });
   return h;
 }
-const DC={q:'',brandFilter:'',catFilter:'',edit:null,confirm:null,drawer:null,picker:null,cmdEdit:null};
+const DC={q:'',brandFilter:'',catFilter:'',edit:null,confirm:null,drawer:null,picker:null,cmdEdit:null,pointEdit:null,copyFrom:null};
 /* 适配浏览：双向层级状态 */
 const DC_BROWSE={dim:'brand',brandId:'',modelId:'',compId:''};
 function dcNorm(s){ return String(s||'').trim().toLowerCase(); }
@@ -5363,7 +5444,7 @@ function dcDup(kind,name,exceptId,brandId){
   return false;
 }
 function dcNewId(p){ return p+'-'+Date.now()+'-'+Math.floor(Math.random()*1000); }
-function dcCloseAll(){ DC.edit=null; DC.confirm=null; DC.drawer=null; DC.picker=null; DC.cmdEdit=null; }
+function dcCloseAll(){ DC.edit=null; DC.confirm=null; DC.drawer=null; DC.picker=null; DC.cmdEdit=null; DC.pointEdit=null; DC.copyFrom=null; }
 function dcRerenderFocus(sel){
   rerender(); const el=document.querySelector(sel);
   if(el){ el.focus(); try{el.setSelectionRange(el.value.length,el.value.length);}catch(err){} }
@@ -5386,13 +5467,14 @@ function dcImgBox(src,size,editable){
     '<div class="src" style="margin-top:6px">支持 JPG / PNG，上传后自动居中裁切为 1:1 方形。</div></div></div>';
 }
 function dcOpenEdit(kind,id){
-  let img='', cat='';
+  let img='', cat='', points=[];
   if(id!=='NEW'){
     const t=kind==='brand'?DC_BRAND.find(x=>x.id===id):(kind==='model'?DC_MODEL.find(x=>x.id===id):DC_COMP.find(x=>x.id===id));
     img=(t&&t.img)||'';
     cat=(t&&t.cat)||'';
+    if(kind==='component') points=(t&&t.points)?t.points.map(dcClonePoint):[];
   }
-  DC.edit={kind:kind,id:id,img:img,cat:cat};
+  DC.edit={kind:kind,id:id,img:img,cat:cat,points:points};
 }
 function dcReadImage(file){
   if(!file||!DC.edit) return;
@@ -5594,7 +5676,121 @@ function dcOverlays(){
   if(DC.confirm) h+=dcConfirmModal();
   if(DC.drawer) h+=dcDrawer();
   if(DC.picker) h+=dcPickerModal();
+  if(DC.copyFrom) h+=dcCopyPointsModal();
+  if(DC.pointEdit) h+=dcPointModal();
   return h;
+}
+/* ============================================================
+   组件数据点（传感器）管理：渲染
+   ============================================================ */
+function dcPointRangeText(pt){
+  if(pt.type==='value'){
+    const seg=[];
+    if(pt.min!=='') seg.push(pt.min);
+    if(pt.max!=='') seg.push('~'+pt.max);
+    const u=pt.unit?' '+pt.unit:'';
+    return (seg.length?seg.join(' '):'—')+u;
+  }
+  if(pt.type==='enum') return (pt.enumVals||[]).join(' / ')||'—';
+  return '—';
+}
+function dcPointDefaultText(pt){
+  if(pt.type==='bool') return pt.def==='true'?'开（true）':(pt.def==='false'?'关（false）':'—');
+  if(pt.def===''||pt.def==null) return '—';
+  return pt.def;
+}
+function dcPointRowHTML(pt){
+  const typeBadge='<span class="badge '+dcPointTypeTone(pt.type)+'">'+esc(dcPointTypeLabel(pt.type))+'</span>';
+  const req=pt.required?'<span class="badge warn">必填</span>':'<span class="badge muted">选填</span>';
+  const en='<input type="checkbox" data-dcpointenable="'+esc(pt.pid)+'"'+(pt.enabled?' checked':'')+' title="启停">';
+  return '<tr>'+
+    '<td><span class="strong">'+esc(pt.name)+'</span></td>'+
+    '<td class="muted">'+esc(pt.code||'—')+'</td>'+
+    '<td>'+typeBadge+'</td>'+
+    '<td class="muted">'+esc(pt.unit||'—')+'</td>'+
+    '<td class="muted">'+esc(dcPointRangeText(pt))+'</td>'+
+    '<td class="muted">'+esc(dcPointDefaultText(pt))+'</td>'+
+    '<td>'+req+'</td>'+
+    '<td style="text-align:center">'+en+'</td>'+
+    '<td><div class="row-actions"><span class="lnk" data-dcpointedit="'+esc(pt.pid)+'">编辑</span><span class="lnk danger" data-dcpointdel="'+esc(pt.pid)+'">删除</span></div></td>'+
+  '</tr>';
+}
+function dcPointManageHTML(){
+  const pts=DC.edit?DC.edit.points:[];
+  const head='<tr><th>名称</th><th>标识</th><th>类型</th><th>单位</th><th>范围</th><th>默认值</th><th>必填</th><th>启用</th><th>操作</th></tr>';
+  const body=pts.length?pts.map(dcPointRowHTML).join(''):'<tr><td colspan="9" class="muted" style="text-align:center;padding:20px">暂无数据点，点击「新增数据点」或「从其他组件复制」。</td></tr>';
+  return '<div class="field"><label>数据点 / 传感器（'+pts.length+'）</label>'+
+    '<div style="display:flex;justify-content:flex-end;gap:8px;margin-bottom:8px">'+
+    '<button class="btn" data-dccopypoints>从其他组件复制</button>'+
+    '<button class="btn accent" data-dcpointnew>＋ 新增数据点</button></div>'+
+    '<div class="tbl-wrap" style="border:1px solid var(--border);border-radius:var(--radius-sm);max-height:300px;overflow:auto">'+
+    '<table><thead>'+head+'</thead><tbody>'+body+'</tbody></table></div></div>';
+}
+function dcPointModal(){
+  const pe=DC.pointEdit; if(!pe) return '';
+  const p=pe.draft;
+  const typeOpts=DC_POINT_TYPES.map(t=>'<option value="'+t[0]+'"'+(p.type===t[0]?' selected':'')+'>'+t[1]+'</option>').join('');
+  let typeFields='';
+  if(p.type==='value'){
+    typeFields='<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">'+
+      '<div class="field"><label>单位</label><input data-dcptunit value="'+esc(p.unit)+'" placeholder="如 g / ml / s"></div>'+
+      '<div class="field"><label>最小值 min</label><input data-dcptmin value="'+esc(p.min)+'" placeholder="0"></div>'+
+      '<div class="field"><label>最大值 max</label><input data-dcptmax value="'+esc(p.max)+'" placeholder="100"></div>'+
+      '<div class="field"><label>步长 step</label><input data-dcptstep value="'+esc(p.step)+'" placeholder="1"></div>'+
+      '<div class="field"><label>精度 scale</label><input data-dcptscale value="'+esc(p.scale)+'" placeholder="0.1"></div>'+
+    '</div>';
+  }else if(p.type==='enum'){
+    const vals=(p.enumVals||[]).map(function(v,i){
+      return '<div style="display:flex;gap:6px;align-items:center;margin-bottom:6px"><input data-dcptenumval="'+i+'" value="'+esc(v)+'" style="flex:1;min-width:0" placeholder="枚举值"><button class="btn" data-dcptenumdel="'+i+'" style="flex:0 0 auto" title="删除">×</button></div>';
+    }).join('');
+    typeFields='<div class="field"><label>枚举值</label>'+vals+
+      '<div style="display:flex;gap:6px"><input data-dcptenumnew placeholder="输入枚举值后点击添加" style="flex:1;min-width:0"><button class="btn" data-dcptenumadd>添加</button></div></div>';
+  }else{
+    typeFields='<div class="field"><div class="src">'+
+      (p.type==='bool'?'开关型：二值（真 / 假），默认值从下方选择。':
+       p.type==='string'?'字符串型：复杂文本，本期不设长度约束。':
+       '透传型：Hex 十六进制透传，本期不设约束。')+'</div></div>';
+  }
+  let defField='';
+  if(p.type==='bool'){
+    defField='<div class="field"><label>默认值</label><select data-dcptdef><option value="false"'+(p.def==='false'?' selected':'')+'>关（false）</option><option value="true"'+(p.def==='true'?' selected':'')+'>开（true）</option></select></div>';
+  }else if(p.type==='enum'){
+    const opts='<option value="">无</option>'+(p.enumVals||[]).map(v=>'<option value="'+esc(v)+'"'+(p.def===v?' selected':'')+'>'+esc(v)+'</option>').join('');
+    defField='<div class="field"><label>默认值</label><select data-dcptdef>'+opts+'</select></div>';
+  }else{
+    defField='<div class="field"><label>默认值</label><input data-dcptdef value="'+esc(p.def)+'" placeholder="默认值"></div>';
+  }
+  return '<div class="mx-mask" data-dcptmask><div class="mx w620"><div class="mx-hd"><div><h3>'+(pe.mode==='new'?'新增数据点':'编辑数据点')+'</h3><div class="mx-sub">定义类型与取值范围，对齐涂鸦物模型</div></div><button class="mx-x" data-dcptclose aria-label="关闭">×</button></div>'+
+    '<div class="mx-bd">'+
+    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">'+
+    '<div class="field"><label>名称 *</label><input data-dcptname value="'+esc(p.name)+'" placeholder="如 研磨时间"></div>'+
+    '<div class="field"><label>标识 code *</label><input data-dcptcode value="'+esc(p.code)+'" placeholder="如 grind_time"></div></div>'+
+    '<div class="field"><label>类型</label><select data-dcpttype>'+typeOpts+'</select></div>'+
+    typeFields+
+    defField+
+    '<div style="display:flex;gap:16px;align-items:center"><label class="bopt"><input type="checkbox" data-dcptrequired'+(p.required?' checked':'')+'><span>必填</span></label>'+
+    '<label class="bopt"><input type="checkbox" data-dcptenabled'+(p.enabled?' checked':'')+'><span>启用</span></label></div>'+
+    '</div>'+
+    '<div class="mx-ft" style="display:flex;justify-content:flex-end;gap:8px;padding:14px 20px;border-top:1px solid var(--border)"><button class="btn" data-dcptclose>取消</button><button class="btn accent" data-dcptsave>保存</button></div></div></div>';
+}
+function dcCopyPointsModal(){
+  const cf=DC.copyFrom; if(!cf) return '';
+  const srcOpts='<option value="">选择源组件</option>'+DC_COMP.filter(c=>!(DC.edit&&DC.edit.id===c.id)).map(c=>'<option value="'+c.id+'"'+(cf.src===c.id?' selected':'')+'>'+esc(c.name)+'</option>').join('');
+  let items='<div class="muted" style="font-size:12px;padding:8px 0">请先选择源组件。</div>';
+  if(cf.src){
+    const src=DC_COMP.find(c=>c.id===cf.src);
+    const pts=(src&&src.points)||[];
+    items=pts.length?pts.map(function(pt){
+      return '<label class="bopt"><input type="checkbox" data-dccopypick="'+esc(pt.pid)+'"'+(cf.checked[pt.pid]?' checked':'')+'><span style="flex:1;min-width:0">'+esc(pt.name)+' <span class="muted">· '+esc(dcPointTypeLabel(pt.type))+' · '+esc(pt.code||'')+'</span></span></label>';
+    }).join(''):'<div class="muted" style="font-size:12px;padding:8px 0">该组件暂无数据点。</div>';
+  }
+  return '<div class="mx-mask" data-dccopymask><div class="mx w620"><div class="mx-hd"><div><h3>从其他组件复制数据点</h3><div class="mx-sub">深拷贝生成独立副本，编辑互不影响</div></div><button class="mx-x" data-dccopyclose aria-label="关闭">×</button></div>'+
+    '<div class="mx-bd">'+
+    '<div class="field"><label>源组件</label><select data-dccopysrc>'+srcOpts+'</select></div>'+
+    '<div style="font-size:12px;color:var(--text-2);margin-bottom:6px">选择要复制的数据点</div>'+
+    '<div class="set-pop-list" style="max-height:260px;border:1px solid var(--border);border-radius:var(--radius-sm)">'+items+'</div>'+
+    '</div>'+
+    '<div class="mx-ft" style="display:flex;justify-content:flex-end;gap:8px;padding:14px 20px;border-top:1px solid var(--border)"><button class="btn" data-dccopyclose>取消</button><button class="btn accent" data-dccopysave>复制所选</button></div></div></div>';
 }
 function dcEditModal(){
   const kind=DC.edit.kind, isNew=DC.edit.id==='NEW';
@@ -5615,9 +5811,9 @@ function dcEditModal(){
     title=isNew?'新增组件':'编辑组件';
     fields='<div class="field"><label>组件名称 *</label><input data-dcname value="'+esc(target?target.name:'')+'" placeholder="输入组件名称" maxlength="50"></div>'+
       '<div class="field"><label>分类</label><select data-dccat>'+dcCatOptions(DC.edit.cat||'')+'</select></div>'+
-      '<div class="field"><label>说明</label><div class="src">组件为全局资料，创建后可供任意品牌型号复用。料道类可进一步细分粉料 / BIB / 豆仓 / 水 / 冰 / 液体。</div></div>';
+      dcPointManageHTML();
   }
-  return '<div class="mx-mask" data-dcmask><div class="mx w620"><div class="mx-hd"><div><h3>'+title+'</h3><div class="mx-sub">品牌型号与组件</div></div><button class="mx-x" data-dcclose aria-label="关闭">×</button></div>'+
+  return '<div class="mx-mask" data-dcmask><div class="mx '+(kind==='component'?'w820':'w620')+'"><div class="mx-hd"><div><h3>'+title+'</h3><div class="mx-sub">品牌型号与组件</div></div><button class="mx-x" data-dcclose aria-label="关闭">×</button></div>'+
     '<div class="mx-bd">'+fields+'</div>'+
     '<div class="mx-ft" style="display:flex;justify-content:flex-end;gap:8px;padding:14px 20px;border-top:1px solid var(--border)"><button class="btn" data-dcclose>取消</button><button class="btn accent" data-dcsave>保存</button></div></div></div>';
 }
@@ -5723,7 +5919,7 @@ function dcSaveEdit(){
     const id=dcNewId(e.kind==='brand'?'B':(e.kind==='model'?'M':'C'));
     if(e.kind==='brand') DC_BRAND.push({id:id,name:name,img:e.img||'',created:today,updated:today});
     else if(e.kind==='model') DC_MODEL.push({id:id,brand:brandId,name:name,img:e.img||'',created:today,updated:today});
-    else DC_COMP.push({id:id,name:name,cat:cat,created:today,updated:today});
+    else DC_COMP.push({id:id,name:name,cat:cat,points:(e.points||[]).map(dcClonePoint),created:today,updated:today});
     toast((e.kind==='brand'?'品牌':(e.kind==='model'?'型号':'组件'))+'创建成功');
   }else{
     let t=null;
@@ -5733,11 +5929,77 @@ function dcSaveEdit(){
     if(!t) return;
     t.name=name; if(e.kind==='model') t.brand=brandId;
     if(e.kind==='brand'||e.kind==='model') t.img=e.img||'';
-    if(e.kind==='component') t.cat=cat;
+    if(e.kind==='component'){ t.cat=cat; t.points=(e.points||[]).map(dcClonePoint); }
     t.updated=today;
     toast('已更新');
   }
   DC.edit=null; rerender();
+}
+/* ============================================================
+   组件数据点（传感器）管理：交互逻辑
+   ============================================================ */
+function dcPointEnumAdd(){
+  const pe=DC.pointEdit; if(!pe) return;
+  const inp=document.querySelector('[data-dcptenumnew]'); if(!inp) return;
+  const v=inp.value.trim(); if(!v){ toast('请输入枚举值'); return; }
+  pe.draft.enumVals=pe.draft.enumVals||[];
+  pe.draft.enumVals.push(v); rerender();
+}
+function dcPointEnumDel(i){
+  const pe=DC.pointEdit; if(!pe) return;
+  pe.draft.enumVals=pe.draft.enumVals||[];
+  pe.draft.enumVals.splice(i,1); rerender();
+}
+function dcSavePoint(){
+  const pe=DC.pointEdit; if(!pe||!DC.edit) return;
+  const q=function(sel){ const el=document.querySelector(sel); return el?el.value.trim():''; };
+  const name=q('[data-dcptname]');
+  const code=q('[data-dcptcode]');
+  if(!name){ toast('数据点名称必填'); return; }
+  if(!code){ toast('标识 code 必填'); return; }
+  if(!/^[A-Za-z][A-Za-z0-9_]*$/.test(code)){ toast('标识 code 需以字母开头，仅含字母/数字/下划线'); return; }
+  const type=pe.draft.type;
+  const dup=(DC.edit.points||[]).some(x=>x.code.toLowerCase()===code.toLowerCase() && x.pid!==pe.draft.pid);
+  if(dup){ toast('标识 code 在组件内已存在'); return; }
+  let unit='',min='',max='',step='',scale='',def='';
+  const enumVals=pe.draft.enumVals||[];
+  if(type==='value'){
+    unit=q('[data-dcptunit]'); min=q('[data-dcptmin]'); max=q('[data-dcptmax]'); step=q('[data-dcptstep]'); scale=q('[data-dcptscale]'); def=q('[data-dcptdef]');
+    if(min!==''&&max!==''&&Number(min)>Number(max)){ toast('最小值不能大于最大值'); return; }
+  }else if(type==='enum'){
+    if(!enumVals.length){ toast('枚举型至少需要一个枚举值'); return; }
+    const dsel=document.querySelector('[data-dcptdef]'); def=dsel?dsel.value:'';
+  }else if(type==='bool'){
+    const dsel=document.querySelector('[data-dcptdef]'); def=dsel?dsel.value:'false';
+  }else{
+    def=q('[data-dcptdef]');
+  }
+  const reqEl=document.querySelector('[data-dcptrequired]');
+  const enEl=document.querySelector('[data-dcptenabled]');
+  const pt=dcClonePoint({pid:pe.draft.pid||dcNewPointId(),code:code,name:name,type:type,unit:unit,min:min,max:max,step:step,scale:scale,enumVals:enumVals,def:def,required:reqEl?reqEl.checked:false,enabled:enEl?enEl.checked:true});
+  if(pe.mode==='new'){
+    DC.edit.points=(DC.edit.points||[]).concat(pt);
+  }else{
+    DC.edit.points=(DC.edit.points||[]).map(x=>x.pid===pe.draft.pid?pt:x);
+  }
+  DC.pointEdit=null; rerender(); toast('数据点已保存');
+}
+function dcSaveCopyPoints(){
+  const cf=DC.copyFrom; if(!cf||!DC.edit) return;
+  const ids=Object.keys(cf.checked).filter(k=>cf.checked[k]);
+  const src=DC_COMP.find(c=>c.id===cf.src);
+  if(!src||!ids.length){ toast('请选择要复制的数据点'); return; }
+  const picked=(src.points||[]).filter(pt=>ids.indexOf(pt.pid)>=0);
+  let added=0;
+  picked.forEach(function(pt){
+    const c=dcClonePoint(pt); c.pid=dcNewPointId();
+    let code=c.code, n=1;
+    while((DC.edit.points||[]).some(x=>x.code===code)){ code=c.code+'_'+(n++); }
+    c.code=code;
+    DC.edit.points=(DC.edit.points||[]).concat(c); added++;
+  });
+  DC.copyFrom=null; rerender();
+  toast('已复制 '+added+' 个数据点');
 }
 function dcConfirmDo(){
   const c=DC.confirm; if(!c) return;
