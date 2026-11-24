@@ -1,0 +1,9 @@
+# WorkBuddy / editor workspace data
+.workbuddy/
+.root-preview-profile/
+
+# Generated export artifacts
+output/
+
+# OS metadata
+.DS_Store
