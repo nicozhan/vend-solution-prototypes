@@ -1,13 +1,223 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>VendSolution 产品原型</title>
-<meta http-equiv="refresh" content="0; url=vend-solution-reports.html#/analytics/overview/sales">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#F6F7FB">
+<title>VendSolution 原型演示</title>
+<style>
+  :root{
+    --brand:#2434C8; --brand-deep:#1B2AA6; --brand-tint:#EEF1FF; --brand-line:#D5DBFF;
+    --orange:#F97316; --ok:#12805C;
+    --ink:#0B102F; --ink-2:#5A6079; --ink-3:#8B91A8;
+    --line:#E6E8F0; --surface:#FFFFFF; --bg:#F6F7FB;
+    --r-card:20px; --r-ctl:12px;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html,body{min-height:100%}
+  body{
+    min-height:100dvh;background:var(--bg);color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",system-ui,sans-serif;
+    -webkit-font-smoothing:antialiased;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    padding:clamp(28px,5vh,64px) 20px calc(28px + env(safe-area-inset-bottom));
+  }
+  body::before{
+    content:"";position:fixed;inset:0;z-index:0;pointer-events:none;
+    background:
+      radial-gradient(760px 420px at 12% -8%,rgba(36,52,200,.09),transparent 70%),
+      radial-gradient(620px 380px at 92% 4%,rgba(249,115,22,.07),transparent 72%);
+  }
+  .wrap{position:relative;z-index:1;width:100%;max-width:880px}
+
+  /* 品牌行 */
+  .brand{display:flex;align-items:center;gap:11px}
+  .logo{
+    width:38px;height:38px;flex:0 0 auto;border-radius:11px;
+    background:linear-gradient(150deg,var(--brand),#4B5BEA);
+    color:#fff;font-size:15px;font-weight:800;letter-spacing:.5px;
+    display:flex;align-items:center;justify-content:center;
+    box-shadow:0 6px 16px rgba(36,52,200,.24)
+  }
+  .brand-name{font-size:15px;font-weight:700;letter-spacing:.2px}
+  .brand-sub{font-size:12px;color:var(--ink-3);line-height:16px}
+
+  /* 标题 */
+  .head{margin-top:clamp(26px,5vh,44px)}
+  .head h1{font-size:clamp(26px,4.4vw,34px);line-height:1.25;font-weight:800;letter-spacing:-.6px}
+  .head p{margin-top:12px;max-width:560px;color:var(--ink-2);font-size:14px;line-height:22px}
+
+  /* 卡片 */
+  .cards{margin-top:clamp(24px,4vh,36px);display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  .card{
+    position:relative;display:flex;flex-direction:column;
+    padding:22px;border-radius:var(--r-card);
+    background:var(--surface);border:1px solid var(--line);
+    text-decoration:none;color:inherit;
+    transition:transform .16s ease,border-color .16s ease,box-shadow .16s ease;
+  }
+  .card:hover{transform:translateY(-2px);border-color:var(--brand-line);box-shadow:0 14px 34px rgba(11,16,47,.09)}
+  .card:active{transform:translateY(0);box-shadow:0 4px 14px rgba(11,16,47,.07)}
+  .card:focus-visible{outline:2px solid var(--brand);outline-offset:3px}
+
+  .preview{
+    height:150px;border-radius:14px;background:linear-gradient(165deg,#F3F5FF,#EAEDFB);
+    display:flex;align-items:center;justify-content:center;overflow:hidden;margin-bottom:18px
+  }
+  /* 手机示意 */
+  .ph{
+    width:74px;height:126px;border-radius:13px;background:#fff;
+    border:1px solid #DDE1F2;box-shadow:0 8px 20px rgba(36,52,200,.12);
+    padding:6px 5px;display:flex;flex-direction:column;gap:4px
+  }
+  .ph-bar{height:5px;border-radius:3px;background:#E4E7F4}
+  .ph-hero{height:34px;border-radius:7px;background:linear-gradient(140deg,var(--brand),#5A69F0)}
+  .ph-row{height:9px;border-radius:4px;background:#EDEFF8}
+  .ph-row.short{width:62%}
+  .ph-dock{margin-top:auto;height:13px;border-radius:5px;background:#F0F2FA;display:flex;align-items:center;justify-content:space-around;padding:0 6px}
+  .ph-dock i{width:7px;height:3px;border-radius:2px;background:#C9CFE6}
+  .ph-dock i:first-child{background:var(--brand)}
+  /* 后台示意 */
+  .br{
+    width:192px;height:120px;border-radius:10px;background:#fff;
+    border:1px solid #DDE1F2;box-shadow:0 8px 20px rgba(36,52,200,.12);overflow:hidden
+  }
+  .br-top{height:18px;background:#F4F6FC;border-bottom:1px solid #E9ECF6;display:flex;align-items:center;gap:4px;padding:0 7px}
+  .br-top i{width:5px;height:5px;border-radius:50%;background:#D8DDEB}
+  .br-top span{margin-left:4px;height:7px;flex:1;border-radius:4px;background:#fff;border:1px solid #E9ECF6}
+  .br-body{display:flex;height:calc(100% - 18px)}
+  .br-side{width:40px;background:#F8F9FD;border-right:1px solid #EDEFF7;padding:7px 6px;display:flex;flex-direction:column;gap:5px}
+  .br-side i{height:6px;border-radius:3px;background:#E1E5F1}
+  .br-side i:first-child{background:var(--brand);opacity:.85}
+  .br-main{flex:1;padding:8px;display:flex;flex-direction:column;gap:6px}
+  .br-kpis{display:flex;gap:5px}
+  .br-kpis b{flex:1;height:22px;border-radius:5px;background:#F2F4FB;border:1px solid #EBEEF7}
+  .br-chart{flex:1;border-radius:6px;background:linear-gradient(180deg,#F7F8FE,#EFF2FB);border:1px solid #EBEEF7;position:relative;overflow:hidden}
+  .br-chart svg{display:block;width:100%;height:100%}
+
+  .card-tag{
+    position:absolute;top:16px;right:16px;height:22px;padding:0 9px;border-radius:999px;
+    display:inline-flex;align-items:center;font-size:11px;font-weight:600;letter-spacing:.2px
+  }
+  .tag-app{background:var(--brand-tint);color:var(--brand)}
+  .tag-web{background:#FFF2E8;color:#B4530F}
+
+  .card h2{font-size:18px;line-height:24px;font-weight:700;letter-spacing:-.2px}
+  .card .desc{margin-top:6px;color:var(--ink-2);font-size:13px;line-height:20px;flex:1}
+  .card .foot{margin-top:16px;display:flex;align-items:center;justify-content:space-between;gap:10px}
+  .domain{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12px;color:var(--ink-3)}
+  .go{
+    flex:0 0 auto;display:inline-flex;align-items:center;gap:6px;height:36px;padding:0 13px;
+    border-radius:10px;font-size:13px;font-weight:700
+  }
+  .card-app .go{background:var(--brand);color:#fff}
+  .card-web .go{background:#fff;color:var(--brand);border:1px solid var(--brand-line)}
+  .go svg{width:15px;height:15px}
+
+  /* 底部 */
+  .foot-note{
+    margin-top:clamp(24px,4vh,34px);padding-top:18px;border-top:1px solid var(--line);
+    display:flex;flex-wrap:wrap;align-items:center;gap:10px 18px;
+    font-size:12px;line-height:18px;color:var(--ink-3)
+  }
+  .foot-note .dot-sep{width:3px;height:3px;border-radius:50%;background:#C9CDDC}
+  .foot-note a{color:var(--ink-2);text-decoration:none;font-weight:600;border-bottom:1px solid var(--line)}
+  .foot-note a:hover{color:var(--brand);border-color:var(--brand-line)}
+
+  @media(max-width:680px){
+    .cards{grid-template-columns:1fr;gap:14px}
+    .preview{height:132px}
+    .card{padding:18px}
+    .card .foot{margin-top:14px}
+  }
+  /* 窄屏放不下完整 hash 路由，只保留文件名，完整地址在 title 里 */
+  @media(max-width:430px){
+    .d-hash{display:none}
+  }
+  @media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
 </head>
 <body>
-<p>正在打开主原型：<a href="vend-solution-reports.html#/analytics/overview/sales">vend-solution-reports.html#/analytics/overview/sales</a></p>
-<script>location.replace('vend-solution-reports.html#/analytics/overview/sales');</script>
+<div class="wrap">
+
+  <div class="brand">
+    <div class="logo">VS</div>
+    <div>
+      <div class="brand-name">VendSolution</div>
+      <div class="brand-sub">AIoT + SaaS 无人零售</div>
+    </div>
+  </div>
+
+  <div class="head">
+    <h1>选择要查看的版本</h1>
+    <p>同一套业务的两个端：App 给一线运维做设备巡检、补货和盘点，Web 后台给运营做商品、设备、订单与数据管理。</p>
+  </div>
+
+  <div class="cards">
+
+    <!-- APP：进入 Demo 外壳 navigation.html -->
+    <a class="card card-app" href="navigation.html" title="/navigation.html">
+      <span class="card-tag tag-app">移动端</span>
+      <div class="preview">
+        <div class="ph">
+          <div class="ph-bar"></div>
+          <div class="ph-hero"></div>
+          <div class="ph-row"></div>
+          <div class="ph-row"></div>
+          <div class="ph-row short"></div>
+          <div class="ph-dock"><i></i><i></i><i></i><i></i></div>
+        </div>
+      </div>
+      <h2>App · 运维端</h2>
+      <div class="desc">设备列表与详情、远程开锁、补货（单门 / 双门 / 咖啡机 / 售卖机）、库存盘点、告警与工单。</div>
+      <div class="foot">
+        <span class="domain" title="/navigation.html">/navigation.html</span>
+        <span class="go">打开 App
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 5 7 7-7 7"/></svg>
+        </span>
+      </div>
+    </a>
+
+    <!-- WEB 后台：本地原型页（非线上平台），默认落在「品牌型号与组件 · 品牌」 -->
+    <a class="card card-web" href="vend-solution-reports.html#/devicecfg/brand" target="_blank" rel="noopener" title="/vend-solution-reports.html#/devicecfg/brand">
+      <span class="card-tag tag-web">Web</span>
+      <div class="preview">
+        <div class="br">
+          <div class="br-top"><i></i><i></i><i></i><span></span></div>
+          <div class="br-body">
+            <div class="br-side"><i></i><i></i><i></i><i></i><i></i></div>
+            <div class="br-main">
+              <div class="br-kpis"><b></b><b></b><b></b></div>
+              <div class="br-chart">
+                <svg viewBox="0 0 120 44" preserveAspectRatio="none" aria-hidden="true">
+                  <path d="M0 36 L17 29 L33 32 L49 21 L65 25 L81 14 L97 18 L120 7" fill="none" stroke="#2434C8" stroke-opacity=".38" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+                  <path d="M0 36 L17 29 L33 32 L49 21 L65 25 L81 14 L97 18 L120 7 L120 44 L0 44 Z" fill="#2434C8" fill-opacity=".07"/>
+                </svg>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <h2>Web 后台 · 运营端</h2>
+      <div class="desc">默认进入「品牌型号与组件」；另有商品、机器、报表与分析、租户管理、系统设置。</div>
+      <div class="foot">
+        <span class="domain" title="/vend-solution-reports.html#/devicecfg/brand">/vend-solution-reports.html<span class="d-hash">#/devicecfg/brand</span></span>
+        <span class="go">打开后台
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 5 7 7-7 7"/></svg>
+        </span>
+      </div>
+    </a>
+
+  </div>
+
+  <div class="foot-note">
+    <span>46 个页面 · 纯前端模拟</span>
+    <span class="dot-sep"></span>
+    <a href="nav.html">浏览全部页面</a>
+    <span class="dot-sep"></span>
+    <a href="style-guide.html">设计规范</a>
+  </div>
+
+</div>
 </body>
 </html>

@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#2434c8">
+<title>我的 · VendSolution</title>
+<link rel="stylesheet" href="app-ui.css">
+<style>
+.my-profile{
+  padding:18px;border-radius:var(--r-card);background:var(--brand);color:#fff;
+  display:flex;align-items:center;gap:14px
+}
+.my-avatar{
+  width:56px;height:56px;flex:0 0 auto;border-radius:18px;background:#fff;color:var(--brand);
+  display:flex;align-items:center;justify-content:center;position:relative
+}
+.my-avatar .edit{
+  position:absolute;right:-3px;bottom:-3px;width:20px;height:20px;border-radius:50%;
+  background:var(--orange);box-shadow:0 0 0 2px var(--brand);color:#fff;
+  display:flex;align-items:center;justify-content:center
+}
+.my-id{min-width:0}
+.my-name{font-size:18px;line-height:24px;font-weight:700;letter-spacing:-.3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.my-email{margin-top:2px;font-size:12px;line-height:17px;color:rgba(255,255,255,.72);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.my-org{margin-top:1px;font-size:12px;line-height:17px;color:rgba(255,255,255,.9);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+</style>
+</head>
+<body>
+<main class="app">
+
+  <div class="status"><span>9:41</span><span class="status-icons"><span class="signal"><i></i><i></i><i></i><i></i></span><svg width="15" height="11" viewBox="0 0 16 12" fill="none"><path d="M1 4.2a10.5 10.5 0 0 1 14 0M3.5 6.8a6.7 6.7 0 0 1 9 0M6.2 9.4a2.7 2.7 0 0 1 3.6 0" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><circle cx="8" cy="11" r="1" fill="currentColor"/></svg><span class="battery"><i></i></span></span></div>
+
+  <header class="navbar">
+    <span class="nav-left"><button class="icon-btn" type="button" aria-label="返回" onclick="appBack(event)"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg></button></span>
+    <h1>我的</h1>
+    <span class="nav-right"></span>
+  </header>
+
+  <div class="body">
+
+    <section class="my-profile">
+      <div class="my-avatar">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="3.6"/><path d="M4.5 20c0-4 3.4-6.2 7.5-6.2s7.5 2.2 7.5 6.2"/></svg>
+        <span class="edit"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L19 9l-4-4L4 16v4Z"/></svg></span>
+      </div>
+      <div class="my-id">
+        <div class="my-name">Leo Venderful</div>
+        <div class="my-email">leo@vendsolution.ai</div>
+        <div class="my-org">Vendfone Team · Sydney Area 2</div>
+      </div>
+    </section>
+
+    <section class="card mt-12">
+      <div class="list">
+        <button class="item no-thumb" type="button">
+          <span class="item-body">
+            <span class="item-name">修改头像</span>
+          </span>
+          <svg class="item-go" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>
+        </button>
+        <button class="item no-thumb" type="button">
+          <span class="item-body">
+            <span class="item-name">语言</span>
+            <span class="item-sub">简体中文</span>
+          </span>
+          <svg class="item-go" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>
+        </button>
+        <button class="item no-thumb" type="button">
+          <span class="item-body">
+            <span class="item-name">用户指南</span>
+          </span>
+          <svg class="item-go" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>
+        </button>
+        <button class="item no-thumb" type="button">
+          <span class="item-body">
+            <span class="item-name">关于</span>
+            <span class="item-sub">Version 0.1.0</span>
+          </span>
+          <svg class="item-go" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>
+        </button>
+      </div>
+    </section>
+
+  </div>
+
+  <footer class="footer on-bg">
+    <button class="btn btn-danger-weak btn-block" type="button" id="logout">
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M15 17l5-5-5-5M20 12H9M12 20H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h6"/></svg>
+      退出登录
+    </button>
+  </footer>
+
+</main>
+<script>
+document.getElementById('logout').addEventListener('click',function(){
+  if(confirm('确认退出登录？'))appLogout();
+});
+</script>
+<script src="app-ui.js"></script>
+</body>
+</html>

@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#2434c8">
+<title>恢复处理 · VendSolution</title>
+<link rel="stylesheet" href="../app-ui.css">
+<style>
+.tk-back{display:inline-flex;align-items:center;gap:2px;height:44px;font-size:13px;font-weight:600;
+  color:var(--brand);white-space:nowrap}
+.tk-title{margin-top:9px;font-size:19px;line-height:26px;font-weight:800;letter-spacing:-.4px}
+.tk-meta{margin-top:5px;font-size:11.5px;line-height:16px;color:var(--text-3);letter-spacing:.2px}
+.tk-timer{margin-top:6px;font-size:30px;line-height:36px;font-weight:800;letter-spacing:-1px;font-variant-numeric:tabular-nums}
+.tk-sla-sub{display:flex;align-items:center;gap:6px;margin-top:3px;font-size:11.5px;line-height:16px;color:var(--text-2)}
+.tk-link{font-size:12px;font-weight:700;color:var(--brand);white-space:nowrap}
+.tk-note{display:flex;align-items:flex-start;gap:8px;padding:10px 12px;
+  border-radius:var(--r-ctl);background:var(--warn-bg);color:var(--warn);
+  font-size:12px;line-height:17px}
+.tk-note svg{margin-top:1px}
+.tk-note b{font-weight:700}
+.tk-rtext{display:block;min-width:0;flex:1}
+.tk-rsub{display:block;margin-top:2px;font-size:11.5px;line-height:16px;font-weight:400;color:var(--text-2)}
+.tk-frow{display:flex;gap:8px;margin-top:14px}
+.tk-frow .btn{flex:1}
+</style>
+</head>
+<body>
+<main class="app">
+
+  <div class="status"><span>9:41</span><span class="status-icons"><span class="signal"><i></i><i></i><i></i><i></i></span><svg width="15" height="11" viewBox="0 0 16 12" fill="none"><path d="M1 4.2a10.5 10.5 0 0 1 14 0M3.5 6.8a6.7 6.7 0 0 1 9 0M6.2 9.4a2.7 2.7 0 0 1 3.6 0" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><circle cx="8" cy="11" r="1" fill="currentColor"/></svg><span class="battery"><i></i></span></span></div>
+
+  <header class="navbar">
+    <span class="nav-left">
+      <a class="tk-back" href="ticket-detail.html" onclick="return appBack(event)">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>返回
+      </a>
+    </span>
+    <h1>工单详情</h1>
+    <span class="nav-right"></span>
+  </header>
+
+  <div class="body">
+
+    <section class="card">
+      <div class="card-body">
+        <div class="hstack" style="flex-wrap:wrap;gap:6px">
+          <span class="badge warn lg">等待反馈</span>
+          <span class="badge lg">P1 · 高优先级</span>
+        </div>
+        <h2 class="tk-title">咖啡机无法出杯</h2>
+        <div class="tk-meta">WO-20261022-001 · 创建时间 10-22 09:30</div>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="card-head">
+        <div class="card-title">SLA</div>
+        <span class="muted" style="font-size:12px">截止 10-22 18:00</span>
+      </div>
+      <div class="card-body">
+        <div class="tk-timer">02:15:30</div>
+        <div class="tk-sla-sub"><span class="dot" style="background:var(--warn)"></span>剩余处理时间 · SLA 持续计时</div>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="card-head">
+        <div class="card-title">设备与点位</div>
+        <span class="tk-link">导航 →</span>
+      </div>
+      <div class="card-body tight">
+        <div class="rows">
+          <div class="row"><dt>设备</dt><dd>CF-001</dd></div>
+          <div class="row"><dt>点位</dt><dd>上海 A 店</dd></div>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <div class="overlay open" id="mask">
+    <div class="sheet">
+
+      <div class="handle"></div>
+      <div class="sheet-head">
+        <h2>恢复处理</h2>
+        <button class="close" id="closeBtn" type="button" aria-label="关闭">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+
+      <div class="sheet-body">
+
+        <div class="tk-note">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 14"/></svg>
+          <div>当前等待原因：<b>等待配件</b><br>等待开始时间 10-22 11:05</div>
+        </div>
+
+        <div class="field mt-12">
+          <div class="field-label">反馈结果<span class="req">*</span></div>
+          <textarea class="textarea" id="fb" style="min-height:56px">已收到配件，准备继续维修。</textarea>
+        </div>
+
+        <div class="field">
+          <div class="field-label">是否已具备继续处理条件？<span class="req">*</span></div>
+          <div class="radios" id="readyGrp">
+            <button class="radio active" type="button" data-v="yes">
+              <span class="mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>
+              <span class="tk-rtext">是<span class="tk-rsub">工单恢复为「处理中」</span></span>
+            </button>
+            <button class="radio" type="button" data-v="no">
+              <span class="mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>
+              <span class="tk-rtext">否，继续等待<span class="tk-rsub">保持「等待反馈」，记录新的反馈</span></span>
+            </button>
+          </div>
+        </div>
+
+        <div class="tk-frow">
+          <button class="btn btn-ghost" id="cancelBtn" type="button">取消</button>
+          <button class="btn btn-primary" id="okBtn" type="button">确认恢复</button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast">已恢复处理</div>
+
+</main>
+
+<script>
+var toastEl = document.getElementById('toast');
+function toast(msg, ms){
+  toastEl.textContent = msg;
+  toastEl.classList.add('show');
+  setTimeout(function(){ toastEl.classList.remove('show'); }, ms || 1500);
+}
+function closeSheet(){ location.href = 'ticket-detail.html'; }
+
+var ready = 'yes';
+document.getElementById('readyGrp').addEventListener('click', function(e){
+  var r = e.target.closest('.radio'); if(!r) return;
+  this.querySelectorAll('.radio').forEach(function(x){ x.classList.remove('active'); });
+  r.classList.add('active');
+  ready = r.dataset.v;
+});
+
+document.getElementById('closeBtn').addEventListener('click', closeSheet);
+document.getElementById('cancelBtn').addEventListener('click', closeSheet);
+document.getElementById('mask').addEventListener('click', function(e){
+  if(e.target === this) closeSheet();
+});
+
+document.getElementById('okBtn').addEventListener('click', function(){
+  if(!document.getElementById('fb').value.trim()){ toast('请填写反馈结果'); return; }
+  toast(ready === 'yes' ? '已恢复处理' : '已记录反馈，继续等待');
+  setTimeout(function(){ location.href = 'ticket-detail.html'; }, 900);
+});
+</script>
+<script src="../app-ui.js"></script>
+</body>
+</html>
