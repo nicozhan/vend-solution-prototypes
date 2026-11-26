@@ -268,10 +268,10 @@
         var data=canvas.toDataURL('image/jpeg',0.86);
         save(data);render(data);closeSheet();toast('现场图片已更新');
       };
-      img.onerror=function(){toast('图片读取失败，请重试')};
+      img.onerror=function(){appAlert({title:'图片读取失败',desc:'文件可能已损坏，请重新选择图片',action:'重新选择',onAction:function(){input.removeAttribute('capture');input.click()}})};
       img.src=reader.result;
     };
-    reader.onerror=function(){toast('图片读取失败，请重试')};
+    reader.onerror=function(){appAlert({title:'图片读取失败',desc:'文件可能已损坏，请重新选择图片',action:'重新选择',onAction:function(){input.removeAttribute('capture');input.click()}})};
     reader.readAsDataURL(file);
   });
 })();

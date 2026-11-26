@@ -1,0 +1,770 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>页面过渡 Loading & 错误提示 · 移动端方案（各 2 套）</title>
+<style>
+:root{
+  --brand:#2434c8;--brand-deep:#1b299e;--brand-weak:#edf0ff;--brand-line:#dce2ff;
+  --orange:#ff7a00;
+  --ink:#0b102f;--text-2:#5d6480;--text-3:#8b92a8;
+  --bg:#eef0f6;--surface:#fff;--surface-2:#f5f6fa;--line:#e4e7ef;
+  --ok:#008f63;--ok-bg:#e8f7f1;--warn:#9a5e2a;--warn-bg:#fff4e8;
+  --danger:#d92d20;--danger-bg:#fff0ef;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","PingFang SC","Microsoft YaHei",sans-serif;
+  background:var(--bg);color:var(--ink);font-size:14.5px;line-height:1.62;-webkit-font-smoothing:antialiased;
+}
+code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px;background:#f1f3fa;padding:1px 5px;border-radius:5px;color:#2b3a8f}
+.shell{max-width:1180px;margin:0 auto;padding:0 22px 100px}
+
+/* ---------- 文档头 ---------- */
+.doc-head{padding:46px 0 26px;border-bottom:1px solid #dfe3ee}
+.kicker{display:flex;align-items:center;gap:8px;font-size:12px;font-weight:700;letter-spacing:.9px;color:var(--brand);text-transform:uppercase}
+.kicker i{width:18px;height:2px;background:var(--brand);border-radius:2px;display:block}
+.doc-head h1{margin-top:12px;font-size:32px;line-height:1.28;letter-spacing:-.8px;font-weight:800}
+.doc-head .sub{margin-top:10px;max-width:860px;font-size:15px;color:var(--text-2)}
+.meta{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px}
+.meta span{display:inline-flex;align-items:center;gap:6px;height:26px;padding:0 10px;border-radius:999px;background:#fff;border:1px solid var(--line);font-size:12px;font-weight:600;color:var(--text-2)}
+.meta b{color:var(--ink)}
+
+/* ---------- 目录 ---------- */
+.toc{display:grid;grid-template-columns:repeat(auto-fit,minmax(228px,1fr));gap:10px;margin:26px 0 8px}
+.toc a{display:flex;align-items:center;gap:10px;padding:11px 13px;border-radius:12px;background:#fff;border:1px solid var(--line);color:var(--ink);text-decoration:none;font-size:13px;font-weight:600}
+.toc a:hover{border-color:#c9d1f2;box-shadow:0 4px 14px rgba(36,52,200,.06)}
+.toc a em{flex:0 0 auto;width:22px;height:22px;border-radius:7px;background:var(--brand-weak);color:var(--brand);font-style:normal;font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center}
+
+/* ---------- 段落 ---------- */
+section{margin-top:48px;scroll-margin-top:20px}
+.sec-head{display:flex;align-items:baseline;gap:12px;padding-bottom:10px;border-bottom:1px solid #dfe3ee}
+.sec-num{font-size:13px;font-weight:800;color:var(--brand);letter-spacing:.4px}
+.sec-head h2{font-size:22px;line-height:1.3;letter-spacing:-.4px;font-weight:800}
+.sec-head .hint{margin-left:auto;font-size:12px;color:var(--text-3)}
+h3{margin-top:26px;font-size:16px;font-weight:800;letter-spacing:-.2px}
+h4{margin-top:18px;font-size:14px;font-weight:800;color:#2a3150}
+p{margin-top:10px;color:#2e3450}
+.lead{font-size:15.5px;color:#353c5c}
+ul,ol{margin:10px 0 0 20px}
+li{margin-top:6px;color:#2e3450}
+li::marker{color:#9aa4c8}
+.small{font-size:12.5px;color:var(--text-2)}
+.tiny{font-size:11.5px;color:var(--text-3)}
+
+/* ---------- 诊断卡 ---------- */
+.diag{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:18px}
+.dcard{background:#fff;border:1px solid var(--line);border-radius:14px;padding:15px 16px}
+.dcard .n{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:800;letter-spacing:.4px;color:var(--danger)}
+.dcard .n.fix{color:var(--ok)}
+.dcard h4{margin-top:6px;font-size:14.5px}
+.dcard p{margin-top:6px;font-size:12.5px;line-height:1.58;color:var(--text-2)}
+@media(max-width:820px){.diag{grid-template-columns:1fr}}
+
+/* ---------- 方案布局 ---------- */
+.opt{display:grid;grid-template-columns:390px 1fr;gap:34px;margin-top:22px;align-items:start}
+@media(max-width:940px){.opt{grid-template-columns:1fr;gap:20px}}
+.opt.left{grid-template-columns:1fr 390px}
+.opt.left .spec{order:2}
+@media(max-width:940px){.opt.left .spec{order:0}}
+.spec h4:first-child{margin-top:0}
+.spec .rowlist{margin-top:10px;display:grid;gap:0;border:1px solid var(--line);border-radius:12px;overflow:hidden;background:#fff}
+.rowlist .r{display:grid;grid-template-columns:96px 1fr;gap:12px;padding:9px 12px;border-bottom:1px solid #eef0f7;font-size:12.5px}
+.rowlist .r:last-child{border-bottom:0}
+.rowlist .r span{color:var(--text-3);font-weight:600}
+.rowlist .r b{font-weight:600;color:#2e3450}
+.pill{display:inline-flex;align-items:center;height:20px;padding:0 8px;border-radius:6px;font-size:10.5px;font-weight:800;letter-spacing:.2px;white-space:nowrap}
+.pill.p0{background:var(--brand-weak);color:var(--brand)}
+.pill.ok{background:var(--ok-bg);color:var(--ok)}
+.pill.warn{background:var(--warn-bg);color:var(--warn)}
+.pill.no{background:#f4f5f9;color:#7a819c}
+.pill.dgr{background:var(--danger-bg);color:var(--danger)}
+
+/* ---------- 手机 ---------- */
+.phone-wrap{position:sticky;top:18px}
+@media(max-width:460px){
+  .phone-wrap{position:static}
+  .phone{width:100%;max-width:390px}
+  .spec .rowlist .r{grid-template-columns:84px 1fr}
+}
+.phone{
+  position:relative;width:390px;height:720px;border-radius:34px;background:#fff;overflow:hidden;
+  box-shadow:0 22px 60px rgba(11,16,47,.16),0 0 0 1px #dfe3ee;
+}
+.phone .sb{height:28px;display:flex;align-items:center;justify-content:space-between;padding:4px 20px 0;font-size:12px;font-weight:700;background:#fff;position:relative;z-index:3}
+.sb .icons{display:flex;align-items:center;gap:5px}
+.sig{width:16px;height:10px;display:flex;align-items:flex-end;gap:1.5px}
+.sig i{display:block;width:3px;border-radius:1px;background:currentColor}
+.sig i:nth-child(1){height:4px}.sig i:nth-child(2){height:6px}.sig i:nth-child(3){height:8px}.sig i:nth-child(4){height:10px}
+.bat{position:relative;width:21px;height:10px;padding:1px;border:1.5px solid currentColor;border-radius:3px}
+.bat::after{content:"";position:absolute;right:-3px;top:2px;width:2px;height:4px;background:currentColor;border-radius:0 1px 1px 0}
+.bat i{display:block;width:80%;height:100%;border-radius:1px;background:currentColor}
+.nav{height:52px;display:grid;grid-template-columns:44px 1fr 44px;align-items:center;padding:0 6px;background:#fff;border-bottom:1px solid #f0f2f8;position:relative;z-index:2}
+.nav .bk{width:32px;height:32px;display:flex;align-items:center;justify-content:center;color:var(--ink);font-size:17px}
+.nav .tt{text-align:center;font-size:16px;font-weight:700;letter-spacing:-.2px}
+.nav .rt{display:flex;justify-content:center;color:var(--text-2);font-size:16px}
+.pbody{position:absolute;inset:80px 0 0;overflow:hidden;background:#f5f6fa}
+.pbody .inner{padding:12px 14px 20px;display:grid;gap:10px}
+.card{background:#fff;border-radius:16px;padding:12px 14px}
+.card .ch{display:flex;align-items:center;justify-content:space-between;font-size:12px;font-weight:700;color:var(--text-3);letter-spacing:.2px}
+.kv{display:flex;align-items:center;justify-content:space-between;padding:9px 0;border-bottom:1px solid #f2f4f9;font-size:13px}
+.kv:last-child{border-bottom:0}
+.kv span{color:var(--text-2)}
+.kv b{font-weight:600}
+.btns{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+.btn-h{height:44px;border-radius:12px;background:var(--brand);color:#fff;font-size:14px;font-weight:700;display:flex;align-items:center;justify-content:center}
+.btn-g{height:44px;border-radius:12px;background:var(--surface-2);color:var(--ink);font-size:14px;font-weight:600;display:flex;align-items:center;justify-content:center}
+.li{display:flex;align-items:center;gap:10px;padding:12px 14px;background:#fff;border-bottom:1px solid #f2f4f9}
+.li .av{width:38px;height:38px;border-radius:11px;background:var(--brand-weak);color:var(--brand);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800}
+.li .tx{flex:1;min-width:0}
+.li .tx b{display:block;font-size:13.5px;font-weight:600}
+.li .tx em{display:block;font-style:normal;font-size:11.5px;color:var(--text-3);margin-top:1px}
+.li .st{font-size:11px;font-weight:700;color:var(--ok)}
+.li .st.off{color:var(--text-3)}
+.replay{display:inline-flex;align-items:center;gap:7px;margin-top:12px;height:34px;padding:0 13px;border-radius:10px;background:#fff;border:1px solid var(--line);font-size:12px;font-weight:700;color:var(--ink);cursor:pointer}
+.replay:hover{border-color:#c9d1f2;background:#fbfcff}
+.replay svg{width:13px;height:13px}
+.hintline{margin-top:8px;font-size:11.5px;color:var(--text-3)}
+
+/* ===== L-A 遮罩 ===== */
+.ldA{position:absolute;inset:80px 0 0;z-index:8;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  background:radial-gradient(120% 90% at 50% 30%,#fff 0%,#fbfcff 46%,#f2f5ff 100%)}
+.ldA .glow{position:absolute;width:180px;height:180px;border-radius:50%;background:radial-gradient(circle,rgba(36,52,200,.13),rgba(36,52,200,0) 62%)}
+.ldA .mark{position:relative;width:56px;height:56px;display:flex;align-items:center;justify-content:center}
+.ldA .mark img{width:56px;height:56px;object-fit:contain}
+.ldA .dots{display:flex;gap:8px;margin-top:22px}
+.ldA .dots i{width:6px;height:6px;border-radius:50%;background:var(--brand);opacity:.3}
+.ldA .txt{margin-top:14px;font-size:11.5px;font-weight:600;letter-spacing:.4px;color:var(--text-3)}
+
+/* ===== L-B 骨架 ===== */
+.skB{position:absolute;inset:80px 0 0;z-index:7;background:#f5f6fa;padding:12px 14px;display:grid;gap:10px;align-content:start}
+.skB .bar{position:absolute;top:0;left:0;right:0;height:2px;background:#e7eaf5;overflow:hidden;z-index:9}
+.skB .bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--brand),#4f68ff 60%,var(--orange));border-radius:0 2px 2px 0}
+.skB .topmark{display:none}
+.skB .skHead{display:flex;align-items:center;gap:6px;margin:-1px 0 11px}
+.skB .skHead img{width:16px;height:16px;object-fit:contain;opacity:.9}
+.skB .skHead span{font-size:11px;font-weight:700;color:var(--brand);letter-spacing:.1px}
+.skB .blk{background:#fff;border-radius:14px;padding:12px 14px}
+.skB .ln{height:11px;border-radius:6px;background:linear-gradient(90deg,#eceff7 25%,#f7f8fc 37%,#eceff7 63%);background-size:400% 100%;animation:shimmer 1.4s ease-in-out infinite}
+.skB .ln.sm{width:38%}.skB .ln.md{width:62%}.skB .ln.lg{width:84%;height:14px}
+.skB .ln+.ln{margin-top:9px}
+.skB .tall{height:64px;border-radius:10px;margin-top:10px}
+@keyframes shimmer{0%{background-position:100% 0}100%{background-position:-100% 0}}
+.ldTitle{position:absolute;top:16px;left:0;right:0;text-align:center;font-size:11.5px;font-weight:600;color:var(--text-3);letter-spacing:.4px}
+
+/* ===== E-A 顶部横幅 ===== */
+.bnWrap{position:absolute;top:88px;left:12px;right:12px;z-index:12}
+.banner{display:flex;gap:10px;align-items:flex-start;padding:12px 12px 12px 12px;border-radius:14px;background:#fff;
+  box-shadow:0 12px 30px rgba(11,16,47,.16),0 1px 0 rgba(11,16,47,.04);border:1px solid #eef0f7;position:relative;overflow:hidden}
+.banner::before{content:"";position:absolute;left:0;top:10px;bottom:10px;width:3px;border-radius:0 3px 3px 0;background:var(--danger)}
+.banner.wa::before{background:#e0a03a}
+.banner.ok::before{background:var(--ok)}
+.banner .ic{flex:0 0 26px;width:26px;height:26px;border-radius:9px;background:var(--danger-bg);color:var(--danger);display:flex;align-items:center;justify-content:center;margin-left:4px}
+.banner.wa .ic{background:var(--warn-bg);color:#b4560c}
+.banner.ok .ic{background:var(--ok-bg);color:var(--ok)}
+.banner .ic svg{width:14px;height:14px}
+.banner .cp{flex:1;min-width:0;padding-right:2px}
+.banner .cp b{display:block;font-size:13px;font-weight:700;line-height:18px;letter-spacing:-.1px}
+.banner .cp p{font-size:11.5px;line-height:16px;color:var(--text-2);margin-top:2px}
+.banner .act{flex:0 0 auto;display:flex;align-items:center;gap:2px;margin-top:1px}
+.banner .act button{height:26px;padding:0 7px;border-radius:8px;font-size:12px;font-weight:700;color:var(--brand);background:transparent;border:0;cursor:pointer;font-family:inherit}
+.banner .act .x{color:var(--text-3);font-size:15px;font-weight:400;padding:0 4px}
+.banner .meter{position:absolute;left:0;bottom:0;height:2px;background:rgba(217,45,32,.22);width:100%}
+.bannerstack{position:absolute;top:88px;left:12px;right:12px;z-index:12;display:grid;gap:8px}
+
+/* ===== E-B 下拉卡片 ===== */
+.maskB{position:absolute;inset:0;z-index:10;background:rgba(11,16,47,.30);opacity:0}
+.sheetB{position:absolute;top:0;left:0;right:0;z-index:11;background:#fff;border-radius:0 0 22px 22px;padding:8px 20px 18px;
+  box-shadow:0 20px 44px rgba(11,16,47,.26);transform:translateY(-100%)}
+.sheetB .grab{width:36px;height:4px;border-radius:2px;background:#dde1ec;margin:0 auto 12px}
+.sheetB .ic{width:40px;height:40px;border-radius:13px;background:var(--danger-bg);color:var(--danger);display:flex;align-items:center;justify-content:center;margin:0 auto}
+.sheetB .ic svg{width:21px;height:21px}
+.sheetB h3{margin-top:11px;text-align:center;font-size:16px;font-weight:800;letter-spacing:-.2px}
+.sheetB p{margin-top:6px;text-align:center;font-size:12.5px;line-height:18px;color:var(--text-2)}
+.sheetB .meta{justify-content:center;margin-top:9px;font-size:11px;color:var(--text-3);font-weight:600;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:0}
+.sheetB .b1{height:44px;border-radius:12px;background:var(--brand);color:#fff;font-size:14px;font-weight:700;display:flex;align-items:center;justify-content:center;margin-top:16px;width:100%;border:0;font-family:inherit;cursor:pointer}
+.sheetB .b2{height:44px;border-radius:12px;background:transparent;color:var(--text-2);font-size:13px;font-weight:600;display:flex;align-items:center;justify-content:center;margin-top:6px;width:100%;border:0;font-family:inherit;cursor:pointer}
+
+/* ===== 动画：只在 .run 下播放 ===== */
+.demo .ldA{opacity:0}
+.demo.run .ldA{animation:ldA_seq 2.4s ease both}
+@keyframes ldA_seq{0%{opacity:1}86%{opacity:1}100%{opacity:0}}
+.demo.run .ldA .mark{animation:mkBreath 1.5s ease-in-out infinite}
+@keyframes mkBreath{0%,100%{transform:scale(1)}50%{transform:scale(1.045)}}
+.demo.run .ldA .glow{animation:glowPulse 1.8s ease-in-out infinite}
+@keyframes glowPulse{0%,100%{opacity:.55;transform:scale(.94)}50%{opacity:1;transform:scale(1.06)}}
+.demo.run .ldA .dots i{animation:dotUp 1.05s ease-in-out infinite}
+.demo.run .ldA .dots i:nth-child(2){animation-delay:.14s}
+.demo.run .ldA .dots i:nth-child(3){animation-delay:.28s}
+@keyframes dotUp{0%,70%,100%{opacity:.26;transform:translateY(0) scale(.9)}35%{opacity:1;transform:translateY(-2px) scale(1)}}
+
+.demo .skB{opacity:0}
+.demo.run .skB{animation:skB_seq 2s ease both}
+@keyframes skB_seq{0%{opacity:1}78%{opacity:1}100%{opacity:0}}
+.demo.run .skB .bar i{animation:barGrow 1.5s cubic-bezier(.25,.75,.35,1) both}
+@keyframes barGrow{0%{width:0}62%{width:86%}100%{width:100%}}
+.demo.run .skB .bar{animation:barFade .3s 1.55s ease both}
+@keyframes barFade{0%{opacity:1}100%{opacity:0}}
+
+.demo.run .bnWrap{animation:bnIn .34s cubic-bezier(.18,.9,.24,1) both,bnOut .3s 3.4s cubic-bezier(.4,0,.6,1) both}
+@keyframes bnIn{0%{opacity:0;transform:translateY(-118%)}100%{opacity:1;transform:translateY(0)}}
+@keyframes bnOut{0%{opacity:1;transform:translateY(0)}100%{opacity:0;transform:translateY(-118%)}}
+.demo.run .banner .meter i{display:block;height:100%;width:100%;background:rgba(217,45,32,.55);transform-origin:left;animation:mtr 3.4s linear both}
+@keyframes mtr{0%{transform:scaleX(1)}100%{transform:scaleX(0)}}
+
+.demo.run .maskB{animation:mkIn .22s ease both}
+@keyframes mkIn{0%{opacity:0}100%{opacity:1}}
+.demo.run .sheetB{animation:shIn .42s cubic-bezier(.16,1,.3,1) both}
+@keyframes shIn{0%{transform:translateY(-100%)}100%{transform:translateY(0)}}
+
+/* ---------- 时间轴 ---------- */
+.tl{margin-top:14px;border:1px solid var(--line);border-radius:12px;background:#fff;padding:14px 14px 12px}
+.tl .track{position:relative;height:34px;margin-top:8px}
+.tl .track .axis{position:absolute;left:0;right:0;top:16px;height:1px;background:#e7eaf5}
+.tl .seg{position:absolute;top:8px;height:16px;border-radius:5px;font-size:10px;font-weight:800;color:#fff;display:flex;align-items:center;justify-content:center;letter-spacing:.2px}
+.tl .labels{display:flex;justify-content:space-between;font-size:10.5px;color:var(--text-3);font-weight:600;margin-top:2px;font-variant-numeric:tabular-nums}
+
+/* ---------- 表格 ---------- */
+.tbl-wrap{margin-top:14px;border:1px solid var(--line);border-radius:14px;background:#fff;overflow:auto}
+table{border-collapse:collapse;width:100%;font-size:12.8px;min-width:660px}
+thead th{position:sticky;top:0;z-index:1;background:#f7f8fc;text-align:left;font-weight:700;color:#3a4166;padding:10px 12px;border-bottom:1px solid var(--line);white-space:nowrap;font-size:12px}
+tbody td{padding:10px 12px;border-bottom:1px solid #eef0f7;vertical-align:top;color:#2e3450}
+tbody tr:last-child td{border-bottom:0}
+tbody tr:hover{background:#fbfcff}
+td.num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+
+/* ---------- 结论 ---------- */
+.verdict{background:#fff;border:1px solid var(--line);border-radius:16px;padding:18px 20px;margin-top:18px}
+.verdict .vt{display:flex;align-items:center;gap:8px;font-size:11px;font-weight:800;letter-spacing:.6px;color:var(--brand)}
+.verdict h4{margin-top:8px;font-size:15.5px}
+.verdict p{margin-top:7px;font-size:13px;color:#353c5c}
+.verdict .picks{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.verdict .picks span{display:inline-flex;align-items:center;gap:6px;height:26px;padding:0 10px;border-radius:8px;background:var(--brand-weak);color:var(--brand);font-size:11.5px;font-weight:700}
+
+/* ---------- 文案对照 ---------- */
+.copy{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px}
+@media(max-width:820px){.copy{grid-template-columns:1fr}}
+.copy .c{border:1px solid var(--line);border-radius:12px;padding:13px 14px;background:#fff}
+.copy .c.no{border-color:#f3d4d1;background:#fffafa}
+.copy .c .h{font-size:11px;font-weight:800;letter-spacing:.4px}
+.copy .c.no .h{color:var(--danger)}
+.copy .c.yes .h{color:var(--ok)}
+.copy .c ul{margin-top:8px}
+.copy .c li{font-size:12.5px;margin-top:5px}
+</style>
+</head>
+<body>
+<div class="shell">
+
+  <header class="doc-head">
+    <div class="kicker"><i></i>Mobile App · Loading &amp; Error</div>
+    <h1>页面过渡 Loading 与错误提示<br>各 2 套移动端方案</h1>
+    <p class="sub">现网两个体验缺口：①页面切换时 iframe 整体重建，中间会白一下；②出错时从屏幕中间弹一个深色胶囊，既遮内容又没法操作。以下 4 套方案只做设计，不改任何页面代码。</p>
+    <div class="meta">
+      <span>画布 <b>390 × 844</b></span>
+      <span>基准品牌色 <b>#2434C8</b></span>
+      <span>强调色 <b>#FF7A00</b></span>
+      <span>方案数 <b>2 + 2</b></span>
+      <span>状态 <b>方案 A + C 已落地</b></span>
+    </div>
+  </header>
+
+  <nav class="toc">
+    <a href="#diag"><em>0</em>现状诊断</a>
+    <a href="#la"><em>A</em>过渡 · Logo 呼吸三点</a>
+    <a href="#lb"><em>B</em>过渡 · 骨架 + 顶部进度</a>
+    <a href="#lcmp"><em>1</em>过渡方案对比</a>
+    <a href="#ea"><em>C</em>错误 · 顶部横幅</a>
+    <a href="#eb"><em>D</em>错误 · 顶部下拉卡片</a>
+    <a href="#level"><em>2</em>错误分级与文案</a>
+    <a href="#ecmp"><em>3</em>结论与参数</a>
+  </nav>
+
+  <section id="diag">
+    <div class="sec-head"><span class="sec-num">00</span><h2>现状诊断</h2><span class="hint">为什么要换掉现在的做法</span></div>
+    <p class="lead">两个问题都不是"美化"问题，而是"信息缺失"问题：用户不知道是不是卡死了，也不知道出错了该点哪里。</p>
+
+    <div class="diag">
+      <div class="dcard">
+        <div class="n">问题 01</div>
+        <h4>切换页面有白屏闪</h4>
+        <p>每次打开原型页都会重建 iframe，旧页先被移除、新页还没渲染，中间是一帧纯白。弱网或页面较重时，这帧能停留 300–800ms，看起来像"点了没反应"。</p>
+      </div>
+      <div class="dcard">
+        <div class="n">问题 02</div>
+        <h4>错误提示是居中黑块</h4>
+        <p>深色胶囊居中弹出，正好压在用户正在看的内容上；没有图标、没有标题、没有"重试"，2 秒后自己消失，用户连发生了什么都没看清。</p>
+      </div>
+      <div class="dcard">
+        <div class="n">问题 03</div>
+        <h4>所有错误长得一样</h4>
+        <p>网络抖动、提交失败、开锁失败、登录过期都走同一个提示。用户无法判断"要不要重来"，也无法区分"我的操作错了"还是"系统出问题了"。</p>
+      </div>
+    </div>
+
+    <h3>四条设计原则</h3>
+    <ul>
+      <li><b>不遮内容。</b>提示只能占用边缘（顶部 / 底部）的窄带，绝不落在视觉中心。</li>
+      <li><b>先给答案，再给动作。</b>标题说"发生了什么"，副文案说"下一步做什么"，右侧永远有一个可点的动作。</li>
+      <li><b>时长与错误等级绑定。</b>轻错误自动收，重错误等用户确认，不替用户做决定。</li>
+      <li><b>品牌只在这种空隙里出现。</b>加载是唯一适合放 Logo 的时机，但要克制：一个标记 + 三点，不做开屏动画。</li>
+    </ul>
+  </section>
+
+  <section id="la">
+    <div class="sec-head"><span class="sec-num">方案 A</span><h2>过渡 Loading · 品牌居中版</h2><span class="hint">Logo + 三点 · 全屏遮罩</span></div>
+    <p>整块浅色遮罩盖住 iframe 区域，正中是 56px 品牌标记（蓝色方框 + 橙色勾），下方三点依次亮起，底部一行小字"正在加载"。这是最稳、最容易做对的一版：品牌露出、进度感、白屏被彻底盖住。</p>
+
+    <div class="opt">
+      <div class="phone-wrap">
+        <div class="phone demo" id="demoA">
+          <div class="sb"><span>9:41</span><span class="icons"><span class="sig"><i></i><i></i><i></i><i></i></span><span class="bat"><i></i></span></span></div>
+          <div class="nav"><div class="bk">‹</div><div class="tt">设备详情</div><div class="rt">⋯</div></div>
+
+          <div class="pbody">
+            <div class="inner">
+              <div class="card">
+                <div class="ch"><span>远程控制</span><span>VM-1001</span></div>
+                <div class="btns"><div class="btn-h">左门开锁</div><div class="btn-g">右门开锁</div></div>
+              </div>
+              <div class="card">
+                <div class="ch"><span>设备状态</span><span>在线</span></div>
+                <div class="kv"><span>柜内温度</span><b>4.2 ℃</b></div>
+                <div class="kv"><span>库存 SKU</span><b>18 / 24</b></div>
+                <div class="kv"><span>最近补货</span><b>11-24 14:20</b></div>
+              </div>
+              <div class="card">
+                <div class="ch"><span>今日销售</span><span>较昨日 +8%</span></div>
+                <div class="kv"><span>订单 / 金额</span><b>42 单 · ¥386.00</b></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="ldA">
+            <div class="glow"></div>
+            <div class="mark"><img src="assets/logo.png" alt=""></div>
+            <div class="dots"><i></i><i></i><i></i></div>
+            <div class="txt">正在加载</div>
+          </div>
+        </div>
+        <button class="replay" onclick="replay('demoA')">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M2.5 8a5.5 5.5 0 1 0 1.9-4.2"/><path d="M2.2 2.4v3.4h3.4"/></svg>
+          重播过渡
+        </button>
+        <div class="hintline">遮罩 → 加载 → 180ms 淡出，约 2.4s 一轮</div>
+      </div>
+
+      <div class="spec">
+        <h4>结构与层级</h4>
+        <div class="rowlist">
+          <div class="r"><span>遮罩范围</span><b>iframe 区域（状态栏 / 导航栏之外），不盖外壳</b></div>
+          <div class="r"><span>背景</span><b>#FFF → #F2F5FF 径向渐变，中心微亮</b></div>
+          <div class="r"><span>品牌标记</span><b>56 × 56，原始 Logo，四周 180px 柔光</b></div>
+          <div class="r"><span>三点</span><b>6px 圆点 / 间距 8px / 品牌蓝</b></div>
+          <div class="r"><span>状态文案</span><b>11.5px · #9AA1B7 · "正在加载"</b></div>
+        </div>
+
+        <h4 style="margin-top:20px">动效节奏</h4>
+        <div class="tl">
+          <div class="track">
+            <div class="axis"></div>
+            <div class="seg" style="left:0;width:8%;background:#2434c8;border-radius:5px 0 0 5px"></div>
+            <div class="seg" style="left:8%;width:74%;background:#3a4ddb">遮罩常驻 · 三点 1.05s 循环（错峰 140ms）</div>
+            <div class="seg" style="left:82%;width:18%;background:#8f9adf;color:#1b299e">淡出</div>
+          </div>
+          <div class="labels"><span>0ms</span><span>320ms 起可撤</span><span>2200ms</span><span>2400ms</span></div>
+        </div>
+        <div class="rowlist" style="margin-top:10px">
+          <div class="r"><span>最短展示</span><b>320ms（低于则直接跳过，避免闪一下）</b></div>
+          <div class="r"><span>淡出</span><b>opacity 1 → 0，180ms，同时内容 scale .995 → 1</b></div>
+          <div class="r"><span>超过 2s</span><b>文案换成「网络较慢，仍在加载」</b></div>
+          <div class="r"><span>超过 8s</span><b>停止转圈，转顶部错误横幅（见方案 C）</b></div>
+          <div class="r"><span>减弱动效</span><b>三点静止常亮，仅保留文案</b></div>
+        </div>
+
+        <h4 style="margin-top:20px">适用 / 代价</h4>
+        <p class="small"><span class="pill p0">适合</span> 跨模块进入、首屏、扫码后跳转、补货流程开始——这些场景用户愿意等 1 秒，也需要知道"是同一个 App 在干活"。</p>
+        <p class="small"><span class="pill warn">代价</span> 列表 ↔ 详情来回切时会显得"重"，如果每次都要盖 300ms 以上，高频操作会觉得被拖住。所以必须配最短时长上限，且不叠加在已有遮罩上。</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="lb">
+    <div class="sec-head"><span class="sec-num">方案 B</span><h2>过渡 Loading · 骨架先行版</h2><span class="hint">骨架屏 + 顶部 2px 进度 · Logo 退到角标</span></div>
+    <p>不盖大遮罩。页面骨架（标题条、卡片块、列表行）立刻出现，顶部一条 2px 品牌渐变进度从左走到右；Logo 缩成 16px，和「正在载入点位」并排占住骨架第一行——品牌在场，但不占额外的屏。体感比 A 快，因为没有"先擦干净再画"的过程。</p>
+
+    <div class="opt left">
+      <div class="spec">
+        <h4>为什么这版体感更快</h4>
+        <p>用户判断"快不快"看的是<b>第一帧有没有内容</b>，而不是总耗时。骨架在第一帧就有结构，视觉上等于"已经在加载了"；A 方案的第一帧是一块留白 + 小 Logo，虽然精致，但心理上还是"在等"。</p>
+
+        <h4 style="margin-top:20px">结构与层级</h4>
+        <div class="rowlist">
+          <div class="r"><span>顶部进度</span><b>2px，横贯内容区，品牌蓝 → 橙渐变</b></div>
+          <div class="r"><span>进度曲线</span><b>0 → 86%（1.5s 缓出）→ 100%（加载完成瞬间）</b></div>
+          <div class="r"><span>骨架块</span><b>3 组：14px 标题 / 11px 两行 / 64px 图形区，圆角 14 / 6</b></div>
+          <div class="r"><span>闪动</span><b>1.4s 循环，明暗差 #ECEFF7 ↔ #F7F8FC（很轻）</b></div>
+          <div class="r"><span>Logo 位置</span><b>16 × 16 + 「正在载入点位」11px 品牌蓝，占骨架首行，随骨架一起淡出</b></div>
+        </div>
+
+        <h4 style="margin-top:20px">动效节奏</h4>
+        <div class="tl">
+          <div class="track">
+            <div class="axis"></div>
+            <div class="seg" style="left:0;width:70%;background:#2434c8">骨架常驻 · 进度 0 → 86%</div>
+            <div class="seg" style="left:70%;width:12%;background:#ff7a00">冲到 100%</div>
+            <div class="seg" style="left:82%;width:18%;background:#c9cee8;color:#5d6480">交叉淡出</div>
+          </div>
+          <div class="labels"><span>0ms</span><span>1500ms</span><span>1800ms</span><span>2000ms</span></div>
+        </div>
+        <div class="rowlist" style="margin-top:10px">
+          <div class="r"><span>骨架帧数</span><b>骨架形状必须和真实页面同构（卡片数一致），否则会出现"跳版"</b></div>
+          <div class="r"><span>交叉淡出</span><b>骨架 opacity 1→0 / 内容 0→1，250ms 重叠，无白帧</b></div>
+          <div class="r"><span>失败处理</span><b>骨架原地换成内联错误块（图标 + 一句话 + 重试），同时顶部横幅轻提示</b></div>
+          <div class="r"><span>超过 1.5s</span><b>进度停在 86% 不动，文案「仍在加载」，不再假装在走</b></div>
+        </div>
+
+        <h4 style="margin-top:20px">适用 / 代价</h4>
+        <p class="small"><span class="pill ok">适合</span> 列表 ↔ 详情、Tab 切换、筛选后重载——所有高频、可预期的跳转。</p>
+        <p class="small"><span class="pill warn">代价</span> 每个页面都要写一份骨架，前期工作量比 A 大；骨架做得不像真实页面时，反而比白屏更"跳"。建议先只给 4 个核心页（点位列表 / 商品列表 / 设备详情 / 补货）做。</p>
+      </div>
+
+      <div class="phone-wrap">
+        <div class="phone demo" id="demoB">
+          <div class="sb"><span>9:41</span><span class="icons"><span class="sig"><i></i><i></i><i></i><i></i></span><span class="bat"><i></i></span></span></div>
+          <div class="nav"><div class="bk">‹</div><div class="tt">点位详情</div><div class="rt">⋯</div></div>
+
+          <div class="pbody">
+            <div class="inner">
+              <div class="card">
+                <div class="ch"><span>基本信息</span><span>8 台设备</span></div>
+                <div class="kv"><span>点位编号</span><b>ST-0031</b></div>
+                <div class="kv"><span>地址</span><b>滨江路 88 号 1F</b></div>
+                <div class="kv"><span>负责人</span><b>李伟 · 138****2210</b></div>
+              </div>
+              <div class="li"><div class="av">VM</div><div class="tx"><b>VM-1001 自动售货机</b><em>库存 18/24 · 在线</em></div><div class="st">正常</div></div>
+              <div class="li"><div class="av">CM</div><div class="tx"><b>CM-2001 咖啡机</b><em>缺水 · 30 分钟前</em></div><div class="st off">告警</div></div>
+            </div>
+          </div>
+
+          <div class="skB">
+            <div class="bar"><i></i></div>
+            <div class="blk"><div class="skHead"><img src="assets/logo.png" alt=""><span>正在载入点位</span></div><div class="ln md"></div><div class="ln sm"></div><div class="ln tall"></div></div>
+            <div class="blk"><div class="ln md"></div><div class="ln lg"></div><div class="ln sm"></div></div>
+            <div class="blk"><div class="ln sm"></div><div class="ln lg"></div></div>
+          </div>
+        </div>
+        <button class="replay" onclick="replay('demoB')">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M2.5 8a5.5 5.5 0 1 0 1.9-4.2"/><path d="M2.2 2.4v3.4h3.4"/></svg>
+          重播过渡
+        </button>
+        <div class="hintline">骨架 → 进度 100% → 交叉淡出，约 2s 一轮</div>
+      </div>
+    </div>
+  </section>
+
+  <section id="lcmp">
+    <div class="sec-head"><span class="sec-num">01</span><h2>过渡方案怎么选</h2><span class="hint">两套不是二选一，是分场景</span></div>
+
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>维度</th><th>A · 品牌居中（Logo + 三点）</th><th>B · 骨架 + 顶部进度</th></tr></thead>
+        <tbody>
+          <tr><td>品牌感</td><td>强。Logo 是视觉焦点，适合"第一次进入"</td><td>弱。Logo 只剩角标，靠进度条表达状态</td></tr>
+          <tr><td>体感速度</td><td>中。第一帧是留白，心理上"在等"</td><td>快。第一帧就有结构，心理上"已到"</td></tr>
+          <tr><td>实现成本</td><td>低。一个遮罩 + 3 个 keyframes，外壳层即可统一</td><td>中。每页要一份同构骨架，跨页统一靠组件</td></tr>
+          <tr><td>失败兜底</td><td>遮罩转顶部横幅，切换清晰</td><td>骨架原地换错误块，信息不跳位</td></tr>
+          <tr><td>建议场景</td><td>启动、扫码进入、跨模块（首页 → 统计）、补货流程</td><td>列表 ↔ 详情、Tab 切换、筛选重载</td></tr>
+          <tr><td>最大风险</td><td>高频跳转时显得"重"，拖慢节奏</td><td>骨架与真实版式不一致，出现跳版</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="verdict">
+      <div class="vt">推荐组合</div>
+      <h4>一套组件、两档强度：A 做"首次 / 跨模块"，B 做"页内"</h4>
+      <p>不要全站只留一种。用户在同一个点位详情里反复开关筛选时，被一块 Logo 遮罩拦住 300ms 会很烦；但从首页点进"统计"时，没有品牌过渡又显得廉价。判定规则很简单：<b>是否离开当前模块</b>——离开用 A，不离开用 B。</p>
+      <div class="picks"><span>A · 跨模块 / 首屏 / 扫码后</span><span>B · 页内跳转 / 筛选重载</span><span>B 可逐步铺，先做 4 个核心页</span></div>
+    </div>
+  </section>
+
+  <section id="ea">
+    <div class="sec-head"><span class="sec-num">方案 C</span><h2>错误提示 · 顶部横幅</h2><span class="hint">Banner · 不阻断 · 自动收</span></div>
+    <p>从导航栏下缘滑入，压住内容首行，一屏最多两条。白底 + 左侧语义图标 + 标题一行 + 说明一行 + 右侧「重试 / ×」。标题栏保持原样，内容仍然可读可滑，错误只是"通知"，不是"拦住"。</p>
+
+    <div class="opt">
+      <div class="phone-wrap">
+        <div class="phone demo" id="demoC">
+          <div class="sb"><span>9:41</span><span class="icons"><span class="sig"><i></i><i></i><i></i><i></i></span><span class="bat"><i></i></span></span></div>
+          <div class="nav"><div class="bk">‹</div><div class="tt">点位</div><div class="rt">＋</div></div>
+
+          <div class="pbody">
+            <div class="inner" style="padding:0">
+              <div class="li"><div class="av">滨</div><div class="tx"><b>滨江路 88 号</b><em>8 台设备 · 2 条待办</em></div><div class="st">正常</div></div>
+              <div class="li"><div class="av">万</div><div class="tx"><b>万象城 B1 中庭</b><em>6 台设备 · 库存偏低</em></div><div class="st off">关注</div></div>
+              <div class="li"><div class="av">科</div><div class="tx"><b>科技园 A 座</b><em>4 台设备 · 在线</em></div><div class="st">正常</div></div>
+              <div class="li"><div class="av">地</div><div class="tx"><b>地铁 2 号线站厅</b><em>5 台设备 · 1 台离线</em></div><div class="st off">异常</div></div>
+            </div>
+          </div>
+
+          <div class="bnWrap">
+            <div class="banner">
+              <div class="ic">
+                <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M8 4.4v4.2"/><path d="M8 11.4v.1"/><circle cx="8" cy="8" r="6.4"/></svg>
+              </div>
+              <div class="cp">
+                <b>点位数据加载失败</b>
+                <p>网络连接已断开，请检查后重试</p>
+              </div>
+              <div class="act">
+                <button>重试</button>
+                <button class="x">×</button>
+              </div>
+              <div class="meter"><i></i></div>
+            </div>
+          </div>
+        </div>
+        <button class="replay" onclick="replay('demoC')">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M2.5 8a5.5 5.5 0 1 0 1.9-4.2"/><path d="M2.2 2.4v3.4h3.4"/></svg>
+          重播错误
+        </button>
+        <div class="hintline">滑入 340ms → 常驻 3.4s → 自动上收 300ms</div>
+      </div>
+
+      <div class="spec">
+        <h4>尺寸与位置</h4>
+        <div class="rowlist">
+          <div class="r"><span>位置</span><b>导航栏下缘 + 8px；left / right 12px；不遮标题，只压内容首行</b></div>
+          <div class="r"><span>容器</span><b>白底 · 圆角 14 · 内边距 12</b></div>
+          <div class="r"><span>左侧色条</span><b>3px × 上下各留 10px，语义色（红 / 橙 / 绿）</b></div>
+          <div class="r"><span>图标</span><b>26 × 26 圆角 9，浅色底 + 同色描边图标</b></div>
+          <div class="r"><span>标题</span><b>13px / 700 / 行高 18，"谁出错了"</b></div>
+          <div class="r"><span>说明</span><b>11.5px / 行高 16 / #697095，最多 2 行</b></div>
+          <div class="r"><span>动作</span><b>「重试」12px 品牌蓝（点区 26×44）＋ 关闭 ×</b></div>
+          <div class="r"><span>阴影</span><b>0 12px 30px rgba(11,16,47,.16)</b></div>
+        </div>
+
+        <h4 style="margin-top:20px">行为</h4>
+        <div class="rowlist">
+          <div class="r"><span>进入</span><b>translateY(-118%) → 0，340ms，cubic-bezier(.18,.9,.24,1)</b></div>
+          <div class="r"><span>自动收</span><b>3.4s，底部 2px 倒计时条同步收缩</b></div>
+          <div class="r"><span>含操作时</span><b>延长到 6s；用户手指按下即暂停倒计时</b></div>
+          <div class="r"><span>手势</span><b>上滑立即收起；点 × 立即收起</b></div>
+          <div class="r"><span>连续错误</span><b>同标题去重（不堆叠），最多 2 条，新的在上</b></div>
+          <div class="r"><span>点击「重试」</span><b>按钮转 loading 文案「重试中…」，成功则横幅换绿并 1.2s 后收</b></div>
+        </div>
+      </div>
+    </div>
+
+    <h3>同一组件的三种语义</h3>
+    <p class="small">错误只是其中一种。把色条、图标、按钮文案抽成参数，成功 / 警告 / 失败共用一套几何，视觉上才不会散。</p>
+    <div style="display:grid;gap:10px;margin-top:12px;max-width:560px">
+      <div class="banner" style="position:relative">
+        <div class="ic" style="background:var(--danger-bg);color:var(--danger)"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M8 4.4v4.2"/><path d="M8 11.4v.1"/><circle cx="8" cy="8" r="6.4"/></svg></div>
+        <div class="cp"><b>提交失败</b><p>工单未送达，请检查网络后重试</p></div>
+        <div class="act"><button>重试</button><button class="x">×</button></div>
+      </div>
+      <div class="banner wa" style="position:relative">
+        <div class="ic" style="background:var(--warn-bg);color:#b4560c"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M8 3.2 13.6 13H2.4L8 3.2Z"/><path d="M8 6.8v2.4"/><path d="M8 11.2v.1"/></svg></div>
+        <div class="cp"><b>库存同步延迟</b><p>显示数据可能滞后约 3 分钟</p></div>
+        <div class="act"><button>刷新</button><button class="x">×</button></div>
+      </div>
+      <div class="banner ok" style="position:relative">
+        <div class="ic" style="background:var(--ok-bg);color:var(--ok)"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3.2 8.4 6.4 11.6 12.8 4.8"/></svg></div>
+        <div class="cp"><b>补货已提交</b><p>8 个 SKU 已写入，等待设备确认</p></div>
+        <div class="act"><button class="x">×</button></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="eb">
+    <div class="sec-head"><span class="sec-num">方案 D</span><h2>错误提示 · 顶部下拉卡片</h2><span class="hint">Sheet · 阻断 · 需确认</span></div>
+    <p>从屏幕顶端整块下拉，圆角 22 的白色卡片，带抓手、42px 语义图标、居中标题与原因，下面一个主按钮「重试」和一个次级「稍后再说」。背后压 30% 深色遮罩。这是"必须让用户知道并且做决定"的错误才用的规格。</p>
+
+    <div class="opt left">
+      <div class="spec">
+        <h4>它解决的是什么</h4>
+        <p>开锁、提交工单、下单这类操作失败时，用户会反复点按钮、怀疑是不是自己没点中。横幅（方案 C）会自动消失，不足以让人停下来；<b>下拉卡片把"失败"变成一个必须回应的时刻</b>，并给出唯一正确的下一步。</p>
+
+        <h4 style="margin-top:20px">尺寸与位置</h4>
+        <div class="rowlist">
+          <div class="r"><span>容器</span><b>贴顶 · 左右通栏 · 圆角 0 0 22 22</b></div>
+          <div class="r"><span>内边距</span><b>8 / 20 / 18（含底部安全区）</b></div>
+          <div class="r"><span>抓手</span><b>36 × 4 · 圆角 2 · #DDE1EC</b></div>
+          <div class="r"><span>图标</span><b>40 × 40 圆角 13 · 危险色浅底</b></div>
+          <div class="r"><span>标题</span><b>16px / 800 / 居中</b></div>
+          <div class="r"><span>原因</span><b>12.5px / 行高 18 / 居中 / 最多 2 行</b></div>
+          <div class="r"><span>错误码</span><b>11px 等宽 · #9AA1B7（便于客服定位）</b></div>
+          <div class="r"><span>按钮</span><b>主 44 高 / 圆角 12 / 品牌蓝；次 44 高纯文字</b></div>
+          <div class="r"><span>遮罩</span><b>rgba(11,16,47,.30)，180ms 淡入</b></div>
+        </div>
+
+        <h4 style="margin-top:20px">行为</h4>
+        <div class="rowlist">
+          <div class="r"><span>进入</span><b>translateY(-100%) → 0，420ms，cubic-bezier(.16,1,.3,1)</b></div>
+          <div class="r"><span>不自动收</span><b>必须由用户选择，或手势上滑关闭</b></div>
+          <div class="r"><span>关闭方式</span><b>上滑卡片 / 点遮罩 / 「稍后再说」，三者等价</b></div>
+          <div class="r"><span>重试中</span><b>卡片不关，主按钮转进度态，失败则原位更新原因文案</b></div>
+          <div class="r"><span>避免连弹</span><b>同类错误 10s 内不再弹第二次，降级为顶部横幅</b></div>
+        </div>
+
+        <div class="verdict" style="margin-top:18px;padding:15px 16px">
+          <div class="vt">使用红线</div>
+          <p style="margin-top:6px">只有<b>用户主动发起、且失败会导致结果不确定</b>的操作才配用这版：开锁、补货提交、工单提交、支付。列表加载失败这种"再刷一下就好"的场景用方案 C，否则每次进页面都被拦一次，用户会烦。</p>
+        </div>
+      </div>
+
+      <div class="phone-wrap">
+        <div class="phone demo" id="demoD">
+          <div class="sb"><span>9:41</span><span class="icons"><span class="sig"><i></i><i></i><i></i><i></i></span><span class="bat"><i></i></span></span></div>
+          <div class="nav"><div class="bk">‹</div><div class="tt">设备详情</div><div class="rt">⋯</div></div>
+
+          <div class="pbody">
+            <div class="inner">
+              <div class="card">
+                <div class="ch"><span>远程控制</span><span>VM-1001</span></div>
+                <div class="btns"><div class="btn-h">左门开锁</div><div class="btn-g">右门开锁</div></div>
+              </div>
+              <div class="card">
+                <div class="ch"><span>门状态</span><span style="color:var(--danger)">开锁超时</span></div>
+                <div class="kv"><span>左门</span><b>未响应</b></div>
+                <div class="kv"><span>右门</span><b>已关闭</b></div>
+                <div class="kv"><span>最近指令</span><b>22:31:04</b></div>
+              </div>
+              <div class="card">
+                <div class="ch"><span>设备状态</span><span>在线</span></div>
+                <div class="kv"><span>柜内温度</span><b>4.2 ℃</b></div>
+                <div class="kv"><span>库存 SKU</span><b>18 / 24</b></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="maskB"></div>
+          <div class="sheetB">
+            <div class="grab"></div>
+            <div class="ic">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M12 7v6"/><path d="M12 16.6v.2"/><circle cx="12" cy="12" r="9"/></svg>
+            </div>
+            <h3>左门开锁失败</h3>
+            <p>电机未在 5 秒内响应，可能被异物卡住。<br>请到现场检查柜门后再试。</p>
+            <div class="meta">错误码 LK-204 · 22:31</div>
+            <button class="b1">重新开锁</button>
+            <button class="b2">稍后再说</button>
+          </div>
+        </div>
+        <button class="replay" onclick="replay('demoD')">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M2.5 8a5.5 5.5 0 1 0 1.9-4.2"/><path d="M2.2 2.4v3.4h3.4"/></svg>
+          重播错误
+        </button>
+        <div class="hintline">下拉 420ms → 等待用户确认（不自动收）</div>
+      </div>
+    </div>
+  </section>
+
+  <section id="level">
+    <div class="sec-head"><span class="sec-num">02</span><h2>错误分级与文案</h2><span class="hint">先分级，再选组件</span></div>
+    <p>同一个错误用错组件，比没有提示更糟。判定只看一件事：<b>用户现在还能不能继续干活</b>。</p>
+
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>等级</th><th>典型场景</th><th>组件</th><th>是否阻断</th><th>文案示例</th></tr></thead>
+        <tbody>
+          <tr><td><span class="pill no">L1 轻</span></td><td>下拉刷新失败、图片加载失败、同步延迟</td><td>顶部横幅（C）· 自动 3.4s</td><td>否</td><td>网络连接已断开，请检查后重试</td></tr>
+          <tr><td><span class="pill warn">L2 中</span></td><td>列表 / 详情数据没回来、筛选后空结果</td><td>顶部横幅 + 页内空态（C + 内联）</td><td>否，内容区留「重试」</td><td>点位数据加载失败</td></tr>
+          <tr><td><span class="pill dgr">L3 重</span></td><td>开锁失败、补货提交失败、工单提交失败、支付失败</td><td>顶部下拉卡片（D）</td><td>是，须确认</td><td>左门开锁失败 · 电机未响应</td></tr>
+          <tr><td><span class="pill dgr">L4 阻断</span></td><td>登录过期、无权限、账号被停用</td><td>全屏状态页（不在本次范围）</td><td>是，只能重新登录</td><td>登录已过期，请重新登录</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>文案怎么写</h3>
+    <div class="copy">
+      <div class="c no">
+        <div class="h">不要这样</div>
+        <ul>
+          <li>「操作失败」— 什么都没说</li>
+          <li>「系统异常，请稍后再试」— 用户不知道该等多久</li>
+          <li>「网络错误 (code: -1009)」— 把日志丢给用户</li>
+          <li>「失败：无法连接到服务器，请检查您的网络设置并稍后重试」— 一句话塞三件事</li>
+        </ul>
+      </div>
+      <div class="c yes">
+        <div class="h">建议这样</div>
+        <ul>
+          <li>标题 = 谁 + 怎么了：<b>点位数据加载失败</b></li>
+          <li>副文案 = 为什么 + 下一步：<b>网络连接已断开，请检查后重试</b></li>
+          <li>标题 ≤ 12 字，副文案 ≤ 24 字，两行内说完</li>
+          <li>错误码只在 L3 出现，小字、等宽、置底</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section id="ecmp">
+    <div class="sec-head"><span class="sec-num">03</span><h2>错误方案对比与结论</h2><span class="hint">都不是"更好看"，而是"更对场景"</span></div>
+
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>维度</th><th>C · 顶部横幅</th><th>D · 顶部下拉卡片</th></tr></thead>
+        <tbody>
+          <tr><td>占屏</td><td>约 66px，压在内容首行上</td><td>约 260px，压住上半屏</td></tr>
+          <tr><td>是否阻断</td><td>否，可继续滑动、点击</td><td>是，遮罩拦截其余操作</td></tr>
+          <tr><td>消失方式</td><td>3.4s 自动 + 手动</td><td>只能用户确认 / 手势关闭</td></tr>
+          <tr><td>适合的错</td><td>可自愈、可重试、不影响当前判断</td><td>结果不确定、必须重来、涉及钱与门</td></tr>
+          <tr><td>连续出现</td><td>可堆叠 2 条，同标题去重</td><td>不允许堆叠，10s 内降级为横幅</td></tr>
+          <tr><td>成本</td><td>低，一个组件全站复用</td><td>中，需和遮罩、手势、焦点管理一起做</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="verdict">
+      <div class="vt">推荐落地</div>
+      <h4>C 做默认，D 只留给"三件事"：开锁、补货提交、工单提交</h4>
+      <p>现网的深色居中胶囊应该整体退役：<b>成功类</b>继续用底部轻提示（不打扰），<b>失败类</b>一律上移到顶部横幅，<b>后果不确定的失败</b>才升级为下拉卡片。这样"提示"和"错误"在空间上分开了——底部是"做成了"，顶部是"没做成"——用户用余光就能判断。</p>
+      <div class="picks"><span>底部 = 成功</span><span>顶部 = 失败</span><span>下拉 = 需决策</span><span>居中黑块 → 退役</span></div>
+    </div>
+
+    <h3>落地参数（供开发直接取用）</h3>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>项</th><th>值</th><th>说明</th></tr></thead>
+        <tbody>
+          <tr><td>层级 z-index</td><td class="num">60 / 70 / 80</td><td>骨架 60 · 加载遮罩 70 · 顶部提示 80；均低于全屏菜单</td></tr>
+          <tr><td>安全区</td><td>env(safe-area-inset-top)</td><td>横幅 top = 系统状态栏 + 8；下拉卡片 padding-top 含安全区</td></tr>
+          <tr><td>最小点击区</td><td class="num">44 × 44</td><td>「重试」与 × 的可点范围放大到 44 高</td></tr>
+          <tr><td>最长停留</td><td class="num">3.4s / 6s</td><td>无操作 3.4s；带操作 6s；手指按下暂停</td></tr>
+          <tr><td>去重窗口</td><td class="num">10s</td><td>同标题同原因不重复弹</td></tr>
+          <tr><td>无障碍</td><td>role="alert" · aria-live="assertive"</td><td>加载遮罩 aria-busy="true"，完成后移除</td></tr>
+          <tr><td>减弱动效</td><td>prefers-reduced-motion</td><td>三点静止、横幅直接出现、卡片无位移</td></tr>
+          <tr><td>横屏 / 360 宽</td><td class="num">自适应</td><td>副文案截断到 2 行，动作按钮始终可见</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>还没定的三件事</h3>
+    <ol>
+      <li><b>过渡方案是"全站统一 A"还是"分场景 A + B"？</b>分场景体感更好，但 B 要给每个页面单独做骨架，铺开需要排期。</li>
+      <li><b>深色胶囊是否全部退役？</b>建议成功类保留（改到顶部会显得"出了事"），失败类全换。这需要确认现有哪些地方在用它。</li>
+      <li><b>下拉卡片要不要带"联系客服"？</b>加上更稳，但会给客服带来量；不加则用户开锁失败后可能直接打电话给点位老板。</li>
+    </ol>
+  </section>
+
+</div>
+
+<script>
+  function replay(id){
+    var el = document.getElementById(id);
+    if(!el) return;
+    el.classList.remove('run');
+    void el.offsetWidth;
+    el.classList.add('run');
+  }
+  window.addEventListener('load', function(){
+    ['demoA','demoB','demoC','demoD'].forEach(function(id, i){
+      setTimeout(function(){ var el = document.getElementById(id); if(el) el.classList.add('run'); }, 420 + i * 260);
+    });
+  });
+</script>
+</body>
+</html>

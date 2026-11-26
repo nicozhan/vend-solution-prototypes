@@ -204,4 +204,242 @@
     document.addEventListener('keydown', function (event) { if (event.key === 'Escape') set(false); });
   })();
 
+  /* ==========================================================================
+     页面过渡 Loading（方案 A）：页内跳转时盖住白帧
+     - 只拦截站内 .html 链接，外链 / 锚点 / 新窗口一律不动
+     - 6s 兜底淡出，避免导航被取消时遮罩卡住
+     ========================================================================== */
+  var ASSET_BASE = (function () {
+    var s = document.currentScript;
+    if (!s || !s.src) return '';
+    return s.src.slice(0, s.src.lastIndexOf('/') + 1);
+  })();
+
+  /* 过渡与提示组件样式：独立文件，页面没引用时自动挂上 */
+  (function ensureOverlayCss() {
+    if (document.querySelector('link[data-app-overlay]')) return;
+    var link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.href = ASSET_BASE + 'app-overlay.css';
+    link.setAttribute('data-app-overlay', '');
+    document.head.appendChild(link);
+  })();
+
+  function appRoot() { return document.querySelector('.app') || document.body; }
+
+  function ensureLoader() {
+    var app = appRoot();
+    var el = app.querySelector('.app-loader');
+    if (el) return el;
+    el = document.createElement('div');
+    el.className = 'app-loader';
+    el.setAttribute('aria-hidden', 'true');
+    el.innerHTML =
+      '<div class="al-glow"></div>' +
+      '<img class="al-logo" src="' + ASSET_BASE + 'assets/logo.png" alt="">' +
+      '<div class="al-dots"><i></i><i></i><i></i></div>' +
+      '<div class="al-txt">正在加载</div>';
+    app.appendChild(el);
+    return el;
+  }
+
+  var loaderFailsafe = null;
+
+  window.appLoader = function (show) {
+    var el = ensureLoader();
+    if (!el) return;
+    clearTimeout(loaderFailsafe);
+    if (show === false) {
+      el.classList.add('out');
+      loaderFailsafe = setTimeout(function () { el.hidden = true; el.classList.remove('out'); }, 220);
+      return;
+    }
+    el.hidden = false;
+    el.classList.remove('out');
+    loaderFailsafe = setTimeout(function () {
+      el.classList.add('out');
+      loaderFailsafe = setTimeout(function () { el.hidden = true; el.classList.remove('out'); }, 220);
+    }, 6000);
+  };
+
+  document.addEventListener('click', function (event) {
+    if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+    var link = event.target && event.target.closest ? event.target.closest('a[href]') : null;
+    if (!link) return;
+    var href = link.getAttribute('href') || '';
+    if (!href || href.charAt(0) === '#') return;
+    if (/^(https?:|mailto:|tel:|javascript:|blob:|data:)/i.test(href)) return;
+    if (link.target === '_blank' || link.hasAttribute('download')) return;
+    window.appLoader(true);
+  }, true);
+
+  /* ==========================================================================
+     顶部错误横幅（方案 C）
+     appAlert({ level:'error|warn|ok', title, desc, action, busyText, onAction, duration })
+     - 导航栏下缘 8px，同标题 10s 内不重复弹，最多并存 2 条
+     - 默认 3.4s 自动收；带操作 6s；按下暂停倒计时；上滑可关
+     ========================================================================== */
+  var BANNER_ICONS = {
+    error: '<path d="M8 4.4v4.2"/><path d="M8 11.4v.1"/><circle cx="8" cy="8" r="6.4"/>',
+    warn: '<path d="M8 3.2 13.6 13H2.4L8 3.2Z"/><path d="M8 6.8v2.4"/><path d="M8 11.2v.1"/>',
+    ok: '<path d="M3.2 8.4 6.4 11.6 12.8 4.8"/>'
+  };
+  var alertRecent = {};
+  var alertLive = {};
+
+  function bannerHost() {
+    var app = appRoot();
+    var host = app.querySelector('.app-banner-host');
+    if (!host) {
+      host = document.createElement('div');
+      host.className = 'app-banner-host';
+      app.appendChild(host);
+    }
+    var nav = app.querySelector('.navbar');
+    var top = 8;
+    if (nav) {
+      var base = app.getBoundingClientRect().top;
+      top = Math.round(nav.getBoundingClientRect().bottom - base + 8);
+    }
+    host.style.top = Math.max(8, top) + 'px';
+    return host;
+  }
+
+  function buildBanner(opts, duration) {
+    var level = opts.level === 'warn' ? 'warn' : opts.level === 'ok' ? 'ok' : 'error';
+    var el = document.createElement('div');
+    el.className = 'app-banner' + (level === 'error' ? '' : ' lv-' + level);
+    el.setAttribute('role', 'alert');
+    el.setAttribute('aria-live', 'assertive');
+
+    var ic = document.createElement('div');
+    ic.className = 'ab-ic';
+    ic.innerHTML = '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">' + BANNER_ICONS[level] + '</svg>';
+
+    var cp = document.createElement('div');
+    cp.className = 'ab-cp';
+    var title = document.createElement('b');
+    title.textContent = opts.title || '操作失败';
+    cp.appendChild(title);
+    var desc = document.createElement('p');
+    desc.textContent = opts.desc || '';
+    if (opts.desc) cp.appendChild(desc);
+
+    var act = document.createElement('div');
+    act.className = 'ab-act';
+    var retry = null;
+    if (opts.action) {
+      retry = document.createElement('button');
+      retry.type = 'button';
+      retry.className = 'ab-retry';
+      retry.textContent = opts.action;
+      act.appendChild(retry);
+    }
+    var closeBtn = document.createElement('button');
+    closeBtn.type = 'button';
+    closeBtn.className = 'ab-x';
+    closeBtn.setAttribute('aria-label', '关闭');
+    closeBtn.textContent = '×';
+    act.appendChild(closeBtn);
+
+    var meter = document.createElement('div');
+    meter.className = 'ab-meter';
+    meter.innerHTML = '<i style="animation-duration:' + (duration / 1000) + 's"></i>';
+
+    el.appendChild(ic); el.appendChild(cp); el.appendChild(act); el.appendChild(meter);
+
+    var remain = duration, startedAt = 0, timer = null, closed = false;
+
+    function arm() {
+      startedAt = Date.now();
+      timer = setTimeout(dismiss, remain);
+    }
+    function pause() {
+      if (!timer) return;
+      clearTimeout(timer);
+      timer = null;
+      remain -= Date.now() - startedAt;
+      el.classList.add('paused');
+    }
+    function resume() {
+      if (timer || remain < 120 || closed) return;
+      el.classList.remove('paused');
+      arm();
+    }
+    function dismiss() {
+      if (closed) return;
+      closed = true;
+      clearTimeout(timer);
+      el.classList.remove('in');
+      el.classList.add('out');
+      setTimeout(function () {
+        if (el.parentNode) el.parentNode.removeChild(el);
+        Object.keys(alertLive).forEach(function (k) { if (alertLive[k] === el) delete alertLive[k]; });
+      }, 220);
+    }
+
+    if (retry) {
+      retry.addEventListener('click', function () {
+        retry.disabled = true;
+        retry.textContent = opts.busyText || '处理中…';
+        clearTimeout(timer);
+        if (typeof opts.onAction === 'function') {
+          try { opts.onAction(); } catch (e) {}
+        }
+        setTimeout(dismiss, 520);
+      });
+    }
+    closeBtn.addEventListener('click', dismiss);
+
+    el.addEventListener('pointerdown', function (event) {
+      el._downY = event.clientY;
+      pause();
+    });
+    el.addEventListener('pointerup', function (event) {
+      var up = el._downY;
+      el._downY = null;
+      if (up !== null && up - event.clientY > 28) { dismiss(); return; }
+      resume();
+    });
+    el.addEventListener('pointercancel', resume);
+
+    el._reset = function (next, dur) {
+      title.textContent = next.title || title.textContent;
+      if (next.desc) { desc.textContent = next.desc; if (!desc.parentNode) cp.appendChild(desc); }
+      clearTimeout(timer);
+      closed = false;
+      remain = dur;
+      el.classList.remove('out');
+      el.classList.add('in');
+      arm();
+    };
+
+    requestAnimationFrame(function () { el.classList.add('in'); });
+    arm();
+    return el;
+  }
+
+  window.appAlert = function (opts) {
+    opts = opts || {};
+    var level = opts.level || 'error';
+    var duration = opts.duration || (opts.action ? 6000 : 3400);
+    var key = level + '|' + (opts.title || '');
+
+    var live = alertLive[key];
+    if (live && live.parentNode && alertRecent[key] && Date.now() - alertRecent[key] < 10000) {
+      live._reset(opts, duration);
+      alertRecent[key] = Date.now();
+      return live;
+    }
+
+    var host = bannerHost();
+    while (host.children.length >= 2) host.removeChild(host.firstElementChild);
+
+    var el = buildBanner(opts, duration);
+    host.appendChild(el);
+    alertLive[key] = el;
+    alertRecent[key] = Date.now();
+    return el;
+  };
+
 })();

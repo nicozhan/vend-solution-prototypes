@@ -1,0 +1,62 @@
+/* ==========================================================================
+   VendSolution App · 过渡与提示组件（v1.0）
+   仅由 app-ui.js 按需注入；颜色写死品牌值，不改页面主题变量。
+   ========================================================================== */
+
+/* ---------- 页面过渡 Loading（方案 A · 品牌居中） ---------- */
+.app-loader{
+  position:absolute;inset:0;z-index:110;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  background:radial-gradient(120% 90% at 50% 30%,#fff 0%,#fbfcff 46%,#f2f5ff 100%);
+  transition:opacity .18s ease
+}
+.app-loader[hidden]{display:none}
+.app-loader.out{opacity:0;pointer-events:none}
+.al-glow{position:absolute;width:180px;height:180px;border-radius:50%;background:radial-gradient(circle,rgba(36,52,200,.13),rgba(36,52,200,0) 62%);animation:alGlow 1.8s ease-in-out infinite}
+.al-logo{position:relative;width:56px;height:56px;object-fit:contain;animation:alBreath 1.5s ease-in-out infinite}
+.al-dots{display:flex;gap:8px;margin-top:22px}
+.al-dots i{width:6px;height:6px;border-radius:50%;background:#2434c8;opacity:.3;animation:alDot 1.05s ease-in-out infinite}
+.al-dots i:nth-child(2){animation-delay:.14s}
+.al-dots i:nth-child(3){animation-delay:.28s}
+.al-txt{margin-top:14px;font-size:11.5px;font-weight:600;letter-spacing:.4px;color:#9aa1b7}
+@keyframes alGlow{0%,100%{opacity:.55;transform:scale(.94)}50%{opacity:1;transform:scale(1.06)}}
+@keyframes alBreath{0%,100%{transform:scale(1)}50%{transform:scale(1.045)}}
+@keyframes alDot{0%,70%,100%{opacity:.28;transform:translateY(0) scale(.9)}35%{opacity:1;transform:translateY(-2px) scale(1)}}
+
+/* ---------- 顶部错误横幅（方案 C） ---------- */
+.app-banner-host{position:absolute;left:12px;right:12px;top:80px;z-index:120;display:flex;flex-direction:column;gap:8px;pointer-events:none}
+.app-banner{
+  position:relative;display:flex;gap:10px;align-items:flex-start;padding:12px;
+  border-radius:14px;background:#fff;border:1px solid #eef0f7;overflow:hidden;
+  box-shadow:0 12px 30px rgba(11,16,47,.16);
+  transform:translateY(-118%);opacity:0;pointer-events:auto;
+  transition:transform .32s cubic-bezier(.18,.9,.24,1),opacity .18s ease
+}
+.app-banner.in{transform:none;opacity:1}
+.app-banner.out{transform:translateY(-118%);opacity:0}
+.app-banner::before{content:"";position:absolute;left:0;top:10px;bottom:10px;width:3px;border-radius:0 3px 3px 0;background:#d92d20}
+.app-banner.lv-warn::before{background:#e0a03a}
+.app-banner.lv-ok::before{background:#008f63}
+.ab-ic{flex:0 0 26px;width:26px;height:26px;border-radius:9px;background:#fff0ef;color:#d92d20;display:flex;align-items:center;justify-content:center;margin-left:4px}
+.ab-ic svg{width:14px;height:14px}
+.app-banner.lv-warn .ab-ic{background:#fff4e8;color:#b4560c}
+.app-banner.lv-ok .ab-ic{background:#e8f7f1;color:#008f63}
+.ab-cp{flex:1;min-width:0}
+.ab-cp b{display:block;font-size:13px;line-height:18px;font-weight:700;letter-spacing:-.1px}
+.ab-cp p{margin-top:2px;font-size:11.5px;line-height:16px;color:#697095;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.ab-act{flex:0 0 auto;display:flex;align-items:center;gap:2px}
+.ab-act button{height:26px;padding:0 7px;border:0;border-radius:8px;background:transparent;font-family:inherit;font-size:12px;font-weight:700;color:#2434c8;cursor:pointer}
+.ab-act button:disabled{color:#9aa1b7}
+.ab-x{color:#9aa1b7!important;font-size:15px!important;font-weight:400!important;padding:0 5px!important}
+.ab-meter{position:absolute;left:0;bottom:0;height:2px;width:100%;background:rgba(217,45,32,.14)}
+.ab-meter i{display:block;height:100%;width:100%;transform-origin:left;background:rgba(217,45,32,.5);animation:abMeter 3.4s linear forwards}
+.app-banner.lv-warn .ab-meter{background:rgba(224,160,58,.16)}
+.app-banner.lv-warn .ab-meter i{background:rgba(224,160,58,.6)}
+.app-banner.paused .ab-meter i{animation-play-state:paused}
+@keyframes abMeter{from{transform:scaleX(1)}to{transform:scaleX(0)}}
+
+@media(prefers-reduced-motion:reduce){
+  .al-glow,.al-logo,.al-dots i{animation:none!important}
+  .al-dots i{opacity:.85}
+  .app-loader,.app-banner{transition:none}
+  .ab-meter i{display:none}
+}
