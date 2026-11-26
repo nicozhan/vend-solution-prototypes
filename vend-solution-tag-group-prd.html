@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>VendSolution · 标签&分组管理 PRD</title>
+<style>
+  :root{
+    --bg:#fafafa; --surface:#ffffff; --surface-2:#f7f7f8; --surface-3:#efeff1;
+    --border:#ececec; --border-strong:#dadade;
+    --text:#18181b; --text-2:#6b7280; --text-3:#a1a1aa; --text-4:#c4c4cc;
+    --accent:#2563eb; --accent-weak:#f0f5ff; --accent-line:#c3d7ff;
+    --ok:#15803d; --ok-weak:#ecfdf3; --ok-line:#bbf7d0;
+    --warn:#b45309; --warn-weak:#fff8ed; --warn-line:#fed7aa;
+    --red:#dc2626; --red-weak:#fef2f2; --red-line:#fecaca;
+    --radius:9px; --radius-sm:5px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    background:var(--bg);color:var(--text);font-size:13.5px;line-height:1.75;
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"PingFang SC","Microsoft YaHei",sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:1080px;margin:0 auto;padding:56px 28px 100px}
+
+  /* header */
+  .eyebrow{font-size:11px;letter-spacing:.09em;color:var(--accent);font-weight:650;text-transform:uppercase}
+  h1{font-size:29px;font-weight:660;letter-spacing:-.025em;margin-top:8px}
+  .lede{color:var(--text-2);font-size:13.5px;margin-top:10px;max-width:760px}
+  .meta{display:flex;gap:26px;flex-wrap:wrap;margin-top:18px;font-size:11.5px;color:var(--text-3)}
+  .meta b{color:var(--text-2);font-weight:500}
+
+  /* section */
+  section{margin-top:48px}
+  .sec-hd{display:flex;align-items:center;gap:9px;margin-bottom:16px;padding-bottom:10px;border-bottom:1px solid var(--border)}
+  .sec-no{font-size:10.5px;font-weight:700;color:var(--accent);background:var(--accent-weak);border:1px solid var(--accent-line);border-radius:4px;padding:1px 7px;letter-spacing:.03em;font-variant-numeric:tabular-nums}
+  h2{font-size:17px;font-weight:645;letter-spacing:-.01em}
+  h3{font-size:13.5px;font-weight:640;margin:22px 0 9px;letter-spacing:-.005em}
+  h3 .h3n{color:var(--text-3);font-weight:600;margin-right:6px;font-variant-numeric:tabular-nums}
+  p{margin:8px 0}
+  .muted{color:var(--text-2)}
+  .small{font-size:12px}
+
+  /* cards / callouts */
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:18px 20px;box-shadow:0 1px 2px rgba(24,24,27,.03)}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+  .kpi{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px}
+  .kpi .k{font-size:11px;color:var(--text-3);letter-spacing:.03em}
+  .kpi .v{font-size:15px;font-weight:640;margin-top:3px;letter-spacing:-.01em}
+  .kpi .d{font-size:11.5px;color:var(--text-2);margin-top:3px}
+
+  .note{border-radius:var(--radius-sm);padding:11px 14px;font-size:12.5px;margin:12px 0;border:1px solid}
+  .note.info{background:var(--accent-weak);border-color:var(--accent-line);color:#1e40af}
+  .note.warn{background:var(--warn-weak);border-color:var(--warn-line);color:#92400e}
+  .note.red{background:var(--red-weak);border-color:var(--red-line);color:#991b1b}
+  .note b{font-weight:650}
+
+  /* tables */
+  table{width:100%;border-collapse:collapse;margin:12px 0;font-size:12.5px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}
+  th,td{text-align:left;padding:9px 12px;border-bottom:1px solid var(--border);vertical-align:top}
+  th{background:var(--surface-2);font-weight:620;font-size:11.5px;color:var(--text-2);letter-spacing:.02em;white-space:nowrap}
+  tr:last-child td{border-bottom:0}
+  td code,li code,p code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:11.5px;background:var(--surface-3);border-radius:4px;padding:1px 5px;color:#3f3f46}
+  td.ac-no{white-space:nowrap;font-variant-numeric:tabular-nums;color:var(--text-2);font-weight:600}
+
+  ul,ol{margin:8px 0 8px 20px}
+  li{margin:4px 0}
+  li::marker{color:var(--text-3)}
+
+  /* change highlight */
+  .chg{color:var(--red);font-weight:650}
+  .chg-tag{display:inline-block;font-size:9.5px;line-height:1.5;color:var(--red);background:var(--red-weak);border:1px solid var(--red-line);border-radius:4px;padding:0 5px;margin-left:5px;font-weight:650;vertical-align:1px;white-space:nowrap}
+  .old{color:var(--text-3);text-decoration:line-through;text-decoration-color:var(--red);text-decoration-thickness:1px}
+  .new{color:var(--red);font-weight:640}
+
+  /* flow */
+  .flow{display:flex;align-items:stretch;gap:0;flex-wrap:wrap;margin:14px 0}
+  .flow .step{flex:1 1 0;min-width:140px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:11px 13px;position:relative}
+  .flow .step:not(:last-child){margin-right:22px}
+  .flow .step:not(:last-child)::after{content:"→";position:absolute;right:-17px;top:50%;transform:translateY(-50%);color:var(--text-4);font-size:14px}
+  .flow .step .sn{font-size:10px;color:var(--accent);font-weight:700;letter-spacing:.04em}
+  .flow .step .st{font-size:12.5px;font-weight:620;margin-top:2px}
+  .flow .step .sd{font-size:11px;color:var(--text-2);margin-top:2px;line-height:1.55}
+
+  /* wireframe box */
+  .wf{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin:14px 0}
+  .wf-cap{padding:8px 14px;background:var(--surface-2);border-bottom:1px solid var(--border);font-size:10.5px;letter-spacing:.05em;color:var(--text-3);text-transform:uppercase;font-weight:620}
+  .wf-bd{padding:16px 18px}
+  .wf-row{display:flex;gap:10px;align-items:center;margin:7px 0;font-size:12px}
+  .wf-chip{background:var(--surface-2);border:1px solid var(--border);border-radius:5px;padding:3px 9px;font-size:11.5px;color:var(--text-2)}
+  .wf-chip.on{background:var(--accent-weak);border-color:var(--accent-line);color:var(--accent);font-weight:600}
+  .wf-pill{display:inline-block;background:var(--accent-weak);border:1px solid var(--accent-line);color:var(--accent);border-radius:20px;padding:1px 9px;font-size:10.5px;margin-right:4px}
+  .wf-col{background:var(--surface-2);border:1px solid var(--border);border-radius:6px;padding:10px 12px;flex:1}
+  .wf-col .h{font-size:11px;font-weight:650;color:var(--text-2);margin-bottom:6px}
+
+  .foot{margin-top:56px;padding-top:18px;border-top:1px solid var(--border);font-size:11px;color:var(--text-4);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
+
+  @media (max-width:760px){ .grid2,.grid3{grid-template-columns:1fr} .flow .step{margin-right:0!important;margin-bottom:18px} .flow .step::after{display:none} }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="eyebrow">Product Requirements Document</div>
+  <h1>标签&分组管理</h1>
+  <p class="lede">在现有平台基础上新增「标签&分组管理」能力，并将其接入预包装商品、现制商品与点位三类业务对象的列表与筛选；同时统一商品页的列标题与搜索口径。本文档以当前可交互原型为准，<span class="chg">红色文字</span>表示相较旧版的变更点。</p>
+  <div class="meta">
+    <span><b>版本</b> v1.0</span>
+    <span><b>日期</b> 2026-11-24</span>
+    <span><b>模块</b> 系统设置 / 商品 / 点位</span>
+    <span><b>状态</b> 待评审</span>
+    <span><b>原型</b> vend-solution-reports.html</span>
+  </div>
+
+  <!-- 1 背景与目标 -->
+  <section>
+    <div class="sec-hd"><span class="sec-no">01</span><h2>背景与目标</h2></div>
+    <p>平台原先的标签与分组分散在各业务对象的设置页中，缺少统一的集中管理入口；商品列表也缺少按分组、标签快速筛选与识别的能力，运营人员难以批量运营同类商品。</p>
+    <p>本需求新增「标签&分组管理」作为集中管理控制台，并在<b>预包装商品</b>、<b>现制商品</b>、<b>点位</b>三个业务页面上提供入口与可视化展示，实现「一处管理、多处生效」。</p>
+
+    <div class="grid3" style="margin-top:14px">
+      <div class="kpi"><div class="k">目标一</div><div class="v">集中管理</div><div class="d">分组与标签在一个控制台内统一维护</div></div>
+      <div class="kpi"><div class="k">目标二</div><div class="v">批量运营</div><div class="d">勾选对象后批量设置 / 移除分组与标签</div></div>
+      <div class="kpi"><div class="k">目标三</div><div class="v">列表可见</div><div class="d">业务列表直接展示分组、标签并支持筛选</div></div>
+    </div>
+  </section>
+
+  <!-- 2 名词与概念 -->
+  <section>
+    <div class="sec-hd"><span class="sec-no">02</span><h2>名词与概念</h2></div>
+    <table>
+      <thead><tr><th style="width:120px">名词</th><th style="width:150px">作用域</th><th>说明</th></tr></thead>
+      <tbody>
+        <tr><td><b>分组</b>（Group）</td><td>按业务对象类型隔离</td><td>用于对同一类型对象做运营分层，例如「夏季主推」「节日礼盒」。<b>一个对象可属于多个分组</b>。</td></tr>
+        <tr><td><b>标签</b>（Tag）</td><td>按业务对象类型隔离</td><td>用于对对象打标记，例如「热销」「促销」「进口商品」。<b>一个对象可同时拥有多个标签</b>。</td></tr>
+        <tr><td><b>品类</b>（Category）</td><td>商品</td><td>商品自身的类目属性（如 BEVERAGE），由商品资料决定，<span class="chg">不再与「分组」混用</span>。</td></tr>
+        <tr><td><b>未分组 / 未打标签</b></td><td>虚拟项</td><td>非真实数据，用于统计未绑定任何分组或标签的对象数量，点击可筛出这批对象。</td></tr>
+        <tr><td><b>启用 / 停用</b></td><td>分组、标签</td><td>停用后不再出现在新建绑定候选中；已绑定的对象仍保留绑定关系，列表以「停用」标记提示。</td></tr>
+      </tbody>
+    </table>
+    <div class="note info"><b>设计原则：</b>分组、标签按业务对象类型（预包装商品 / 现制商品 / 点位）相互隔离，同名标签在不同类型下互不影响。</div>
+  </section>
+
+  <!-- 3 功能总览 -->
+  <section>
+    <div class="sec-hd"><span class="sec-no">03</span><h2>功能总览</h2></div>
+    <table>
+      <thead><tr><th style="width:190px">页面 / 模块</th><th style="width:130px">变更类型</th><th>本次范围</th></tr></thead>
+      <tbody>
+        <tr><td>系统设置 / <span class="new">标签&分组管理</span></td><td><span class="chg-tag">新增</span></td><td>集中管理控制台：分组与标签维护 + 对象列表批量绑定</td></tr>
+        <tr><td>商品 / 预包装商品</td><td><span class="chg-tag">增强</span></td><td><span class="chg">新增「分组&标签」入口；列表新增分组、标签列；筛选新增分组、标签维度</span></td></tr>
+        <tr><td>商品 / 现制商品</td><td><span class="chg-tag">增强</span></td><td><span class="chg">新增「分组&标签」入口；列表新增分组、标签列；筛选新增分组、标签维度</span></td></tr>
+        <tr><td>点位</td><td><span class="chg-tag">增强</span></td><td>新增「分组&标签」按钮，列表展示分组、标签列，筛选支持分组、标签（<span class="muted">本次未提供点位原型，仅约定规格</span>）</td></tr>
+      </tbody>
+    </table>
+    <div class="note warn"><b>说明：</b>点位页面本次不在原型范围内，本 PRD 只约定其入口位置、列展示与筛选规格，界面细节由后续点位页实现时对齐。</div>
+  </section>
+
+  <!-- 4 详细需求 -->
+  <section>
+    <div class="sec-hd"><span class="sec-no">04</span><h2>详细需求 · 标签&分组管理</h2></div>
+
+    <h3><span class="h3n">4.1</span>入口与位置</h3>
+    <ul>
+      <li>位于 <b>系统设置</b> 下的二级菜单，名称 <span class="old">标签分组管理</span> → <span class="new">标签&分组管理</span>。</li>
+      <li>页面顶部提供对象类型切换 tab：<b>预包装商品 / 现制商品 / 点位</b>，切换后左侧与右侧数据同步切换。</li>
+      <li>同时提供从业务页进入的入口：商品页右上角「分组&标签」按钮，进入后定位到对应对象类型。</li>
+    </ul>
+
+    <h3><span class="h3n">4.2</span>页面结构</h3>
+    <div class="wf">
+      <div class="wf-cap">标签&分组管理 · 布局结构</div>
+      <div class="wf-bd">
+        <div class="wf-row">
+          <span class="wf-chip on">预包装商品</span><span class="wf-chip">现制商品</span><span class="wf-chip">点位</span>
+        </div>
+        <div class="wf-row" style="align-items:flex-start;margin-top:12px">
+          <div class="wf-col" style="flex:0 0 38%">
+            <div class="h">左栏 · 分组 / 标签</div>
+            <div class="wf-row" style="margin:3px 0"><span class="wf-chip" style="flex:1">搜索分组</span><span class="wf-chip">＋ 新建</span></div>
+            <div class="wf-row" style="margin:3px 0;font-size:11.5px;color:var(--text-2)">未分组 <span style="margin-left:auto">0</span></div>
+            <div class="wf-row" style="margin:3px 0"><span class="wf-pill">启用 夏季主推</span><span class="muted" style="font-size:10.5px">3</span><span style="margin-left:auto;color:var(--text-3)">⋯</span></div>
+            <div class="wf-row" style="margin:3px 0"><span class="wf-pill">启用 节日礼盒</span><span class="muted" style="font-size:10.5px">2</span></div>
+            <div class="wf-row" style="margin:10px 0 3px"><span class="wf-chip" style="flex:1">搜索标签</span><span class="wf-chip">＋ 新建</span></div>
+            <div class="wf-row" style="margin:3px 0"><span class="wf-pill">启用 热销</span><span class="muted" style="font-size:10.5px">4</span></div>
+          </div>
+          <div class="wf-col" style="flex:1">
+            <div class="h">右栏 · 对象列表</div>
+            <div class="wf-row" style="margin:3px 0;font-size:11px;color:var(--text-3)">☐ 商品名称　租户　品类　状态　分组　标签</div>
+            <div class="wf-row" style="margin:3px 0;font-size:11.5px">☐ 怡宝矿泉水　MVP　BEVERAGE　<span class="wf-pill">启用</span>　<span class="wf-pill">夏季主推</span>　<span class="wf-pill">热销 促销</span></div>
+            <div class="wf-row" style="margin:3px 0;font-size:11.5px">☐ 可口可乐 330ml　MVP　BEVERAGE　<span class="wf-pill">启用</span>　<span class="wf-pill">夏季主推</span>　<span class="wf-pill">热销</span></div>
+            <div class="wf-row" style="margin-top:8px"><span class="wf-chip" style="flex:1">已选择 2 项　设置标签 / 移除标签 / 设置分组 / 移除分组 / 取消</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <h3><span class="h3n">4.3</span>左栏：分组 / 标签维护</h3>
+    <table>
+      <thead><tr><th style="width:130px">能力</th><th>规则与交互</th></tr></thead>
+      <tbody>
+        <tr><td>新建</td><td>分组、标签分别有独立的「＋ 新建」；弹窗输入名称，名称在<b>同一对象类型下唯一</b>，重复时提示。</td></tr>
+        <tr><td>搜索</td><td>分组、标签各有独立搜索框，按名称实时过滤当前类型下的列表。</td></tr>
+        <tr><td>列表项信息</td><td>每项展示：启用 / 停用标记、名称、已绑定对象数量。</td></tr>
+        <tr><td>行内编辑</td><td>列表项「⋯」→「编辑」进入行内编辑，Enter 确认、Esc 取消；改名同样做重名校验。</td></tr>
+        <tr><td>启用 / 停用</td><td>「⋯」→「停用 / 启用」切换状态，更新时间为当天。</td></tr>
+        <tr><td>删除</td><td>「⋯」→「删除」，需二次确认；删除后解除该分组 / 标签与所有对象的绑定。</td></tr>
+        <tr><td>未分组虚拟项</td><td>置顶展示，显示「未分组 / 未打标签」的对象数量；选中后右侧列表只显示未绑定该项的对象。</td></tr>
+        <tr><td>单选筛选</td><td>左侧选中一个分组或标签，右侧对象列表按该绑定关系过滤；再次点击取消选中即恢复全部。</td></tr>
+      </tbody>
+    </table>
+
+    <h3><span class="h3n">4.4</span>右栏：对象列表与批量操作</h3>
+    <ul>
+      <li>列表列随对象类型变化，<b>公共列</b>为：复选框、对象主名称、状态、<b>分组</b>、<b>标签</b>；分组 / 标签列以胶囊标签展示，超过 2 个显示「+N」。</li>
+      <li>表头复选框支持全选 / 反选当前筛选结果。</li>
+      <li>勾选对象后，底部出现批量操作条：<b>设置标签、移除标签、设置分组、移除分组、取消</b>。</li>
+      <li>设置类操作弹窗内可多选目标分组 / 标签，仅列出<b>已启用</b>项；移除类操作清除所选对象与所选分组 / 标签的绑定。</li>
+      <li>批量操作完成后提示成功数量，列表即时刷新。</li>
+    </ul>
+
+    <h3><span class="h3n">4.5</span>规则与约束</h3>
+    <ul>
+      <li>同类型下分组名、标签名均<b>唯一</b>，不同类型可同名。</li>
+      <li>对象与分组、标签均为<b>多对多</b>关系，可绑定多个、也可完全为空。</li>
+      <li>停用不解除历史绑定，仅在新建候选中隐藏，并在列表胶囊上标注「停用」。</li>
+      <li>删除分组 / 标签属于破坏性操作，必须二次确认，并同步清理绑定关系。</li>
+      <li>对象列表与绑定数量统计随操作<b>实时更新</b>，无需手动刷新。</li>
+    </ul>
+  </section>
+
+  <!-- 5 商品页集成 -->
+  <section>
+    <div class="sec-hd"><span class="sec-no">05</span><h2>业务页面集成</h2></div>
+
+    <h3><span class="h3n">5.1</span>商品 / 预包装商品</h3>
+    <p>在页头新增「分组&标签」入口，并把分组、标签直接呈现在列表与筛选中。</p>
+    <table>
+      <thead><tr><th style="width:120px">区域</th><th style="width:46%">变更前</th><th>变更后</th></tr></thead>
+      <tbody>
+        <tr>
+          <td>页面标题</td>
+          <td><span class="old">商品库</span>；带 eyebrow PRODUCT LIBRARY 与描述文案</td>
+          <td><span class="new">预包装商品</span><span class="chg-tag">变更</span>，移除 eyebrow 与描述</td>
+        </tr>
+        <tr>
+          <td>页头按钮</td>
+          <td><span class="old">＋ 新建商品</span></td>
+          <td><span class="new">分组&标签</span> + <span class="new">+新建</span><span class="chg-tag">变更</span></td>
+        </tr>
+        <tr>
+          <td>列表列</td>
+          <td><span class="old">图片 · 名称 · 租户 · 分类 · 品牌 · AI识别 · 状态 · 操作</span></td>
+          <td>图片 · 名称 · 租户 · <span class="new">分组</span> · <span class="new">标签</span> · AI 识别 · 状态 · <span class="new">更新日期</span> · <span class="new">更新者</span> · 操作<span class="chg-tag">变更</span><br><span class="small muted">「分类」改为「分组」；移除品牌；新增标签、更新日期、更新者</span></td>
+        </tr>
+        <tr>
+          <td>操作列</td>
+          <td><span class="old">查看详情 · ⋯</span></td>
+          <td><span class="new">复制 · 禁用（可切回启用） · 删除</span><span class="chg-tag">变更</span></td>
+        </tr>
+        <tr>
+          <td>搜索与筛选</td>
+          <td><span class="old">搜索名称/条码 + 分类 + 租户 + 清除过滤条件（文字链接）</span></td>
+          <td>搜索名称/条码 + <span class="new">分组</span> + 租户 + <span class="new">标签</span> + <span class="new">更新者</span>；过滤 / 刷新 / 清除改为<span class="new">图标按钮</span><span class="chg-tag">变更</span></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3><span class="h3n">5.2</span>商品 / 现制商品</h3>
+    <table>
+      <thead><tr><th style="width:120px">区域</th><th style="width:46%">变更前</th><th>变更后</th></tr></thead>
+      <tbody>
+        <tr>
+          <td>页面名称</td>
+          <td><span class="old">现制商品-原 UI</span>；带描述文案</td>
+          <td><span class="new">现制商品</span><span class="chg-tag">变更</span>，移除描述</td>
+        </tr>
+        <tr>
+          <td>页头按钮</td>
+          <td><span class="old">分组&标签 · ＋ 创建现制商品</span></td>
+          <td>分组&标签 · <span class="new">+新建</span><span class="chg-tag">变更</span></td>
+        </tr>
+        <tr>
+          <td>列表列</td>
+          <td><span class="old">名称（无图） · 分类 · 标签 · 机器品牌 · 更新日期 · 更新者 · 客户 · 操作</span></td>
+          <td>名称<span class="new">（含缩略图）</span> · <span class="new">分组</span> · 标签 · 机器品牌 · <span class="new">租户</span> · 更新日期 · 更新者 · 客户（仅 ROOT）· 操作<span class="chg-tag">变更</span><br><span class="small muted">「分类」改为「分组」；名称加缩略图；机器品牌后新增租户</span></td>
+        </tr>
+        <tr>
+          <td>搜索与筛选</td>
+          <td><span class="old">输入名称 + 分类 / 标签 / 更新者 / 机器品牌；过滤 / 刷新 / 清除为文字或大图标</span></td>
+          <td>输入商品名称或编码 + <span class="new">分组</span> / 标签 / 更新者 / 机器品牌；过滤 / 刷新 / 清除改为<span class="new">紧凑图标</span>，另保留列设置<span class="chg-tag">变更</span></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3><span class="h3n">5.3</span>点位（本次仅约定规格）</h3>
+    <div class="note warn">点位页面本次未提供原型，以下为对齐约定，实现时按点位页既有规范落地。</div>
+    <ul>
+      <li><b>入口</b>：页头新增「分组&标签」按钮，点击进入「标签&分组管理」并定位到「点位」类型 tab。</li>
+      <li><b>列表</b>：在既有列之后追加<b>分组</b>、<b>标签</b>两列，以胶囊展示，超过 2 个显示「+N」；未绑定时显示「—」。</li>
+      <li><b>筛选</b>：过滤区新增<b>分组</b>、<b>标签</b>两个筛选维度，仅列出已启用项，支持与其他筛选条件叠加。</li>
+      <li><b>其他列</b>：点位名称、所属租户、设备类型、运行状态保持现状，不在本次改动范围。</li>
+    </ul>
+  </section>
+
+  <!-- 6 变更对比 -->
+  <section>
+    <div class="sec-hd"><span class="sec-no">06</span><h2>变更对比一览</h2></div>
+    <p class="small muted">下表汇总本次相对旧版的所有改动，<span class="chg">红色</span>为新增或变更项。</p>
+    <table>
+      <thead><tr><th style="width:170px">页面</th><th style="width:150px">改动项</th><th>旧 → 新</th></tr></thead>
+      <tbody>
+        <tr><td rowspan="3">系统设置</td><td>菜单名称</td><td><span class="old">标签分组管理</span> → <span class="new">标签&分组管理</span></td></tr>
+        <tr><td>页面标题 / 面包屑</td><td>同步改为 <span class="new">标签&分组管理</span></td></tr>
+        <tr><td>对象类型 tab</td><td><span class="new">预包装商品 / 现制商品 / 点位</span> 三类集中管理</td></tr>
+        <tr><td rowspan="4">预包装商品</td><td>标题</td><td><span class="old">商品库</span> → <span class="new">预包装商品</span></td></tr>
+        <tr><td>列</td><td>分类→<span class="new">分组</span>；移除品牌；新增<span class="new">标签、更新日期、更新者</span></td></tr>
+        <tr><td>筛选</td><td>新增<span class="new">分组、标签、更新者</span>；清除改<span class="new">图标</span></td></tr>
+        <tr><td>按钮</td><td><span class="old">＋ 新建商品</span> → <span class="new">分组&标签 + +新建</span></td></tr>
+        <tr><td rowspan="3">现制商品</td><td>名称</td><td><span class="old">现制商品-原 UI</span> → <span class="new">现制商品</span></td></tr>
+        <tr><td>列</td><td>分类→<span class="new">分组</span>；名称加<span class="new">缩略图</span>；新增<span class="new">租户</span></td></tr>
+        <tr><td>筛选</td><td>新增<span class="new">分组</span>；过滤/刷新/清除改<span class="new">紧凑图标</span></td></tr>
+        <tr><td>点位</td><td>入口 + 列 + 筛选</td><td>新增<span class="new">分组&标签按钮</span>、<span class="new">分组/标签列</span>、<span class="new">分组/标签筛选</span>（仅约定）</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- 7 关键流程 -->
+  <section>
+    <div class="sec-hd"><span class="sec-no">07</span><h2>关键流程</h2></div>
+    <h3><span class="h3n">7.1</span>集中管理：给对象批量打标签</h3>
+    <div class="flow">
+      <div class="step"><div class="sn">STEP 1</div><div class="st">进入控制台</div><div class="sd">系统设置 → 标签&分组管理，选择对象类型</div></div>
+      <div class="step"><div class="sn">STEP 2</div><div class="st">勾选对象</div><div class="sd">右侧列表勾选，或按左侧分组/标签先筛出对象</div></div>
+      <div class="step"><div class="sn">STEP 3</div><div class="st">批量设置</div><div class="sd">底部操作条选择「设置标签 / 设置分组」并多选目标</div></div>
+      <div class="step"><div class="sn">STEP 4</div><div class="st">即时生效</div><div class="sd">列表刷新、绑定数量更新，业务页同步展示</div></div>
+    </div>
+
+    <h3><span class="h3n">7.2</span>业务页：按分组快速筛选</h3>
+    <div class="flow">
+      <div class="step"><div class="sn">STEP 1</div><div class="st">打开业务页</div><div class="sd">商品 / 预包装商品或现制商品</div></div>
+      <div class="step"><div class="sn">STEP 2</div><div class="st">选择维度</div><div class="sd">过滤区选择「分组」或「标签」</div></div>
+      <div class="step"><div class="sn">STEP 3</div><div class="st">查看结果</div><div class="sd">列表实时过滤，分组/标签列可见</div></div>
+      <div class="step"><div class="sn">STEP 4</div><div class="st">清除条件</div><div class="sd">点击清除图标恢复全部</div></div>
+    </div>
+  </section>
+
+  <!-- 8 验收标准 -->
+  <section>
+    <div class="sec-hd"><span class="sec-no">08</span><h2>验收标准</h2></div>
+    <table>
+      <thead><tr><th style="width:64px">编号</th><th>验收项</th></tr></thead>
+      <tbody>
+        <tr><td class="ac-no">AC-01</td><td>系统设置下菜单、面包屑、页面标题均为「标签&分组管理」，无旧名称残留。</td></tr>
+        <tr><td class="ac-no">AC-02</td><td>控制台可在预包装商品 / 现制商品 / 点位间切换，左右栏数据随之切换且互不串数据。</td></tr>
+        <tr><td class="ac-no">AC-03</td><td>可新建、搜索、行内改名、启用/停用、删除分组与标签；重名被拦截，删除有二次确认。</td></tr>
+        <tr><td class="ac-no">AC-04</td><td>「未分组 / 未打标签」数量准确，点击后只显示未绑定对象。</td></tr>
+        <tr><td class="ac-no">AC-05</td><td>勾选对象后批量设置/移除标签与分组生效，绑定数量与列表即时刷新。</td></tr>
+        <tr><td class="ac-no">AC-06</td><td>预包装商品页：列含分组、标签、更新日期、更新者；筛选含分组、标签、更新者；页头有「分组&标签」「+新建」。</td></tr>
+        <tr><td class="ac-no">AC-07</td><td>现制商品页：列含分组、标签、租户与名称缩略图；筛选含分组；页头有「分组&标签」「+新建」。</td></tr>
+        <tr><td class="ac-no">AC-08</td><td>点位页（实现后）：页头有「分组&标签」入口，列表展示分组、标签列，筛选支持分组、标签。</td></tr>
+        <tr><td class="ac-no">AC-09</td><td>停用的分组/标签不进入新建候选，已绑定对象仍显示绑定并标注「停用」。</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- 9 非目标 -->
+  <section>
+    <div class="sec-hd"><span class="sec-no">09</span><h2>非目标与后续</h2></div>
+    <ul>
+      <li>本次不涉及机器、租户对象的界面入口（数据层已具备类型隔离能力，可作为后续扩展）。</li>
+      <li>本次不做分组 / 标签的排序拖拽、批量导入导出与权限细分。</li>
+      <li>点位页面仅约定规格，界面实现与视觉细节在点位页开发时对齐。</li>
+      <li>报表分析、组件管理、多语言本地化中的「分类」为独立业务概念，<b>不在本次统一范围内</b>。</li>
+    </ul>
+  </section>
+
+  <div class="foot">
+    <span>VendSolution · 标签&分组管理 PRD · v1.0</span>
+    <span>以 vend-solution-reports.html 当前原型为准</span>
+  </div>
+
+</div>
+</body>
+</html>

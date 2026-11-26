@@ -7,25 +7,15 @@
 <title>告警详情 · VendSolution</title>
 <link rel="stylesheet" href="app-ui.css">
 <style>
-/* 告警详情 · 页面前缀 ad- */
-.ad-back{
-  display:inline-flex;align-items:center;gap:2px;height:44px;
-  font-size:13px;font-weight:600;color:var(--brand);white-space:nowrap
+/* 告警详情 · 页面前缀 ad-（只写布局，组件一律用 app-ui.css） */
+.ad-badges{flex-wrap:wrap}
+.ad-title{margin-top:10px;font-size:19px;line-height:26px;font-weight:800;letter-spacing:-.4px}
+.ad-sub{
+  margin-top:4px;font-size:11.5px;line-height:16px;color:var(--text-3);
+  letter-spacing:.2px;font-variant-numeric:tabular-nums;overflow-wrap:anywhere
 }
-.ad-back svg{width:17px;height:17px}
-
-.ad-hero{
-  padding:14px;border:1px solid var(--brand-line);border-radius:var(--r-card);background:var(--brand-weak)
-}
-.ad-hero-top{display:flex;align-items:center;justify-content:space-between;gap:8px}
-.ad-hero-title{margin-top:8px;font-size:20px;line-height:27px;font-weight:800;letter-spacing:-.4px;color:var(--ink)}
-.ad-hero-sub{
-  margin-top:4px;font-size:11px;line-height:16px;color:var(--text-2);
-  font-variant-numeric:tabular-nums;overflow-wrap:anywhere
-}
-
-.ad-link{margin-left:6px;font-size:12px;font-weight:700;color:var(--brand);white-space:nowrap}
-.ad-ok{color:var(--ok);font-weight:700}
+.ad-link{margin-left:6px;font-size:12px;font-weight:600;color:var(--brand);white-space:nowrap}
+.ad-ok{color:var(--ok);font-weight:600}
 .ad-order{font-variant-numeric:tabular-nums}
 </style>
 </head>
@@ -36,14 +26,14 @@
 
   <header class="navbar">
     <span class="nav-left">
-      <a class="ad-back" href="alerts.html" onclick="return appBack(event)">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>返回
+      <a class="icon-btn" href="alerts.html" aria-label="返回告警列表">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
       </a>
     </span>
     <h1>告警详情</h1>
     <span class="nav-right">
       <a class="icon-btn" href="alerts.html" aria-label="关闭">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
       </a>
     </span>
   </header>
@@ -51,44 +41,46 @@
   <div class="body">
 
     <!-- 状态头 -->
-    <section class="ad-hero">
-      <div class="ad-hero-top">
-        <span class="badge brand lg">P2 · 提示</span>
-        <span class="badge ok"><span class="dot ok"></span>已完成</span>
+    <section class="card">
+      <div class="card-body">
+        <div class="hstack ad-badges">
+          <span class="badge lg brand">P2 · 提示</span>
+          <span class="badge lg ok"><span class="dot ok"></span>已完成</span>
+        </div>
+        <h2 class="ad-title">设备离线</h2>
+        <p class="ad-sub">设备告警 · DEVICE_OFFLINE · 60e340a2-fe34-4255-9511-2899ffeab032</p>
       </div>
-      <h2 class="ad-hero-title">设备离线</h2>
-      <p class="ad-hero-sub">设备告警 · DEVICE_OFFLINE · 60e340a2-fe34-4255-9511-2899ffeab032</p>
     </section>
 
     <!-- 基本信息 -->
-    <section class="card mt-12">
-      <div class="card-head"><h2 class="card-title">基本信息</h2></div>
+    <section class="card">
+      <div class="card-head"><div class="card-title">基本信息</div></div>
       <div class="card-body tight">
-        <dl class="rows">
+        <div class="rows">
           <div class="row"><dt>设备</dt><dd>SN0010155<a class="ad-link" href="machines.html">查看</a></dd></div>
           <div class="row"><dt>点位</dt><dd>—</dd></div>
           <div class="row"><dt>告警时间</dt><dd>2026/10/25 14:27</dd></div>
           <div class="row"><dt>状态</dt><dd><span class="badge ok">已完成</span></dd></div>
-        </dl>
+        </div>
       </div>
     </section>
 
     <!-- 告警信息 -->
     <section class="card">
-      <div class="card-head"><h2 class="card-title">告警信息</h2></div>
+      <div class="card-head"><div class="card-title">告警信息</div></div>
       <div class="card-body tight">
-        <dl class="rows">
+        <div class="rows">
           <div class="row"><dt>告警类型</dt><dd>设备离线</dd></div>
           <div class="row"><dt>当前状态</dt><dd><span class="ad-ok">正常</span></dd></div>
           <div class="row"><dt>持续时间</dt><dd>7 分钟</dd></div>
-        </dl>
+        </div>
       </div>
     </section>
 
     <!-- 关联工单 -->
     <section class="card">
       <div class="card-head bordered">
-        <h2 class="card-title">关联工单</h2>
+        <div class="card-title">关联工单</div>
         <span class="badge ok">工单已创建</span>
       </div>
       <a class="item no-thumb" href="app_workorder/ticket-detail.html">

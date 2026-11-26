@@ -7,26 +7,14 @@
 <title>告警详情 · VendSolution</title>
 <link rel="stylesheet" href="app-ui.css">
 <style>
-/* 通知详情 · 页面前缀 nd- */
-.nd-back{
-  display:inline-flex;align-items:center;gap:2px;height:44px;
-  font-size:13px;font-weight:600;color:var(--brand);white-space:nowrap
+/* 通知详情 · 页面前缀 nd-（只写布局，组件一律用 app-ui.css） */
+.nd-badges{flex-wrap:wrap}
+.nd-title{margin-top:10px;font-size:19px;line-height:26px;font-weight:800;letter-spacing:-.4px}
+.nd-meta{
+  margin-top:4px;font-size:11.5px;line-height:16px;color:var(--text-3);
+  letter-spacing:.2px;font-variant-numeric:tabular-nums
 }
-.nd-back svg{width:17px;height:17px}
-
-.nd-hero{
-  padding:14px;border:1px solid var(--line);border-radius:var(--r-card);
-  background:var(--surface)
-}
-.nd-hero.p0{background:var(--danger-bg);border-color:var(--danger)}
-.nd-hero.p1{background:var(--warn-bg);border-color:var(--warn)}
-.nd-hero.p2{background:var(--brand-weak);border-color:var(--brand-line)}
-.nd-hero .badge{background:var(--surface)}
-.nd-title{margin-top:8px;font-size:20px;line-height:27px;font-weight:800;letter-spacing:-.4px;color:var(--ink)}
-.nd-meta{margin-top:3px;font-size:12px;line-height:17px;color:var(--text-2)}
-
 .nd-desc{font-size:13px;line-height:20px;color:var(--ink)}
-.nd-st{font-weight:700}
 </style>
 </head>
 <body>
@@ -36,8 +24,8 @@
 
   <header class="navbar">
     <span class="nav-left">
-      <a class="nd-back" href="notifications.html" onclick="return appBack(event)">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>返回
+      <a class="icon-btn" href="notifications.html" aria-label="返回通知列表">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
       </a>
     </span>
     <h1>告警详情</h1>
@@ -47,28 +35,31 @@
   <div class="body">
 
     <!-- 状态头：等级 + 标题 + 机器 + 点位 -->
-    <section class="nd-hero p0" id="sevHead">
-      <span class="badge danger lg" id="dVl">P0</span>
-      <h2 class="nd-title" id="dTitle">制冷系统故障</h2>
-      <div class="nd-meta" id="dMachine">Machine VS-1028</div>
-      <div class="nd-meta" id="dSite">点位：Downtown Store</div>
+    <section class="card">
+      <div class="card-body">
+        <div class="hstack nd-badges">
+          <span class="badge lg danger" id="dVl">P0</span>
+        </div>
+        <h2 class="nd-title" id="dTitle">制冷系统故障</h2>
+        <p class="nd-meta"><span id="dMachine">Machine VS-1028</span> · <span id="dSite">点位：Downtown Store</span></p>
+      </div>
     </section>
 
     <!-- 告警信息 -->
-    <section class="card mt-12">
-      <div class="card-head"><h2 class="card-title">告警信息</h2></div>
+    <section class="card">
+      <div class="card-head"><div class="card-title">告警信息</div></div>
       <div class="card-body tight">
-        <dl class="rows">
-          <div class="row"><dt>告警状态</dt><dd><span class="nd-st" id="dStatus">未恢复</span></dd></div>
+        <div class="rows">
+          <div class="row"><dt>告警状态</dt><dd><span class="badge danger" id="dStatus">未恢复</span></dd></div>
           <div class="row"><dt>首次发生</dt><dd id="dFirst">2026-10-30 09:32</dd></div>
           <div class="row"><dt>最近发生</dt><dd id="dLast">2026-10-30 09:32</dd></div>
-        </dl>
+        </div>
       </div>
     </section>
 
     <!-- 告警描述 -->
     <section class="card">
-      <div class="card-head"><h2 class="card-title">告警描述</h2></div>
+      <div class="card-head"><div class="card-title">告警描述</div></div>
       <div class="card-body">
         <p class="nd-desc" id="dDesc">制冷系统检测到异常，可能影响设备正常销售。</p>
       </div>
@@ -76,7 +67,7 @@
 
     <!-- 告警历史 -->
     <section class="card">
-      <div class="card-head"><h2 class="card-title">告警历史</h2></div>
+      <div class="card-head"><div class="card-title">告警历史</div></div>
       <div class="card-body">
         <div class="steps" id="dHist"></div>
       </div>
@@ -120,7 +111,6 @@ var BADGE = { p0:'danger', p1:'warn', p2:'brand' };
 var CHECK = '<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
 
 /* 状态头 */
-document.getElementById('sevHead').className = 'nd-hero ' + lvl;
 var vl = document.getElementById('dVl');
 vl.className = 'badge lg ' + BADGE[lvl];
 vl.textContent = d.level;
@@ -130,8 +120,8 @@ document.getElementById('dSite').textContent = '点位：' + d.site;
 
 /* 告警信息 */
 var st = document.getElementById('dStatus');
+st.className = 'badge ' + (d.status === '已恢复' ? 'ok' : 'danger');
 st.textContent = d.status;
-st.style.color = (d.status === '已恢复') ? 'var(--ok)' : 'var(--danger)';
 document.getElementById('dFirst').textContent = d.firstAt;
 document.getElementById('dLast').textContent = d.lastAt;
 

@@ -7,89 +7,41 @@
 <title>告警卡片 · 全描边 4 款 · VendSolution</title>
 <link rel="stylesheet" href="app-ui.css">
 <style>
-/* 告警卡片设计变体 · 页面前缀 dd- */
+/* 告警卡片设计对比 · 页面前缀 dd-（四款只改「严重度强调」，其余组件一律用 app-ui.css） */
 .dd-head{padding:4px 0 0}
 .dd-brand{font-size:11px;line-height:15px;font-weight:800;letter-spacing:2.5px;color:var(--brand)}
-.dd-title{margin-top:3px;font-size:23px;line-height:31px;font-weight:800;letter-spacing:-.5px;color:var(--ink)}
+.dd-title{margin-top:3px;font-size:22px;line-height:30px;font-weight:800;letter-spacing:-.5px}
 .dd-tip{margin-top:4px;font-size:12px;line-height:18px;color:var(--text-2)}
 
 .dd-cap{display:flex;align-items:center;gap:8px;margin:18px 2px 8px}
-.dd-no{
-  display:inline-flex;align-items:center;height:20px;padding:0 7px;border-radius:6px;
-  background:var(--brand-weak);color:var(--brand);font-size:11px;font-weight:800;letter-spacing:.4px
-}
-.dd-nm{font-size:14px;line-height:20px;font-weight:700;color:var(--ink)}
-.dd-src{margin-left:auto;font-size:11px;line-height:16px;color:var(--text-3)}
-.dd-src.done{
-  height:20px;padding:0 8px;display:inline-flex;align-items:center;border-radius:999px;
-  background:var(--brand);color:#fff;font-weight:700
-}
+.dd-nm{font-size:13px;line-height:19px;font-weight:700}
+.dd-cap .spacer{flex:1}
 
-/* 卡片公共 */
-.dd-card{display:block;border-radius:var(--r-card);color:var(--ink)}
+.dd-card{display:block;color:var(--ink)}
 .dd-card:active{opacity:.94}
-.dd-top{display:flex;align-items:center;gap:8px}
-.dd-title-s{margin-top:8px;font-size:16px;line-height:22px;font-weight:700;letter-spacing:-.2px}
-.dd-foot{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:11px}
+.dd-row{display:flex;align-items:center;gap:6px}
+.dd-row .spacer{flex:1}
+.dd-name{margin-top:8px}
+.dd-tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:9px}
+.dd-tags .badge{font-weight:600}
+.dd-tags svg{width:11px;height:11px}
+.dd-foot{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:12px}
 .dd-time{font-size:11px;line-height:16px;color:var(--text-3);font-variant-numeric:tabular-nums}
-.dd-btn{
-  display:inline-flex;align-items:center;height:28px;padding:0 10px;border-radius:8px;
-  font-size:12px;font-weight:700;white-space:nowrap
-}
-.dd-chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:9px}
-.dd-chip{
-  display:inline-flex;align-items:center;gap:4px;height:22px;padding:0 8px;border-radius:999px;
-  background:var(--surface-2);font-size:11px;font-weight:600;color:var(--text-2)
-}
-.dd-chip svg{width:11px;height:11px;color:var(--text-3)}
-.dd-dot{width:6px;height:6px;border-radius:50%;background:var(--danger);display:inline-block;flex:0 0 auto}
-.dd-st{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:700;color:var(--text-2);white-space:nowrap}
+.dd-meta{margin-top:5px;font-size:12px;line-height:17px;color:var(--text-2)}
 
 /* C1 细描边 / 白底 */
-.dd-c1{padding:12px 13px;border:1px solid var(--danger);background:var(--surface)}
-.dd-c1-lvl{
-  display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:800;
-  letter-spacing:.6px;color:var(--danger)
-}
-.dd-c1-st{margin-left:auto;color:var(--danger)}
-.dd-c1 .dd-btn{background:var(--brand-weak);color:var(--brand)}
-
+.dd-c1{border-color:var(--danger)}
 /* C2 描边 / 浅红底 */
-.dd-c2{padding:12px 13px;border:1px solid var(--danger);background:var(--danger-bg)}
-.dd-c2-lvl{
-  display:inline-flex;align-items:center;height:20px;padding:0 7px;border-radius:6px;
-  background:var(--danger);color:#fff;font-size:11px;font-weight:800;letter-spacing:.4px
-}
-.dd-c2-sev{font-size:11px;font-weight:800;letter-spacing:.6px;color:var(--danger)}
-.dd-c2 .dd-st{margin-left:auto;color:var(--danger)}
-.dd-c2 .dd-chip{background:var(--surface)}
-.dd-c2 .dd-time{color:var(--danger)}
-.dd-c2 .dd-btn{background:var(--surface);color:var(--danger);box-shadow:inset 0 0 0 1px var(--danger)}
-
+.dd-c2{border-color:var(--danger);background:var(--danger-bg)}
+.dd-c2 .badge:not(.dd-fill){background:var(--surface)}
+.dd-c2 .dd-time{color:var(--warn)}
 /* C3 描边 / 发光实心徽章 */
-.dd-c3{
-  padding:13px;border:2px solid var(--danger);background:var(--surface);
-  box-shadow:0 0 0 4px var(--danger-bg)
-}
-.dd-c3-lvl{
-  display:inline-flex;align-items:center;height:22px;padding:0 9px;border-radius:7px;
-  background:var(--danger);color:#fff;font-size:11px;font-weight:800;letter-spacing:.4px
-}
-.dd-c3-sev{font-size:11px;font-weight:800;letter-spacing:.6px;color:var(--danger)}
-.dd-c3 .dd-st{margin-left:auto;height:22px;padding:0 9px;border-radius:999px;background:var(--danger-bg);color:var(--danger)}
-.dd-c3-meta{margin-top:5px;font-size:12px;line-height:17px;color:var(--text-2)}
-.dd-c3 .dd-btn{background:var(--danger);color:#fff}
-
+.dd-c3{border-color:var(--danger);box-shadow:0 0 0 4px var(--danger-bg)}
 /* C4 描边 / 顶部色条 */
-.dd-c4{border:1px solid var(--danger);background:var(--surface);overflow:hidden}
-.dd-c4-strip{height:4px;background:var(--danger)}
-.dd-c4-in{padding:11px 13px 12px}
-.dd-c4-lvl{
-  display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:800;
-  letter-spacing:.6px;color:var(--danger)
-}
-.dd-c4-st{margin-left:auto;color:var(--danger)}
-.dd-c4 .dd-btn{background:var(--brand-weak);color:var(--brand)}
+.dd-c4{border-color:var(--line);overflow:hidden}
+.dd-strip{height:6px;background:var(--danger)}
+/* 实心等级徽章（C2 / C3 共用） */
+.dd-fill{background:var(--danger);color:#fff}
 </style>
 </head>
 <body>
@@ -106,64 +58,76 @@
     </div>
 
     <!-- C1 -->
-    <div class="dd-cap"><span class="dd-no">C1</span><span class="dd-nm">细描边 / 白底</span><span class="dd-src">全描边</span></div>
-    <a class="dd-card dd-c1" href="alert-detail.html">
-      <div class="dd-top">
-        <span class="dd-c1-lvl"><span class="dd-dot"></span>P0 · 严重</span>
-        <span class="dd-st dd-c1-st"><span class="dd-dot"></span>待处理</span>
+    <div class="dd-cap"><span class="badge brand">C1</span><span class="dd-nm">细描边 / 白底</span><span class="spacer"></span><span class="badge">全描边</span></div>
+    <a class="card dd-card dd-c1" href="alert-detail.html">
+      <div class="card-body">
+        <div class="dd-row">
+          <span class="badge danger">P0 · 严重</span>
+          <span class="spacer"></span>
+          <span class="badge"><span class="dot danger"></span>待处理</span>
+        </div>
+        <div class="card-title dd-name">柜内温度过高</div>
+        <div class="dd-tags">
+          <span class="badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><rect x="2" y="4" width="20" height="12" rx="2"/><path d="M8 20h8M12 16v4"/></svg>SN0020301</span>
+          <span class="badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>上海 A 店</span>
+          <span class="badge">JAVA</span>
+        </div>
+        <div class="dd-foot"><span class="dd-time">2026/10/25 14:40</span><span class="btn btn-secondary btn-xs">查看 →</span></div>
       </div>
-      <div class="dd-title-s">柜内温度过高</div>
-      <div class="dd-chips">
-        <span class="dd-chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><rect x="2" y="4" width="20" height="12" rx="2"/><path d="M8 20h8M12 16v4"/></svg>SN0020301</span>
-        <span class="dd-chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>上海 A 店</span>
-        <span class="dd-chip">JAVA</span>
-      </div>
-      <div class="dd-foot"><span class="dd-time">2026/10/25 14:40</span><span class="dd-btn">查看 →</span></div>
     </a>
 
     <!-- C2 -->
-    <div class="dd-cap"><span class="dd-no">C2</span><span class="dd-nm">描边 / 浅红底</span><span class="dd-src">全描边</span></div>
-    <a class="dd-card dd-c2" href="alert-detail.html">
-      <div class="dd-top">
-        <span class="dd-c2-lvl">P0</span><span class="dd-c2-sev">严重</span>
-        <span class="dd-st"><span class="dd-dot"></span>待处理</span>
+    <div class="dd-cap"><span class="badge brand">C2</span><span class="dd-nm">描边 / 浅红底</span><span class="spacer"></span><span class="badge">全描边</span></div>
+    <a class="card dd-card dd-c2" href="alert-detail.html">
+      <div class="card-body">
+        <div class="dd-row">
+          <span class="badge dd-fill">P0</span>
+          <span class="badge danger">严重</span>
+          <span class="spacer"></span>
+          <span class="badge"><span class="dot danger"></span>待处理</span>
+        </div>
+        <div class="card-title dd-name">柜内温度过高</div>
+        <div class="dd-tags">
+          <span class="badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><rect x="2" y="4" width="20" height="12" rx="2"/><path d="M8 20h8M12 16v4"/></svg>SN0020301</span>
+          <span class="badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>上海 A 店</span>
+        </div>
+        <div class="dd-foot"><span class="dd-time">2026/10/25 14:40</span><span class="btn btn-danger-weak btn-xs">查看 →</span></div>
       </div>
-      <div class="dd-title-s">柜内温度过高</div>
-      <div class="dd-chips">
-        <span class="dd-chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><rect x="2" y="4" width="20" height="12" rx="2"/><path d="M8 20h8M12 16v4"/></svg>SN0020301</span>
-        <span class="dd-chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>上海 A 店</span>
-      </div>
-      <div class="dd-foot"><span class="dd-time">2026/10/25 14:40</span><span class="dd-btn">查看 →</span></div>
     </a>
 
     <!-- C3 -->
-    <div class="dd-cap"><span class="dd-no">C3</span><span class="dd-nm">描边 / 发光实心徽章</span><span class="dd-src done">已采用 · 全局标准</span></div>
-    <a class="dd-card dd-c3" href="alert-detail.html">
-      <div class="dd-top">
-        <span class="dd-c3-lvl">P0</span><span class="dd-c3-sev">严重告警</span>
-        <span class="dd-st">待处理</span>
+    <div class="dd-cap"><span class="badge brand">C3</span><span class="dd-nm">描边 / 发光实心徽章</span><span class="spacer"></span><span class="badge ok">已采用 · 全局标准</span></div>
+    <a class="card dd-card dd-c3" href="alert-detail.html">
+      <div class="card-body">
+        <div class="dd-row">
+          <span class="badge dd-fill">P0</span>
+          <span class="badge danger">严重告警</span>
+          <span class="spacer"></span>
+          <span class="badge"><span class="dot danger"></span>待处理</span>
+        </div>
+        <div class="card-title dd-name">柜内温度过高</div>
+        <div class="dd-meta">设备 SN0020301 · 点位 上海 A 店 · JAVA</div>
+        <div class="dd-foot"><span class="dd-time">2026/10/25 14:40</span><span class="btn btn-danger btn-xs">查看 →</span></div>
       </div>
-      <div class="dd-title-s">柜内温度过高</div>
-      <div class="dd-c3-meta">设备 SN0020301 · 点位 上海 A 店 · JAVA</div>
-      <div class="dd-foot"><span class="dd-time">2026/10/25 14:40</span><span class="dd-btn">查看 →</span></div>
     </a>
 
     <!-- C4 -->
-    <div class="dd-cap"><span class="dd-no">C4</span><span class="dd-nm">描边 / 顶部色条</span><span class="dd-src">全描边</span></div>
-    <a class="dd-card dd-c4" href="alert-detail.html">
-      <div class="dd-c4-strip"></div>
-      <div class="dd-c4-in">
-        <div class="dd-top">
-          <span class="dd-c4-lvl"><span class="dd-dot"></span>P0 · 严重</span>
-          <span class="dd-st dd-c4-st"><span class="dd-dot"></span>待处理</span>
+    <div class="dd-cap"><span class="badge brand">C4</span><span class="dd-nm">描边 / 顶部色条</span><span class="spacer"></span><span class="badge">全描边</span></div>
+    <a class="card dd-card dd-c4" href="alert-detail.html">
+      <div class="dd-strip"></div>
+      <div class="card-body">
+        <div class="dd-row">
+          <span class="badge danger">P0 · 严重</span>
+          <span class="spacer"></span>
+          <span class="badge"><span class="dot danger"></span>待处理</span>
         </div>
-        <div class="dd-title-s">柜内温度过高</div>
-        <div class="dd-chips">
-          <span class="dd-chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><rect x="2" y="4" width="20" height="12" rx="2"/><path d="M8 20h8M12 16v4"/></svg>SN0020301</span>
-          <span class="dd-chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>上海 A 店</span>
-          <span class="dd-chip">JAVA</span>
+        <div class="card-title dd-name">柜内温度过高</div>
+        <div class="dd-tags">
+          <span class="badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><rect x="2" y="4" width="20" height="12" rx="2"/><path d="M8 20h8M12 16v4"/></svg>SN0020301</span>
+          <span class="badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>上海 A 店</span>
+          <span class="badge">JAVA</span>
         </div>
-        <div class="dd-foot"><span class="dd-time">2026/10/25 14:40</span><span class="dd-btn">查看 →</span></div>
+        <div class="dd-foot"><span class="dd-time">2026/10/25 14:40</span><span class="btn btn-secondary btn-xs">查看 →</span></div>
       </div>
     </a>
 
