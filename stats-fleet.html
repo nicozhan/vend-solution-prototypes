@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#2434c8">
+<title>资产与机队 · VendSolution</title>
+<link rel="stylesheet" href="app-ui.css">
+<style>
+/* 资产与机队（方案 C2） · 页面前缀 fl- */
+.fl-card{padding:13px 14px}
+.fl-hd{display:flex;align-items:baseline;justify-content:space-between;gap:8px;font-size:13.5px;line-height:19px;font-weight:700}
+.fl-hd em{font-style:normal;font-size:10px;line-height:14px;font-weight:600;color:var(--text-3)}
+.fl-nums{display:grid;grid-template-columns:repeat(3,1fr);margin-top:11px;padding-top:11px;border-top:1px solid var(--line)}
+.fl-nums.four{grid-template-columns:repeat(4,1fr)}
+.fl-num{padding-left:11px;border-left:1px solid var(--line)}
+.fl-num:first-child{padding-left:0;border-left:0}
+.fl-num b{display:block;font-size:23px;line-height:28px;font-weight:800;letter-spacing:-.7px;font-variant-numeric:tabular-nums}
+.fl-nums.four .fl-num b{font-size:19px;line-height:25px;letter-spacing:-.4px}
+.fl-num span{display:block;margin-top:1px;font-size:10.5px;line-height:15px;font-weight:600;color:var(--text-2)}
+.fl-num b.ok{color:var(--ok)}
+.fl-num b.warn{color:var(--orange)}
+.fl-num b.mute{color:var(--text-3)}
+.fl-tip{margin-top:11px;font-size:10px;line-height:15px;color:var(--text-3)}
+.fl-model{display:grid;grid-template-columns:58px minmax(0,1fr) 34px;gap:10px;align-items:center;padding:8px 0;border-bottom:1px solid var(--line)}
+.fl-model:last-of-type{border-bottom:0}
+.fl-model .nm{font-size:12.5px;font-weight:600;white-space:nowrap}
+.fl-model .bar{display:block;height:6px;border-radius:3px;background:var(--surface-2);overflow:hidden}
+.fl-model .bar i{display:block;height:100%;border-radius:3px;background:var(--brand)}
+.fl-model .ct{text-align:right;font-size:12.5px;font-weight:700;font-variant-numeric:tabular-nums}
+.fl-foot{margin-top:12px;padding:0 2px;font-size:10px;line-height:16px;color:var(--text-3)}
+</style>
+</head>
+<body>
+<main class="app">
+
+  <div class="status"><span>9:41</span><span class="status-icons"><span class="signal"><i></i><i></i><i></i><i></i></span><svg width="15" height="11" viewBox="0 0 16 12" fill="none"><path d="M1 4.2a10.5 10.5 0 0 1 14 0M3.5 6.8a6.7 6.7 0 0 1 9 0M6.2 9.4a2.7 2.7 0 0 1 3.6 0" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><circle cx="8" cy="11" r="1" fill="currentColor"/></svg><span class="battery"><i></i></span></span></div>
+
+  <header class="navbar">
+    <span class="nav-left">
+      <a class="icon-btn" href="stats.html" aria-label="返回统计">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+      </a>
+    </span>
+    <h1>资产与机队</h1>
+    <span class="nav-right"></span>
+  </header>
+
+  <div class="body" id="flBody"></div>
+
+  <div class="toast" id="flToast" role="status" aria-live="polite"></div>
+</main>
+
+<script src="app-ui.js"></script>
+<script src="stats-data.js"></script>
+<script>
+(function(){
+  var S=window.STATS, a=S.assets();
+
+  function pctText(x){return (Math.round(x*10)/10).toFixed(1)+'%'}
+  function modelRows(){
+    var max=a.models[0]?a.models[0].count:1;
+    return a.models.map(function(m){
+      return '<div class="fl-model"><span class="nm">'+m.name+'</span>'
+        +'<span class="bar"><i style="width:'+(m.count/max*100).toFixed(1)+'%"></i></span>'
+        +'<span class="ct">'+m.count+'</span></div>';
+    }).join('');
+  }
+
+  document.getElementById('flBody').innerHTML=
+    /* M24 设备资产 */
+    '<section class="card fl-card">'
+      +'<div class="fl-hd"><span>设备资产</span><em>生命周期口径</em></div>'
+      +'<div class="fl-nums">'
+        +'<div class="fl-num"><b>'+a.deviceTotal+'</b><span>设备总数</span></div>'
+        +'<div class="fl-num"><b class="ok">'+a.deviceActive+'</b><span>在用</span></div>'
+        +'<div class="fl-num"><b>'+pctText(a.deviceRate)+'</b><span>在用率</span></div>'
+      +'</div>'
+      +'<p class="fl-tip">「在用」是生命周期状态，不是实时在线；离线数见设备列表。</p>'
+    +'</section>'
+
+    /* M25 点位资产 */
+    +'<section class="card fl-card">'
+      +'<div class="fl-hd"><span>点位资产</span><em>共 '+a.siteTotal+' 个</em></div>'
+      +'<div class="fl-nums four">'
+        +'<div class="fl-num"><b>'+a.siteTotal+'</b><span>点位</span></div>'
+        +'<div class="fl-num"><b class="ok">'+a.siteActive+'</b><span>正常</span></div>'
+        +'<div class="fl-num"><b class="warn">'+a.sitePaused+'</b><span>暂停</span></div>'
+        +'<div class="fl-num"><b class="mute">'+a.siteClosed+'</b><span>关闭</span></div>'
+      +'</div>'
+      +'<p class="fl-tip">暂停 = 点位总数 − 正常 − 关闭，对应 SUSPENDED 状态。</p>'
+    +'</section>'
+
+    /* M26 商品资产 */
+    +'<section class="card fl-card">'
+      +'<div class="fl-hd"><span>商品资产</span><em>预包装目录</em></div>'
+      +'<div class="fl-nums">'
+        +'<div class="fl-num"><b>'+a.productOnShelf+'</b><span>在售</span></div>'
+        +'<div class="fl-num"><b class="warn">'+a.productLowStock+'</b><span>低库存</span></div>'
+        +'<div class="fl-num"><b>'+pctText(a.productRate)+'</b><span>上架率</span></div>'
+      +'</div>'
+      +'<p class="fl-tip">上架率 = 在售 ÷ 商品总数（'+a.productOnShelf+' / '+a.productTotal+'）；低库存指低于安全库存的 SKU。</p>'
+    +'</section>'
+
+    /* M27 机型结构 */
+    +'<section class="card fl-card">'
+      +'<div class="fl-hd"><span>机型结构</span><em>合计 '+a.deviceTotal+' 台</em></div>'
+      +'<div class="mt-8">'+modelRows()+'</div>'
+    +'</section>'
+
+    +'<p class="fl-foot">机型数量与设备总数一致（'+a.deviceTotal+' 台）· 数据按租户时区归日<br>资产口径来自设备/点位/商品主数据，与销售统计互不影响</p>';
+})();
+</script>
+</body>
+</html>

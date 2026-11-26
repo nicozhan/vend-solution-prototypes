@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#2434c8">
+<title>预包装商品 · VendSolution</title>
+<link rel="stylesheet" href="app-ui.css">
+<style>
+/* 预包装商品列表 · 页面前缀 pl-（只写私有部分，组件沿用 app-ui.css） */
+.pl-count{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:10px 2px 2px;font-size:12px;line-height:17px;color:var(--text-2)}
+.pl-count b{font-weight:700;color:var(--ink);font-variant-numeric:tabular-nums}
+.pl-sec{padding:14px 2px 7px;display:flex;align-items:baseline;justify-content:space-between;gap:8px;font-size:12px;line-height:17px;font-weight:700;letter-spacing:.4px;color:var(--text-2)}
+.pl-sec:first-of-type{padding-top:6px}
+.pl-sec em{font-style:normal;font-weight:600;letter-spacing:0;color:var(--text-3)}
+.pl-thumb{width:44px;height:44px}
+.pl-row.off .item-name,.pl-row.off .thumb{opacity:.55}
+.pl-view{position:relative;height:196px;border-radius:16px;background:#11162f;overflow:hidden;display:flex;align-items:center;justify-content:center}
+.pl-frame{position:relative;width:210px;height:120px;border-radius:12px}
+.pl-frame::before,.pl-frame::after,.pl-frame span::before,.pl-frame span::after{content:"";position:absolute;width:22px;height:22px;border:2.5px solid #fff;border-radius:4px}
+.pl-frame::before{left:0;top:0;border-right:0;border-bottom:0}
+.pl-frame::after{right:0;top:0;border-left:0;border-bottom:0}
+.pl-frame span::before{left:0;bottom:0;border-right:0;border-top:0}
+.pl-frame span::after{right:0;bottom:0;border-left:0;border-top:0}
+.pl-laser{position:absolute;left:6px;right:6px;top:50%;height:2px;border-radius:2px;background:#5fd2a4;opacity:.85}
+.pl-hint{position:absolute;left:0;right:0;bottom:12px;text-align:center;font-size:12px;color:rgba(255,255,255,.72)}
+</style>
+</head>
+<body>
+<main class="app">
+
+  <div class="status"><span>9:41</span><span class="status-icons"><span class="signal"><i></i><i></i><i></i><i></i></span><svg width="15" height="11" viewBox="0 0 16 12" fill="none"><path d="M1 4.2a10.5 10.5 0 0 1 14 0M3.5 6.8a6.7 6.7 0 0 1 9 0M6.2 9.4a2.7 2.7 0 0 1 3.6 0" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><circle cx="8" cy="11" r="1" fill="currentColor"/></svg><span class="battery"><i></i></span></span></div>
+
+  <!-- 二级页统一用 .navbar：44px 返回 + 17px 居中标题 -->
+  <header class="navbar">
+    <span class="nav-left">
+      <a class="icon-btn" href="navigation.html#common" aria-label="返回常用" onclick="return appHome(event,'common')">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+      </a>
+    </span>
+    <h1>预包装商品</h1>
+    <span class="nav-right"></span>
+  </header>
+
+  <div class="body">
+
+    <div class="search">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg>
+      <input id="plSearch" type="search" placeholder="搜索名称或条码" aria-label="搜索商品">
+      <button class="scan" type="button" data-act="scan" aria-label="扫码核对">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M4 8V5h3M20 8V5h-3M4 16v3h3M20 16v3h-3M3 12h18"/></svg>
+      </button>
+    </div>
+
+    <div class="chips mt-12" id="plChips">
+      <button class="chip active" type="button" data-cat="all">全部</button>
+      <button class="chip" type="button" data-cat="饮料">饮料</button>
+      <button class="chip" type="button" data-cat="零食">零食</button>
+      <button class="chip" type="button" data-cat="乳制品">乳制品</button>
+      <button class="chip" type="button" data-cat="即食">即食</button>
+    </div>
+
+    <div class="pl-count" id="plCount"></div>
+    <div id="plBody"></div>
+  </div>
+
+  <div class="overlay" id="plScan" role="dialog" aria-modal="true" aria-label="扫码核对">
+    <div class="sheet">
+      <div class="handle"></div>
+      <div class="sheet-head"><h2>扫码核对</h2><button class="close" type="button" data-act="closeScan" aria-label="关闭">✕</button></div>
+      <div class="pl-view">
+        <div class="pl-frame"><span></span><i class="pl-laser"></i></div>
+        <div class="pl-hint">将条码对准框内，自动识别</div>
+      </div>
+      <p class="sheet-note" style="margin-top:12px">相机为原型模拟，可直接输入条码或选一个示例。</p>
+      <div class="field" style="margin-top:0">
+        <label class="field-label" for="plCode">条码</label>
+        <input class="input" id="plCode" inputmode="numeric" placeholder="例如 6901234567890">
+      </div>
+      <div class="sheet-btns">
+        <button class="btn btn-ghost" type="button" data-act="demoScan">模拟扫描</button>
+        <button class="btn btn-primary" type="button" data-act="submitCode">确认</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="plToast" role="status" aria-live="polite"></div>
+</main>
+
+<script src="app-ui.js"></script>
+<script>
+(function(){
+  var PRODUCTS=[
+    {id:'p1',name:'泰式奶茶',spec:'330ml',cat:'饮料',on:true,barcode:'6901234567890',thumb:'奶'},
+    {id:'p2',name:'气泡水',spec:'500ml',cat:'饮料',on:true,barcode:'6901234567891',thumb:'气'},
+    {id:'p3',name:'椰子水',spec:'330ml',cat:'饮料',on:false,barcode:'6901234567892',thumb:'椰'},
+    {id:'p4',name:'鲜榨橙汁',spec:'250ml',cat:'饮料',on:true,barcode:'6901234567893',thumb:'橙'},
+    {id:'p5',name:'柠檬茶',spec:'480ml',cat:'饮料',on:true,barcode:'6901234567894',thumb:'柠'},
+    {id:'p6',name:'矿泉水',spec:'600ml',cat:'饮料',on:true,barcode:'6901234567895',thumb:'水'},
+    {id:'p7',name:'烤海苔',spec:'40g',cat:'零食',on:true,barcode:'6901234567896',thumb:'苔'},
+    {id:'p8',name:'原味薯片',spec:'70g',cat:'零食',on:true,barcode:'6901234567897',thumb:'薯'},
+    {id:'p9',name:'混合坚果',spec:'30g',cat:'零食',on:true,barcode:'6901234567898',thumb:'坚'},
+    {id:'p10',name:'巧克力棒',spec:'45g',cat:'零食',on:true,barcode:'6901234567899',thumb:'巧'},
+    {id:'p11',name:'原味酸奶',spec:'180g',cat:'乳制品',on:true,barcode:'6901234567801',thumb:'酸'},
+    {id:'p12',name:'巧克力牛奶',spec:'200ml',cat:'乳制品',on:false,barcode:'6901234567802',thumb:'牛'},
+    {id:'p13',name:'鸡蛋布丁',spec:'120g',cat:'乳制品',on:true,barcode:'6901234567803',thumb:'布'},
+    {id:'p14',name:'三文鱼饭团',spec:'110g',cat:'即食',on:true,barcode:'6901234567804',thumb:'饭'},
+    {id:'p15',name:'火腿三明治',spec:'150g',cat:'即食',on:true,barcode:'6901234567805',thumb:'治'}
+  ];
+  var GROUPS=['饮料','零食','乳制品','即食'];
+  var state={q:'',cat:'all'};
+
+  function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]})}
+  function toast(msg){
+    var el=document.getElementById('plToast');
+    el.textContent=msg; el.classList.add('show');
+    clearTimeout(toast._t); toast._t=setTimeout(function(){el.classList.remove('show')},1900);
+  }
+  var CHEV='<svg class="item-go" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 5 7 7-7 7"/></svg>';
+
+  function rowHtml(p){
+    var off=!p.on;
+    return '<a class="item pl-row'+(off?' off':'')+'" href="product-view.html?id='+encodeURIComponent(p.id)+'">'
+      +'<span class="thumb pl-thumb"><i>'+esc(p.thumb)+'</i></span>'
+      +'<span class="item-body"><span class="item-name">'+esc(p.name)+'</span>'
+      +'<span class="item-sub">'+esc(p.spec)+' · '+esc(p.cat)+'</span></span>'
+      +(off?'<span class="badge">停用</span>':CHEV)+'</a>';
+  }
+
+  function render(){
+    var q=state.q.trim().toLowerCase();
+    var rows=PRODUCTS.filter(function(p){
+      if(state.cat!=='all'&&p.cat!==state.cat)return false;
+      return !q||(p.name+' '+p.barcode+' '+p.spec).toLowerCase().indexOf(q)>=0;
+    });
+    var count=document.getElementById('plCount');
+    var body=document.getElementById('plBody');
+
+    count.innerHTML=q||state.cat!=='all'
+      ? '<span>找到 <b>'+rows.length+'</b> 个商品</span>'
+      : '<span>共 <b>'+PRODUCTS.length+'</b> 个商品</span>';
+
+    if(!rows.length){
+      body.innerHTML='<div class="card"><div class="empty">'
+        +'<div class="empty-icon gray"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg></div>'
+        +'<p>没有符合条件的商品</p><span>换个关键词，或扫码直接定位商品</span>'
+        +'<button class="btn btn-sm btn-secondary" type="button" data-act="reset">清除条件</button></div></div>';
+      return;
+    }
+
+    var groups=q||state.cat!=='all'?['搜索结果']:GROUPS;
+    body.innerHTML=groups.map(function(g){
+      var list=g==='搜索结果'?rows:rows.filter(function(p){return p.cat===g});
+      if(!list.length)return '';
+      var meta=list.length+' 个';
+      return '<div class="pl-sec">'+g+'<em>'+meta+'</em></div>'
+        +'<div class="card"><div class="list">'+list.map(rowHtml).join('')+'</div></div>';
+    }).join('');
+  }
+
+  document.getElementById('plChips').addEventListener('click',function(event){
+    var chip=event.target.closest('[data-cat]'); if(!chip)return;
+    state.cat=chip.dataset.cat;
+    Array.prototype.forEach.call(this.querySelectorAll('[data-cat]'),function(b){b.classList.toggle('active',b===chip)});
+    render();
+  });
+
+  document.addEventListener('click',function(event){
+    var act=event.target.closest('[data-act]');
+    if(!act)return;
+    var a=act.dataset.act;
+    if(a==='scan'){document.getElementById('plScan').classList.add('open');return}
+    if(a==='closeScan'){document.getElementById('plScan').classList.remove('open');return}
+    if(a==='reset'){state.q='';state.cat='all';document.getElementById('plSearch').value='';
+      Array.prototype.forEach.call(document.querySelectorAll('[data-cat]'),function(b){b.classList.toggle('active',b.dataset.cat==='all')});
+      render();return}
+    if(a==='demoScan'){go('6901234567890');return}
+    if(a==='submitCode'){
+      var code=document.getElementById('plCode').value.trim();
+      if(!code){toast('请输入条码');return}
+      go(code);
+    }
+  });
+
+  function go(code){
+    var hit=PRODUCTS.filter(function(p){return p.barcode===code})[0];
+    if(!hit){toast('未找到该条码对应商品');return}
+    document.getElementById('plScan').classList.remove('open');
+    document.getElementById('plCode').value='';
+    location.href='product-view.html?id='+encodeURIComponent(hit.id)+'&from=scan';
+  }
+
+  document.getElementById('plSearch').addEventListener('input',function(){state.q=this.value;render()});
+  document.getElementById('plScan').addEventListener('click',function(event){
+    if(event.target===this)this.classList.remove('open');
+  });
+
+  render();
+
+  /* 支持 ?scan=1 直达扫码层（页面索引与分享链接用） */
+  if(new URLSearchParams(location.search).get('scan')==='1'){
+    document.getElementById('plScan').classList.add('open');
+  }
+})();
+</script>
+</body>
+</html>

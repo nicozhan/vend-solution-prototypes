@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#2434c8">
+<title>商品详情 · VendSolution</title>
+<link rel="stylesheet" href="app-ui.css">
+<style>
+/* 预包装商品详情（App 只读） · 页面前缀 pv- */
+.pv-body{padding:12px 16px 16px}
+.pv-banner{display:flex;align-items:center;gap:8px;margin-bottom:10px;padding:11px 13px;border-radius:12px;background:var(--danger-bg);color:var(--danger);font-size:13px;line-height:19px;font-weight:600}
+.pv-hero{display:flex;gap:14px;padding:14px}
+.pv-img{position:relative;width:92px;height:92px;flex:0 0 auto;border-radius:14px;background:var(--surface-2);display:flex;align-items:center;justify-content:center;font-size:30px;font-weight:800;color:#8a92ab;overflow:hidden}
+.pv-img small{position:absolute;left:0;right:0;bottom:0;padding:3px 0;background:rgba(11,16,47,.55);color:#fff;font-size:10px;font-weight:600;text-align:center}
+.pv-info{min-width:0;flex:1}
+.pv-name{font-size:17px;line-height:24px;font-weight:800;letter-spacing:-.3px}
+.pv-line{display:flex;align-items:center;gap:6px;margin-top:6px;flex-wrap:wrap}
+.pv-spec{font-size:13px;line-height:19px;color:var(--text-2)}
+/* 基本信息：行沿用 .row，横向内边距由容器给一次 */
+.pv-rows{padding:0 14px 4px}
+.pv-code{font-size:14px;line-height:20px;font-weight:700;letter-spacing:.5px;font-variant-numeric:tabular-nums;overflow:hidden;text-overflow:ellipsis}
+.pv-code-dd{display:flex;align-items:center;justify-content:flex-end;gap:8px}
+.pv-copy{width:30px;height:30px;flex:0 0 auto;border-radius:9px;background:var(--surface-2);color:var(--text-2);display:flex;align-items:center;justify-content:center}
+.pv-copy:active{background:var(--surface-3)}
+.pv-tags{display:flex;flex-wrap:wrap;gap:5px;justify-content:flex-end}
+.pv-none{color:var(--text-3);font-weight:600}
+.pv-unit{margin-left:2px;font-size:11px;font-weight:600;color:var(--text-2)}
+.pv-note{margin:10px 14px 12px;padding:9px 11px;border-radius:10px;background:var(--warn-bg);color:var(--warn);font-size:12px;line-height:18px;font-weight:600}
+/* 更多信息 */
+.pv-fold{width:100%;display:flex;align-items:center;justify-content:space-between;gap:8px;padding:0 14px;min-height:50px;font-size:14px;font-weight:600;text-align:left}
+.pv-fold svg{color:var(--text-3);transition:transform .18s}
+.pv-fold.open svg{transform:rotate(180deg)}
+.pv-more{padding:0 14px 14px}
+.pv-grp+.pv-grp{margin-top:16px;padding-top:15px;border-top:1px solid var(--line)}
+.pv-grp-hd{display:flex;align-items:center;gap:8px}
+.pv-no{flex:0 0 auto;width:22px;height:22px;display:flex;align-items:center;justify-content:center;border-radius:7px;background:var(--brand-weak);color:var(--brand);font-size:10.5px;font-weight:800;font-variant-numeric:tabular-nums}
+.pv-grp-hd h3{font-size:13.5px;line-height:20px;font-weight:700}
+.pv-grp-sub{margin-top:2px;font-size:11px;line-height:16px;color:var(--text-2)}
+.pv-dim{margin:10px 0 8px}
+.pv-dim-hd{display:flex;align-items:baseline;gap:6px;font-size:13px;line-height:19px;color:var(--text-2)}
+.pv-dim-hd span{font-size:10px;line-height:14px;font-weight:700;letter-spacing:.4px;color:var(--text-3)}
+.pv-dim-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:6px}
+.pv-dim-c{padding:7px 9px;border-radius:10px;background:var(--surface-2)}
+.pv-dim-c .k{display:block;font-size:10px;line-height:14px;color:var(--text-2)}
+.pv-dim-c .v{display:block;margin-top:1px;font-size:13px;line-height:18px;font-weight:700;font-variant-numeric:tabular-nums}
+.pv-desc{margin-top:8px;font-size:13px;line-height:20px;color:var(--text-2)}
+.pv-desc.muted{color:var(--text-3)}
+</style>
+</head>
+<body>
+<main class="app">
+
+  <div class="status"><span>9:41</span><span class="status-icons"><span class="signal"><i></i><i></i><i></i><i></i></span><svg width="15" height="11" viewBox="0 0 16 12" fill="none"><path d="M1 4.2a10.5 10.5 0 0 1 14 0M3.5 6.8a6.7 6.7 0 0 1 9 0M6.2 9.4a2.7 2.7 0 0 1 3.6 0" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><circle cx="8" cy="11" r="1" fill="currentColor"/></svg><span class="battery"><i></i></span></span></div>
+
+  <header class="navbar">
+    <span class="nav-left"><a class="icon-btn" href="product-list.html" aria-label="返回商品列表" onclick="return pvBack(event)"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg></a></span>
+    <h1>商品详情</h1>
+    <span class="nav-right"></span>
+  </header>
+
+  <div class="body pv-body" id="pvBody"></div>
+
+  <div class="toast" id="pvToast" role="status" aria-live="polite"></div>
+</main>
+
+<script src="app-ui.js"></script>
+<script>
+/* 返回：页面内有历史（列表 → 详情）就回上一页，否则回商品列表；
+   两条路径都能落在列表，不会回到首页或空页 */
+function pvBack(event){
+  if(window.history.length>2){ event.preventDefault(); window.history.back(); return false; }
+  return true;
+}
+(function(){
+  /* dim = [长, 宽, 高]，单位 CM；空值渲染为「—」 */
+  var P={
+    p1:{name:'泰式奶茶',spec:'330ml',cat:'饮料',on:true,barcode:'6901234567890',thumb:'奶',shelf:180,brand:'ChaTraMue',origin:'泰国 · 曼谷',price:'¥12.00',unit:'瓶',sku:'SKU-TEA-330',etin:'6971234500015',ai:'ok',tags:['热销','主推'],pack:'瓶装',net:'330 ml',weight:358,dim:['6.5','6.5','14.2'],desc:'经典泰式红茶配炼乳，茶味偏浓、甜度固定。开封后请当日饮用完毕。',alert:30},
+    p2:{name:'气泡水',spec:'500ml',cat:'饮料',on:true,barcode:'6901234567891',thumb:'气',shelf:365,brand:'Singha',origin:'泰国 · 佛统',price:'¥8.00',unit:'瓶',sku:'SKU-SODA-500',etin:'6971234500022',ai:'ok',tags:['常规'],pack:'瓶装',net:'500 ml',weight:524,dim:['6.8','6.8','21.0'],desc:'',alert:60},
+    p3:{name:'椰子水',spec:'330ml',cat:'饮料',on:false,barcode:'6901234567892',thumb:'椰',shelf:120,brand:'',origin:'',price:'¥15.00',unit:'瓶',sku:'SKU-COCO-330',etin:'',ai:'reject',tags:['清仓'],pack:'瓶装',net:'330 ml',weight:'',dim:['','',''],desc:'',alert:null},
+    p4:{name:'鲜榨橙汁',spec:'250ml',cat:'饮料',on:true,barcode:'6901234567893',thumb:'橙',shelf:21,brand:'Tipco',origin:'泰国 · 叻丕',price:'¥14.00',unit:'瓶',sku:'SKU-ORG-250',etin:'6971234500046',ai:'ok',tags:['新品'],pack:'瓶装',net:'250 ml',weight:268,dim:['5.6','5.6','13.0'],desc:'冷压鲜榨，未添加防腐剂，饮用前请摇匀。',alert:7},
+    p5:{name:'柠檬茶',spec:'480ml',cat:'饮料',on:true,barcode:'6901234567894',thumb:'柠',shelf:90,brand:'Lipton',origin:'泰国',price:'¥10.00',unit:'瓶',sku:'SKU-LEM-480',etin:'6971234500053',ai:'ok',tags:['热销'],pack:'瓶装',net:'480 ml',weight:502,dim:['6.6','6.6','20.4'],desc:'',alert:15},
+    p6:{name:'矿泉水',spec:'600ml',cat:'饮料',on:true,barcode:'6901234567895',thumb:'水',shelf:540,brand:'Aura',origin:'泰国 · 清迈',price:'¥5.00',unit:'瓶',sku:'SKU-WAT-600',etin:'6971234500060',ai:'ok',tags:['常规'],pack:'瓶装',net:'600 ml',weight:618,dim:['6.4','6.4','22.0'],desc:'',alert:null},
+    p7:{name:'烤海苔',spec:'40g',cat:'零食',on:true,barcode:'6901234567896',thumb:'苔',shelf:180,brand:'Tao Kae Noi',origin:'泰国',price:'¥9.00',unit:'袋',sku:'SKU-NOR-040',etin:'6971234500077',ai:'ok',tags:['热销','组合装'],pack:'袋装',net:'40 g',weight:46,dim:['14.0','3.0','22.0'],desc:'原味烤海苔，开封后请密封并尽快食用。',alert:30},
+    p8:{name:'原味薯片',spec:'70g',cat:'零食',on:true,barcode:'6901234567897',thumb:'薯',shelf:150,brand:'Lays',origin:'泰国',price:'¥11.00',unit:'袋',sku:'SKU-CHP-070',etin:'6971234500084',ai:'ok',tags:['主推'],pack:'袋装',net:'70 g',weight:78,dim:['18.0','4.0','26.0'],desc:'',alert:30},
+    p9:{name:'混合坚果',spec:'30g',cat:'零食',on:true,barcode:'6901234567898',thumb:'坚',shelf:270,brand:'',origin:'',price:'¥13.00',unit:'袋',sku:'SKU-NUT-030',etin:'6971234500091',ai:'ok',tags:[],pack:'袋装',net:'30 g',weight:34,dim:['11.0','2.5','16.0'],desc:'',alert:45},
+    p10:{name:'巧克力棒',spec:'45g',cat:'零食',on:true,barcode:'6901234567899',thumb:'巧',shelf:240,brand:'Snickers',origin:'',price:'¥7.00',unit:'条',sku:'SKU-CHO-045',etin:'6971234500107',ai:'ok',tags:['收银台'],pack:'条装',net:'45 g',weight:48,dim:['3.0','2.0','14.5'],desc:'',alert:null},
+    p11:{name:'原味酸奶',spec:'180g',cat:'乳制品',on:true,barcode:'6901234567801',thumb:'酸',shelf:21,brand:'Dutch Mill',origin:'泰国',price:'¥9.50',unit:'杯',sku:'SKU-YOG-180',etin:'6971234500114',ai:'ok',tags:['短保'],pack:'杯装',net:'180 g',weight:196,dim:['7.2','7.2','11.0'],desc:'请勿冷冻，开封后尽快食用。',alert:3},
+    p12:{name:'巧克力牛奶',spec:'200ml',cat:'乳制品',on:false,barcode:'6901234567802',thumb:'牛',shelf:14,brand:'Foremost',origin:'泰国',price:'¥8.50',unit:'盒',sku:'SKU-MIL-200',etin:'6971234500121',ai:'reject',tags:['短保'],pack:'盒装',net:'200 ml',weight:216,dim:['4.2','4.2','12.6'],desc:'',alert:3},
+    p13:{name:'鸡蛋布丁',spec:'120g',cat:'乳制品',on:true,barcode:'6901234567803',thumb:'布',shelf:10,brand:'',origin:'泰国 · 曼谷',price:'¥10.00',unit:'杯',sku:'SKU-PUD-120',etin:'6971234500138',ai:'ok',tags:['短保'],pack:'杯装',net:'120 g',weight:132,dim:['7.0','7.0','6.0'],desc:'',alert:2},
+    p14:{name:'三文鱼饭团',spec:'110g',cat:'即食',on:true,barcode:'6901234567804',thumb:'饭',shelf:3,brand:'',origin:'泰国 · 曼谷',price:'¥16.00',unit:'个',sku:'SKU-RIC-110',etin:'6971234500145',ai:'ok',tags:['短保','当日达'],pack:'盒装',net:'110 g',weight:118,dim:['10.0','8.0','4.5'],desc:'当日生产，建议 24 小时内食用。',alert:1},
+    p15:{name:'火腿三明治',spec:'150g',cat:'即食',on:true,barcode:'6901234567805',thumb:'治',shelf:5,brand:'',origin:'',price:'¥18.00',unit:'个',sku:'',etin:'',ai:'ok',tags:['短保'],pack:'盒装',net:'',weight:'',dim:['','',''],desc:'',alert:1}
+  };
+
+  function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]})}
+  function toast(msg){
+    var el=document.getElementById('pvToast');
+    el.textContent=msg; el.classList.add('show');
+    clearTimeout(toast._t); toast._t=setTimeout(function(){el.classList.remove('show')},1900);
+  }
+  /* 空值统一显示「—」，数值后带单位 */
+  function val(v,unit){
+    var body=(v==null||v==='')?'<span class="pv-none">—</span>':esc(v);
+    return body+(unit?'<span class="pv-unit">'+unit+'</span>':'');
+  }
+  function tagHtml(list){
+    if(!list||!list.length)return '<span class="pv-none">—</span>';
+    return '<span class="pv-tags">'+list.map(function(t){return '<span class="badge">'+esc(t)+'</span>'}).join('')+'</span>';
+  }
+  function dimCell(label,v){
+    return '<div class="pv-dim-c"><span class="k">'+label+' (CM)</span><span class="v">'+(v?esc(v):'<span class="pv-none">—</span>')+'</span></div>';
+  }
+
+  var id=new URLSearchParams(location.search).get('id')||'p1';
+  var p=P[id]||P.p1;
+  document.title=p.name+' · 预包装商品';
+
+  var info=
+     '<div class="row"><dt>条码</dt><dd class="pv-code-dd"><span class="pv-code">'+esc(p.barcode)+'</span>'
+      +'<button class="pv-copy" type="button" data-copy="1" aria-label="复制条码"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h8"/></svg></button></dd></div>'
+    +'<div class="row"><dt>ETIN 条形码</dt><dd>'+val(p.etin)+'</dd></div>'
+    +'<div class="row"><dt>SKU</dt><dd>'+val(p.sku)+'</dd></div>'
+    +'<div class="row"><dt>分类</dt><dd>'+(p.cat?'<span class="badge brand">'+esc(p.cat)+'</span>':'<span class="pv-none">—</span>')+'</dd></div>'
+    +'<div class="row"><dt>标签</dt><dd>'+tagHtml(p.tags)+'</dd></div>'
+    +'<div class="row"><dt>AI 识别</dt><dd>'+(p.ai==='reject'?'<span class="badge danger">审核未通过</span>':'<span class="badge ok">通过</span>')+'</dd></div>'
+    +'<div class="row"><dt>保质期</dt><dd>'+(p.shelf?p.shelf+'<span class="pv-unit">天</span>':'<span class="pv-none">未启用</span>')+'</dd></div>'
+    +(p.alert?'<div class="row"><dt>临期提醒</dt><dd>到期前 '+p.alert+'<span class="pv-unit">天</span></dd></div>':'')
+    +'<div class="row"><dt>品牌</dt><dd>'+val(p.brand)+'</dd></div>'
+    +'<div class="row"><dt>产地</dt><dd>'+val(p.origin)+'</dd></div>'
+    +'<div class="row"><dt>计量单位</dt><dd>'+val(p.unit)+'</dd></div>'
+    +'<div class="row"><dt>建议零售价</dt><dd>'+val(p.price)+'</dd></div>';
+
+  var more=
+     '<div class="pv-grp"><div class="pv-grp-hd"><span class="pv-no">01</span><h3>包装规格</h3></div>'
+      +'<p class="pv-grp-sub">用于库存单位和商品详情展示。</p>'
+      +'<div class="rows" style="margin-top:4px"><div class="row"><dt>商品重量</dt><dd>'+val(p.weight,'g')+'</dd></div></div>'
+      +'<div class="pv-dim"><div class="pv-dim-hd">商品尺寸 <span>CM</span></div><div class="pv-dim-grid">'
+        +dimCell('长',p.dim[0])+dimCell('宽',p.dim[1])+dimCell('高',p.dim[2])+'</div></div>'
+      +'<div class="rows">'
+        +'<div class="row"><dt>包装类型</dt><dd>'+val(p.pack)+'</dd></div>'
+        +'<div class="row"><dt>净含量</dt><dd>'+val(p.net)+'</dd></div>'
+      +'</div></div>'
+    +'<div class="pv-grp"><div class="pv-grp-hd"><span class="pv-no">02</span><h3>商品描述</h3></div>'
+      +'<p class="pv-desc'+(p.desc?'':' muted')+'">'+(p.desc?esc(p.desc):'暂无商品描述')+'</p></div>';
+
+  document.getElementById('pvBody').innerHTML=
+    (p.on?'':'<div class="pv-banner"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v6M12 16.5h.01"/></svg>该商品已停用，请勿补货</div>')
+    +'<div class="card"><div class="pv-hero">'
+    +'<div class="pv-img">'+esc(p.thumb)+(p.on?'':'<small>停用</small>')+'</div>'
+    +'<div class="pv-info"><div class="pv-name">'+esc(p.name)+'</div>'
+    +'<div class="pv-line"><span class="pv-spec">'+esc(p.spec)+' · '+esc(p.cat)+'</span></div>'
+    +'<div class="pv-line"><span class="badge '+(p.on?'ok':'')+'">'+(p.on?'启用':'停用')+'</span></div>'
+    +'</div></div></div>'
+
+    +'<div class="card"><div class="card-head bordered"><span class="card-title">基本信息</span></div>'
+    +'<div class="pv-rows">'+info+'</div></div>'
+
+    +(p.ai==='reject'?'<div class="pv-note">AI 识别未通过，补货前请人工核对包装、条码与 SKU。</div>':'')
+
+    +'<div class="card"><button class="pv-fold" type="button" id="pvFold">更多信息<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></button><div class="pv-more" id="pvMore" hidden>'+more+'</div></div>';
+
+  document.getElementById('pvBody').addEventListener('click',function(event){
+    if(event.target.closest('[data-copy]')){
+      try{
+        var job=navigator.clipboard&&navigator.clipboard.writeText&&navigator.clipboard.writeText(p.barcode);
+        if(job&&job.catch)job.catch(function(){});
+      }catch(e){}
+      toast('条码已复制'); return;
+    }
+    var fold=event.target.closest('#pvFold');
+    if(fold){
+      var m=document.getElementById('pvMore');
+      var open=fold.classList.toggle('open');
+      m.hidden=!open;
+    }
+  });
+})();
+</script>
+</body>
+</html>

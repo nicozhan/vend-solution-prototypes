@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#2434c8">
+<title>销售额排行 · VendSolution</title>
+<link rel="stylesheet" href="app-ui.css">
+<style>
+/* 销售额排行 TOP50 · 页面前缀 sr- */
+.sr-body{padding:0 16px 18px}
+.sr-sticky{position:sticky;top:0;z-index:8;margin:0 -16px;padding:8px 16px;background:var(--bg)}
+.sr-sticky .segmented button{height:32px;font-size:12.5px}
+.sr-tools{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:2px 0 6px}
+.sr-tools .chips{padding:0}
+.sr-count{font-size:10.5px;font-weight:600;color:var(--text-2);white-space:nowrap}
+.sr-list{padding:2px 14px}
+.sr-rk{display:grid;grid-template-columns:22px minmax(0,1fr) auto;gap:10px;align-items:center;padding:9px 0;border-bottom:1px solid var(--line)}
+.sr-rk:last-child{border-bottom:0}
+.sr-no{width:21px;height:21px;border-radius:6px;background:var(--surface-2);color:var(--text-2);font-size:10.5px;font-weight:800;display:flex;align-items:center;justify-content:center;font-variant-numeric:tabular-nums}
+.sr-no.t1{background:var(--brand);color:#fff}
+.sr-no.t2{background:#e2e6fb;color:#33409e}
+.sr-no.t3{background:#edf0f7;color:#5b6488}
+.sr-main{min-width:0}
+.sr-line{display:flex;align-items:baseline;gap:6px;min-width:0}
+.sr-line b{flex:0 1 auto;min-width:0;font-size:12.5px;line-height:17px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sr-line i{flex:0 0 auto;font-style:normal;font-size:9.5px;line-height:14px;font-weight:600;color:var(--text-3)}
+.sr-bar{display:block;height:4px;margin-top:5px;border-radius:2px;background:var(--surface-2);overflow:hidden}
+.sr-bar i{display:block;height:100%;border-radius:2px;background:var(--brand);opacity:.85}
+.sr-val{text-align:right}
+.sr-val b{display:block;font-size:12.5px;line-height:17px;font-weight:700;font-variant-numeric:tabular-nums}
+.sr-val em{display:block;margin-top:1px;font-style:normal;font-size:9.5px;line-height:14px;font-weight:600;color:var(--text-3);font-variant-numeric:tabular-nums}
+.sr-foot{margin-top:12px;padding:0 2px;font-size:10px;line-height:16px;color:var(--text-3)}
+</style>
+</head>
+<body>
+<main class="app">
+
+  <div class="status"><span>9:41</span><span class="status-icons"><span class="signal"><i></i><i></i><i></i><i></i></span><svg width="15" height="11" viewBox="0 0 16 12" fill="none"><path d="M1 4.2a10.5 10.5 0 0 1 14 0M3.5 6.8a6.7 6.7 0 0 1 9 0M6.2 9.4a2.7 2.7 0 0 1 3.6 0" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><circle cx="8" cy="11" r="1" fill="currentColor"/></svg><span class="battery"><i></i></span></span></div>
+
+  <header class="navbar">
+    <span class="nav-left">
+      <a class="icon-btn" href="stats.html" aria-label="返回统计">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+      </a>
+    </span>
+    <h1>销售额排行</h1>
+    <span class="nav-right"></span>
+  </header>
+
+  <div class="body sr-body">
+    <div class="sr-sticky">
+      <div class="segmented" id="srPeriod" role="tablist" aria-label="统计时间范围">
+        <button type="button" data-p="today" role="tab">今日</button>
+        <button type="button" data-p="d7" role="tab" class="active">近 7 天</button>
+        <button type="button" data-p="d30" role="tab">近 30 天</button>
+      </div>
+    </div>
+
+    <div class="sr-tools">
+      <div class="chips" id="srTabs">
+        <button class="chip active" type="button" data-tab="products">商品</button>
+        <button class="chip" type="button" data-tab="sites">点位</button>
+        <button class="chip" type="button" data-tab="devices">设备</button>
+      </div>
+      <span class="sr-count" id="srCount"></span>
+    </div>
+
+    <section class="card sr-list" id="srList"></section>
+    <p class="sr-foot" id="srFoot"></p>
+  </div>
+</main>
+
+<script src="app-ui.js"></script>
+<script src="stats-data.js"></script>
+<script>
+(function(){
+  var S=window.STATS;
+  var params=new URLSearchParams(location.search);
+  var period=S.PERIODS[params.get('p')]?params.get('p'):'d7';
+  var tab=['products','sites','devices'].indexOf(params.get('dim'))>=0?params.get('dim'):'products';
+  var TAB_UNIT={products:'个商品',sites:'个点位',devices:'台设备'};
+
+  function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]})}
+
+  function rowsHTML(){
+    var all=S.ranks(period)[tab];
+    var max=all.length?all[0].amount:0;
+    var TOP=50;
+    var list=all.slice(0,TOP);
+    return list.map(function(item,i){
+      var tone=i===0?' t1':i===1?' t2':i===2?' t3':'';
+      var sub=item.sub?'<i>'+esc(item.sub)+'</i>':'';
+      return '<div class="sr-rk">'
+        +'<span class="sr-no'+tone+'">'+(i+1)+'</span>'
+        +'<span class="sr-main"><span class="sr-line"><b>'+esc(item.name)+'</b>'+sub+'</span>'
+        +'<span class="sr-bar"><i style="width:'+(max?item.amount/max*100:0).toFixed(1)+'%"></i></span></span>'
+        +'<span class="sr-val"><b>'+S.money(item.amount)+'</b><em>'+item.share.toFixed(1)+'%</em></span>'
+        +'</div>';
+    }).join('');
+  }
+
+  function paint(){
+    var all=S.ranks(period)[tab];
+    var shown=Math.min(50,all.length);
+    document.getElementById('srList').innerHTML=rowsHTML();
+    document.getElementById('srCount').textContent='共 '+shown+' '+TAB_UNIT[tab];
+    document.getElementById('srFoot').innerHTML=
+      '按区间销售额降序 · 条长按第一名归一 · 右侧为该名占区间总额的比例<br>'
+      +'单次最多 50 条；点位共 8 个、设备共 38 台，不足 50 条按实际数量展示';
+    Array.prototype.forEach.call(document.querySelectorAll('#srTabs [data-tab]'),function(b){
+      b.classList.toggle('active',b.dataset.tab===tab);
+    });
+    Array.prototype.forEach.call(document.querySelectorAll('#srPeriod [data-p]'),function(b){
+      b.classList.toggle('active',b.dataset.p===period);
+    });
+  }
+
+  document.getElementById('srTabs').addEventListener('click',function(event){
+    var b=event.target.closest('[data-tab]'); if(!b)return;
+    tab=b.dataset.tab; paint();
+    history.replaceState(null,'','?p='+period+'&dim='+tab);
+  });
+  document.getElementById('srPeriod').addEventListener('click',function(event){
+    var b=event.target.closest('[data-p]'); if(!b)return;
+    period=b.dataset.p; paint();
+    history.replaceState(null,'','?p='+period+'&dim='+tab);
+  });
+
+  paint();
+})();
+</script>
+</body>
+</html>

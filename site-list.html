@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#2434c8">
+<title>点位 · VendSolution</title>
+<link rel="stylesheet" href="app-ui.css">
+<style>
+/* 点位列表 · 页面前缀 sl-（组件沿用 app-ui.css） */
+.sl-body{display:flex;flex-direction:column;padding:0;overflow:hidden}
+.sl-top{flex:0 0 auto;padding:12px 16px 0;background:var(--bg)}
+.sl-count{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:10px 2px 8px;font-size:12px;line-height:17px;color:var(--text-2)}
+.sl-count b{font-weight:700;color:var(--ink);font-variant-numeric:tabular-nums}
+.sl-main{position:relative;flex:1;min-height:0;display:flex;flex-direction:column}
+.sl-list{flex:1;min-height:0;overflow-y:auto;padding:0 16px 16px;scrollbar-width:none}
+.sl-list::-webkit-scrollbar{display:none}
+.sl-item .item-name{white-space:normal;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.sl-item .item-sub{margin-top:3px}
+.sl-item .item-meta{margin-top:6px;gap:6px}
+.sl-item .item-meta b{font-weight:700;color:var(--ink)}
+.sl-item .item-meta .sep{width:1px;height:10px;background:var(--surface-3)}
+.sl-map{position:absolute;inset:0;overflow:hidden;background:#edf0f6}
+.sl-map .base{position:absolute;inset:0;width:100%;height:100%}
+.sl-pin{position:absolute;z-index:2;width:28px;height:28px;margin:-28px 0 0 -14px;border-radius:50%;border:2px solid #fff;background:var(--brand);color:#fff;display:flex;align-items:center;justify-content:center;box-shadow:0 3px 8px rgba(11,16,47,.28);transition:transform .16s}
+.sl-pin.warn{background:var(--orange)}
+.sl-pin.danger{background:var(--danger)}
+.sl-pin.on{transform:scale(1.18);z-index:3;box-shadow:0 0 0 5px rgba(36,52,200,.16),0 3px 8px rgba(11,16,47,.3)}
+.sl-pin i{display:block;width:7px;height:7px;border-radius:50%;background:#fff}
+.sl-me{position:absolute;left:50%;top:46%;z-index:2;width:16px;height:16px;margin:-8px 0 0 -8px;border-radius:50%;background:var(--brand);border:3px solid #fff;box-shadow:0 0 0 8px rgba(36,52,200,.14)}
+.sl-recenter{position:absolute;right:12px;top:12px;z-index:4;width:42px;height:42px;border-radius:14px;background:var(--surface);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;color:var(--ink);box-shadow:0 4px 14px rgba(11,16,47,.1)}
+.sl-mapcard{position:absolute;left:12px;right:12px;bottom:12px;z-index:4;padding:12px 13px;border:1px solid var(--line);border-radius:16px;background:var(--surface);box-shadow:0 12px 30px rgba(11,16,47,.14);opacity:0;visibility:hidden;transform:translateY(10px);transition:opacity .18s,transform .18s,visibility .18s}
+.sl-mapcard.show{opacity:1;visibility:visible;transform:translateY(0)}
+.sl-mapcard .item-name{font-size:15px}
+.sl-mapcard .sl-meta{margin-top:4px}
+.sl-mapbtns{display:flex;gap:8px;margin-top:10px}
+.sl-mapbtns .btn{flex:1}
+</style>
+</head>
+<body>
+<main class="app">
+
+  <div class="status"><span>9:41</span><span class="status-icons"><span class="signal"><i></i><i></i><i></i><i></i></span><svg width="15" height="11" viewBox="0 0 16 12" fill="none"><path d="M1 4.2a10.5 10.5 0 0 1 14 0M3.5 6.8a6.7 6.7 0 0 1 9 0M6.2 9.4a2.7 2.7 0 0 1 3.6 0" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><circle cx="8" cy="11" r="1" fill="currentColor"/></svg><span class="battery"><i></i></span></span></div>
+
+  <header class="navbar">
+    <span class="nav-left">
+      <a class="icon-btn" href="navigation.html#common" aria-label="返回常用" onclick="return appHome(event,'common')">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+      </a>
+    </span>
+    <h1>点位</h1>
+    <span class="nav-right">
+      <button class="icon-btn accent" id="slMode" type="button" aria-label="切换到地图视图" aria-pressed="false">
+        <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"><path d="M9 4 3 6v14l6-2 6 2 6-2V4l-6 2-6-2z"/><path d="M9 4v14M15 6v14"/></svg>
+      </button>
+    </span>
+  </header>
+
+  <div class="body bare sl-body">
+    <div class="sl-top">
+      <div class="search">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg>
+        <input id="slSearch" type="search" placeholder="搜索点位名称或地址" aria-label="搜索点位">
+      </div>
+      <div class="sl-count"><span>共 <b id="slCount">0</b> 个点位</span><span id="slSort">按距离排序</span></div>
+    </div>
+
+    <div class="sl-main">
+      <div class="sl-list" id="slList"></div>
+
+      <div class="sl-map" id="slMap" hidden>
+        <svg class="base" viewBox="0 0 390 520" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+          <rect width="390" height="520" fill="#edf0f6"/>
+          <rect x="18" y="40" width="120" height="86" rx="6" fill="#e4e8f1"/>
+          <rect x="168" y="26" width="96" height="66" rx="6" fill="#e4e8f1"/>
+          <rect x="292" y="52" width="86" height="104" rx="6" fill="#e4e8f1"/>
+          <rect x="24" y="196" width="104" height="96" rx="6" fill="#e4e8f1"/>
+          <rect x="158" y="164" width="112" height="118" rx="6" fill="#e4e8f1"/>
+          <rect x="296" y="212" width="82" height="72" rx="6" fill="#e4e8f1"/>
+          <rect x="26" y="352" width="128" height="102" rx="6" fill="#e4e8f1"/>
+          <rect x="180" y="330" width="90" height="86" rx="6" fill="#e4e8f1"/>
+          <rect x="290" y="330" width="88" height="70" rx="6" fill="#e4e8f1"/>
+          <path d="M0 310h390" stroke="#fff" stroke-width="16"/>
+          <path d="M0 310h390" stroke="#f6d9a8" stroke-width="3" stroke-dasharray="10 8"/>
+          <path d="M150 0v520" stroke="#fff" stroke-width="14"/>
+          <path d="M278 0v520" stroke="#fff" stroke-width="10"/>
+          <path d="M0 152h390" stroke="#fff" stroke-width="10"/>
+          <path d="M0 470h390" stroke="#fff" stroke-width="12"/>
+          <path d="M-10 340c60-14 96 16 150 6s96-30 150-16 70 24 110 12v58c-46 12-76-6-118-4s-92 18-142 20-96-14-150-2Z" fill="#dbe8f7"/>
+        </svg>
+        <div class="sl-me" aria-hidden="true"></div>
+        <div id="slPins"></div>
+        <button class="sl-recenter" type="button" aria-label="回到当前位置" data-act="recenter">
+          <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3.4"/><path d="M12 2v3.2M12 18.8V22M2 12h3.2M18.8 12H22"/><circle cx="12" cy="12" r="7"/></svg>
+        </button>
+        <div class="sl-mapcard" id="slMapCard"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="slToast" role="status" aria-live="polite"></div>
+</main>
+
+<script src="app-ui.js"></script>
+<script>
+(function(){
+  var SITES=[
+    {id:'s1',name:'曼谷机场 T1 店',addr:'素万那普机场 1 层 A 区',km:1.2,status:'ACTIVE',devices:12,online:10,alerts:1,low:3,x:36,y:30},
+    {id:'s2',name:'中央广场咖啡角',addr:'曼谷中央广场 B1 层',km:0.8,status:'ACTIVE',devices:3,online:3,alerts:0,low:0,x:58,y:52},
+    {id:'s3',name:'素坤逸 24 便利店',addr:'素坤逸路 24 巷 12 号',km:2.4,status:'ACTIVE',devices:6,online:5,alerts:1,low:8,x:74,y:36},
+    {id:'s4',name:'拉玛九商场店',addr:'拉玛九路 9 号 3 层',km:3.1,status:'PAUSED',devices:4,online:2,alerts:0,low:0,x:26,y:66},
+    {id:'s5',name:'是隆路写字楼店',addr:'是隆路 88 号 1 层',km:4.6,status:'ACTIVE',devices:2,online:2,alerts:0,low:0,x:62,y:74},
+    {id:'s6',name:'湄南河码头店',addr:'湄南河码头 C 区',km:5.2,status:'ACTIVE',devices:3,online:2,alerts:0,low:1,x:44,y:82},
+    {id:'s7',name:'邦纳工业园店',addr:'邦纳工业园 2 号厂区',km:6.0,status:'ACTIVE',devices:5,online:5,alerts:0,low:0,x:82,y:64},
+    {id:'s8',name:'拉抛 Central 店',addr:'拉抛路 1693 号 4 层',km:7.8,status:'CLOSED',devices:3,online:0,alerts:0,low:0,x:20,y:22}
+  ];
+  var STATUS={CLOSED:'已关闭'};
+  var state={mode:'list',q:'',sel:null};
+
+  function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]})}
+  function toast(msg){
+    var el=document.getElementById('slToast');
+    el.textContent=msg; el.classList.add('show');
+    clearTimeout(toast._t); toast._t=setTimeout(function(){el.classList.remove('show')},1900);
+  }
+  function match(s){
+    var q=state.q.trim().toLowerCase();
+    if(q&&(s.name+' '+s.addr).toLowerCase().indexOf(q)<0)return false;
+    return true;
+  }
+  /* 运营状态只在「已关闭」时提示，已暂停不再打标签 */
+  function statusBadge(s){
+    if(s.status!=='CLOSED')return '';
+    return '<span class="badge">'+STATUS.CLOSED+'</span>';
+  }
+  /* 只表达问题：在线齐全的点位不写「全部在线」 */
+  function metaHtml(s){
+    var parts=['<b>'+s.km.toFixed(1)+' km</b>','<span>'+s.devices+' 台设备</span>'];
+    if(s.online<s.devices)parts.push('<span class="badge danger">离线 '+(s.devices-s.online)+'</span>');
+    parts.push(statusBadge(s));
+    return '<span class="item-meta">'+parts.filter(Boolean).join('<span class="sep"></span>')+'</span>';
+  }
+  var CHEV='<svg class="item-go" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 5 7 7-7 7"/></svg>';
+  var PIN='<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s7-6.3 7-11a7 7 0 1 0-14 0c0 4.7 7 11 7 11Z"/><circle cx="12" cy="10" r="2.5"/></svg>';
+
+  function cardHtml(s){
+    return '<a class="item tall sl-item" href="site-detail.html?id='+encodeURIComponent(s.id)+'">'
+      +'<span class="item-icon">'+PIN+'</span>'
+      +'<span class="item-body"><span class="item-name">'+esc(s.name)+'</span>'
+      +'<span class="item-sub">'+esc(s.addr)+'</span>'
+      +metaHtml(s)+'</span>'+CHEV+'</a>';
+  }
+
+  function renderList(){
+    var rows=SITES.filter(match).sort(function(a,b){return a.km-b.km});
+    document.getElementById('slCount').textContent=rows.length;
+    var box=document.getElementById('slList');
+    if(!rows.length){
+      box.innerHTML='<div class="card"><div class="empty">'
+        +'<div class="empty-icon gray"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s7-6.3 7-11a7 7 0 1 0-14 0c0 4.7 7 11 7 11Z"/><circle cx="12" cy="10" r="2.5"/></svg></div>'
+        +'<p>没有符合条件的点位</p><span>换个点位名称或地址关键词试试</span>'
+        +'<button class="btn btn-sm btn-secondary" type="button" data-act="reset">清除条件</button></div></div>';
+      return;
+    }
+    box.innerHTML='<div class="card"><div class="list">'+rows.map(cardHtml).join('')+'</div></div>';
+  }
+
+  function renderPins(){
+    var rows=SITES.filter(match);
+    document.getElementById('slCount').textContent=rows.length;
+    document.getElementById('slPins').innerHTML=rows.map(function(s){
+      var cls=(s.alerts>0||s.online<s.devices)?' danger':(s.low>0||s.status!=='ACTIVE'?' warn':'');
+      return '<button class="sl-pin'+cls+(state.sel===s.id?' on':'')+'" type="button" style="left:'+s.x+'%;top:'+s.y+'%" data-pin="'+s.id+'" aria-label="'+esc(s.name)+'"><i></i></button>';
+    }).join('');
+    renderMapCard();
+  }
+
+  function renderMapCard(){
+    var box=document.getElementById('slMapCard');
+    var s=SITES.filter(function(x){return x.id===state.sel})[0];
+    if(!s){box.classList.remove('show');box.innerHTML='';return}
+    box.innerHTML='<div class="hstack" style="justify-content:space-between;gap:8px"><span class="item-name" style="flex:1;min-width:0">'+esc(s.name)+'</span>'+statusBadge(s)+'</div>'
+      +'<div class="item-sub" style="margin-top:4px">'+esc(s.addr)+'</div>'
+      +metaHtml(s)
+      +'<div class="sl-mapbtns">'
+      +'<button class="btn btn-sm btn-ghost" type="button" data-act="nav">导航</button>'
+      +'<a class="btn btn-sm btn-primary" href="site-detail.html?id='+encodeURIComponent(s.id)+'">查看点位</a>'
+      +'</div>';
+    box.classList.add('show');
+  }
+
+  function render(){
+    if(state.mode==='list')renderList(); else renderPins();
+  }
+
+  var modeBtn=document.getElementById('slMode');
+  var ICON_MAP='<svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"><path d="M9 4 3 6v14l6-2 6 2 6-2V4l-6 2-6-2z"/><path d="M9 4v14M15 6v14"/></svg>';
+  var ICON_LIST='<svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>';
+  modeBtn.addEventListener('click',function(){
+    state.mode=state.mode==='list'?'map':'list';
+    var map=state.mode==='map';
+    document.getElementById('slList').hidden=map;
+    document.getElementById('slMap').hidden=!map;
+    modeBtn.innerHTML=map?ICON_LIST:ICON_MAP;
+    modeBtn.setAttribute('aria-label',map?'切换到列表视图':'切换到地图视图');
+    modeBtn.setAttribute('aria-pressed',map?'true':'false');
+    document.getElementById('slSort').textContent=map?'点标记查看点位':'按距离排序';
+    if(!map)state.sel=null;
+    render();
+  });
+
+  document.getElementById('slSearch').addEventListener('input',function(){state.q=this.value;render()});
+
+  document.addEventListener('click',function(event){
+    var pin=event.target.closest('[data-pin]');
+    if(pin){ state.sel=pin.dataset.pin; renderPins(); return }
+    var act=event.target.closest('[data-act]');
+    if(!act)return;
+    var a=act.dataset.act;
+    if(a==='reset'){state.q='';document.getElementById('slSearch').value='';render()}
+    if(a==='recenter')toast('已回到当前位置');
+    if(a==='nav')toast('正在唤起系统地图…');
+  });
+
+  render();
+
+  /* 支持 ?view=map 直达地图视图（页面索引与分享链接用）；?site=id 预选点位 */
+  var params=new URLSearchParams(location.search);
+  if(params.get('view')==='map'){
+    modeBtn.click();
+    if(params.get('site')){ state.sel=params.get('site'); renderPins(); }
+  }
+})();
+</script>
+</body>
+</html>

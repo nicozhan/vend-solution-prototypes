@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#2434c8">
+<title>点位详情 · VendSolution</title>
+<link rel="stylesheet" href="app-ui.css">
+<style>
+/* 点位详情 · 页面前缀 sd- */
+.sd-body{padding:12px 16px 16px}
+.sd-map{position:relative;height:168px;border-radius:var(--r-card);overflow:hidden;border:1px solid var(--line);background:#edf0f6}
+.sd-map svg{position:absolute;inset:0;width:100%;height:100%}
+.sd-map .pin{position:absolute;left:50%;top:52%;width:16px;height:16px;margin:-8px 0 0 -8px;border-radius:50%;background:var(--brand);border:3px solid #fff;box-shadow:0 0 0 9px rgba(36,52,200,.15)}
+.sd-km{position:absolute;left:10px;top:10px;height:26px;padding:0 10px;border-radius:999px;background:rgba(255,255,255,.94);display:flex;align-items:center;font-size:12px;font-weight:700;color:var(--ink);font-variant-numeric:tabular-nums}
+.sd-card+.sd-card{margin-top:10px}
+.sd-addr{display:flex;gap:10px;padding:13px 14px;border-bottom:1px solid var(--line)}
+.sd-addr svg{color:var(--brand);margin-top:1px}
+.sd-addr p{font-size:14px;line-height:20px;font-weight:600}
+.sd-addr span{display:block;margin-top:2px;font-size:12px;line-height:17px;color:var(--text-2)}
+.sd-quick{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 14px;min-height:52px}
+.sd-quick .k{flex:0 0 auto;font-size:13px;line-height:19px;color:var(--text-2)}
+.sd-quick .v{min-width:0;flex:1;font-size:14px;line-height:20px;font-weight:600;font-variant-numeric:tabular-nums;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sd-call{width:44px;height:44px;border-radius:12px;background:var(--brand-weak);color:var(--brand);display:flex;align-items:center;justify-content:center;flex:0 0 auto}
+.sd-call:active{background:#dfe4ff}
+.sd-item .item-sub{font-variant-numeric:tabular-nums;letter-spacing:.2px}
+.sd-copy{display:inline-block;margin-left:4px;color:var(--text-3);vertical-align:-2px}
+.sd-badges{display:flex;align-items:center;gap:5px;justify-self:end}
+.sd-fold{width:100%;display:flex;align-items:center;justify-content:space-between;gap:8px;padding:0 14px;min-height:50px;font-size:14px;font-weight:600;text-align:left}
+.sd-fold svg{color:var(--text-3);transition:transform .18s}
+.sd-fold.open svg{transform:rotate(180deg)}
+</style>
+</head>
+<body>
+<main class="app">
+
+  <div class="status"><span>9:41</span><span class="status-icons"><span class="signal"><i></i><i></i><i></i><i></i></span><svg width="15" height="11" viewBox="0 0 16 12" fill="none"><path d="M1 4.2a10.5 10.5 0 0 1 14 0M3.5 6.8a6.7 6.7 0 0 1 9 0M6.2 9.4a2.7 2.7 0 0 1 3.6 0" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><circle cx="8" cy="11" r="1" fill="currentColor"/></svg><span class="battery"><i></i></span></span></div>
+
+  <header class="navbar">
+    <span class="nav-left">
+      <a class="icon-btn" href="site-list.html" aria-label="返回点位列表" onclick="return sdBack(event)">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+      </a>
+    </span>
+    <h1 id="sdTitle">点位详情</h1>
+    <span class="nav-right"></span>
+  </header>
+
+  <div class="body sd-body" id="sdBody"></div>
+
+  <div class="footer">
+    <div class="ops">
+      <button class="btn btn-ghost" type="button" id="sdCall"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M6.6 3.5 9 3l1.6 4-2 1.4a11 11 0 0 0 5 5L15 11.4 19 13l-.5 2.4a2.4 2.4 0 0 1-2.6 1.9A15.5 15.5 0 0 1 4.7 6.1a2.4 2.4 0 0 1 1.9-2.6Z"/></svg>拨打电话</button>
+      <button class="btn btn-primary" type="button" id="sdNav"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="m3 11 18-8-8 18-2-8-8-2Z"/></svg>导航到点位</button>
+    </div>
+  </div>
+
+  <div class="toast" id="sdToast" role="status" aria-live="polite"></div>
+</main>
+
+<script src="app-ui.js"></script>
+<script>
+/* 返回：页面内有历史（列表 → 详情）就回上一页，否则回列表页；
+   两条路径都能落在点位列表，不会回到首页或空页 */
+function sdBack(event){
+  if(window.history.length>2){ event.preventDefault(); window.history.back(); return false; }
+  return true;
+}
+
+(function(){
+  var SITES={
+    s1:{name:'曼谷机场 T1 店',addr:'素万那普机场 1 层 A 区 · 国际到达 3 号门',km:1.2,status:'ACTIVE',devices:12,online:10,alerts:1,hours:'06:00 - 23:00',contact:'陈美玲',phone:'081-234-5678',owner:'张伟',notes:''},
+    s2:{name:'中央广场咖啡角',addr:'曼谷中央广场 B1 层 · 电梯厅左侧',km:0.8,status:'ACTIVE',devices:3,online:3,alerts:0,hours:'09:00 - 22:00',contact:'李佳',phone:'089-112-3344',owner:'张伟',notes:'从 B1 电梯口右转，靠近洗手间通道。'},
+    s3:{name:'素坤逸 24 便利店',addr:'素坤逸路 24 巷 12 号',km:2.4,status:'ACTIVE',devices:6,online:5,alerts:1,hours:'24 小时营业',contact:'王强',phone:'086-778-9021',owner:'刘敏',notes:''},
+    s4:{name:'拉玛九商场店',addr:'拉玛九路 9 号 3 层',km:3.1,status:'PAUSED',devices:4,online:2,alerts:0,hours:'10:00 - 21:00',contact:'Porn',phone:'092-334-1188',owner:'刘敏',notes:'商场装修中，暂停补货至 12 月 10 日。'},
+    s5:{name:'是隆路写字楼店',addr:'是隆路 88 号 1 层大堂',km:4.6,status:'ACTIVE',devices:2,online:2,alerts:0,hours:'07:00 - 20:00',contact:'陈美玲',phone:'081-234-5678',owner:'张伟',notes:''},
+    s6:{name:'湄南河码头店',addr:'湄南河码头 C 区候船厅',km:5.2,status:'ACTIVE',devices:3,online:2,alerts:0,hours:'05:30 - 22:30',contact:'Nok',phone:'095-661-2033',owner:'刘敏',notes:''},
+    s7:{name:'邦纳工业园店',addr:'邦纳工业园 2 号厂区食堂',km:6.0,status:'ACTIVE',devices:5,online:5,alerts:0,hours:'06:00 - 19:00',contact:'Somchai',phone:'088-224-7766',owner:'张伟',notes:''},
+    s8:{name:'拉抛 Central 店',addr:'拉抛路 1693 号 4 层',km:7.8,status:'CLOSED',devices:3,online:0,alerts:0,hours:'10:00 - 22:00',contact:'李佳',phone:'089-112-3344',owner:'刘敏',notes:'点位已关闭，设备待撤场。'}
+  };
+  var STATUS={ACTIVE:['运营中','ok'],PAUSED:['已暂停','warn'],CLOSED:['已关闭','']};
+  var TYPES=[['GRAB_GO','开门柜'],['VENDING','弹簧机'],['COFFEE','现调机'],['DRINK','饮料机']];
+  var state={type:'ALL'};
+
+  function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]})}
+  function toast(msg){
+    var el=document.getElementById('sdToast');
+    el.textContent=msg; el.classList.add('show');
+    clearTimeout(toast._t); toast._t=setTimeout(function(){el.classList.remove('show')},1900);
+  }
+
+  var id=new URLSearchParams(location.search).get('id')||'s1';
+  var site=SITES[id]||SITES.s1;
+
+  function buildDevices(){
+    var out=[];
+    for(var i=0;i<site.devices;i++){
+      var t=TYPES[i%TYPES.length];
+      var online=i<site.online;
+      out.push({
+        name:(i+1)+' 号机',
+        type:t[0],
+        typeLabel:t[1],
+        sn:t[0].slice(0,4)+'-'+(10000+(Number(site.id.slice(1))-1)*1000+site.devices*100+i*37+11),
+        state:online?'ONLINE':'OFFLINE',
+        alerts:i<site.alerts?1:0
+      });
+    }
+    return out.sort(function(a,b){
+      if((b.alerts>0)-(a.alerts>0))return (b.alerts>0)-(a.alerts>0);
+      if((a.state==='OFFLINE')-(b.state==='OFFLINE'))return (a.state==='OFFLINE'?-1:1);
+      return 0;
+    });
+  }
+  var DEVICES=buildDevices();
+
+  function typeChips(){
+    var present=[];
+    DEVICES.forEach(function(d){ if(present.indexOf(d.type)<0)present.push(d.type) });
+    if(present.length<2)return '';
+    var chips=['<button class="chip'+(state.type==='ALL'?' active':'')+'" type="button" data-type="ALL">全部</button>'];
+    present.forEach(function(t){
+      var label=TYPES.filter(function(x){return x[0]===t})[0][1];
+      chips.push('<button class="chip'+(state.type===t?' active':'')+'" type="button" data-type="'+t+'">'+label+'</button>');
+    });
+    return '<div class="chips" id="sdTypes" style="padding:12px 14px 8px">'+chips.join('')+'</div>';
+  }
+
+  var DEV_ICONS={
+    GRAB_GO:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="4.5" y="3.5" width="15" height="17" rx="2.4"/><path d="M4.5 8.5h15M12 8.5v12"/><path d="M7.6 5.6h1.2"/></svg>',
+    VENDING:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="3.5" width="14" height="17" rx="2.4"/><path d="M8 7.5h5M8 11h5M8 14.5h3"/><circle cx="16" cy="15.5" r="1.3"/></svg>',
+    COFFEE:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 9h12v5a4.5 4.5 0 0 1-4.5 4.5H9A4.5 4.5 0 0 1 4.5 14V9Z"/><path d="M16.5 10h1.2a2.6 2.6 0 0 1 0 5.2h-1.2"/><path d="M7.5 3.5v2M11 3.5v2"/></svg>',
+    DRINK:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3.5h8l1 3v12a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2v-12l1-3Z"/><path d="M7 9h10"/></svg>'
+  };
+  var COPY_ICON='<svg class="sd-copy" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h8"/></svg>';
+
+  function devHtml(d){
+    var st=d.state==='ONLINE'
+      ? '<span class="badge ok"><span class="dot ok"></span>在线</span>'
+      : '<span class="badge"><span class="dot off"></span>离线</span>';
+    return '<button class="item sd-item" type="button" data-sn="'+esc(d.sn)+'" aria-label="复制设备编号 '+esc(d.sn)+'">'
+      +'<span class="item-icon">'+(DEV_ICONS[d.type]||DEV_ICONS.GRAB_GO)+'</span>'
+      +'<span class="item-body"><span class="item-name">'+esc(d.name)+'<span class="badge" style="margin-left:6px;vertical-align:middle">'+esc(d.typeLabel)+'</span></span>'
+      +'<span class="item-sub">'+esc(d.sn)+COPY_ICON+'</span></span>'
+      +'<span class="sd-badges">'+(d.alerts?'<span class="badge danger">告警 '+d.alerts+'</span>':'')+st+'</span></button>';
+  }
+
+  function render(){
+    var st=STATUS[site.status];
+    document.getElementById('sdTitle').textContent=site.name;
+    document.title=site.name+' · 点位';
+
+    var rows=DEVICES.filter(function(d){return state.type==='ALL'||d.type===state.type});
+    var offline=site.devices-site.online;
+
+    var moreRows='';
+    if(site.owner)moreRows+='<div class="row"><dt>运维负责人</dt><dd>'+esc(site.owner)+'</dd></div>';
+    if(site.notes)moreRows+='<div class="row top"><dt>备注</dt><dd>'+esc(site.notes)+'</dd></div>';
+
+    document.getElementById('sdBody').innerHTML=
+      '<div class="sd-map">'
+      +'<svg viewBox="0 0 358 168" preserveAspectRatio="xMidYMid slice" aria-hidden="true">'
+      +'<rect width="358" height="168" fill="#edf0f6"/>'
+      +'<rect x="14" y="16" width="108" height="52" rx="5" fill="#e4e8f1"/><rect x="146" y="10" width="86" height="44" rx="5" fill="#e4e8f1"/>'
+      +'<rect x="264" y="20" width="80" height="62" rx="5" fill="#e4e8f1"/><rect x="20" y="104" width="96" height="52" rx="5" fill="#e4e8f1"/>'
+      +'<rect x="150" y="92" width="104" height="64" rx="5" fill="#e4e8f1"/><rect x="282" y="110" width="66" height="46" rx="5" fill="#e4e8f1"/>'
+      +'<path d="M0 88h358" stroke="#fff" stroke-width="14"/><path d="M0 88h358" stroke="#f6d9a8" stroke-width="3" stroke-dasharray="9 7"/>'
+      +'<path d="M132 0v168" stroke="#fff" stroke-width="12"/><path d="M262 0v168" stroke="#fff" stroke-width="9"/>'
+      +'</svg>'
+      +'<span class="sd-km">距你 '+site.km.toFixed(1)+' km</span>'
+      +'<span class="pin" aria-hidden="true"></span></div>'
+
+      +'<div class="card sd-card" style="margin-top:10px">'
+      +'<div class="sd-addr"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s7-6.3 7-11a7 7 0 1 0-14 0c0 4.7 7 11 7 11Z"/><circle cx="12" cy="10" r="2.6"/></svg>'
+      +'<div style="flex:1;min-width:0"><p>'+esc(site.addr)+'</p><span>'+site.km.toFixed(1)+' km · 步行约 '+Math.max(1,Math.round(site.km*13))+' 分钟</span></div>'
+      +'<span class="badge '+st[1]+'">'+st[0]+'</span></div>'
+      +'<div class="sd-quick" style="border-bottom:1px solid var(--line)"><span class="k">营业时间</span><span class="v">'+esc(site.hours)+'</span></div>'
+      +'<div class="sd-quick"><span class="k">联系人</span><span class="v">'+esc(site.contact)+' · '+esc(site.phone)+'</span>'
+      +'<button class="sd-call" type="button" data-call="1" aria-label="拨打 '+esc(site.phone)+'"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M6.6 3.5 9 3l1.6 4-2 1.4a11 11 0 0 0 5 5L15 11.4 19 13l-.5 2.4a2.4 2.4 0 0 1-2.6 1.9A15.5 15.5 0 0 1 4.7 6.1a2.4 2.4 0 0 1 1.9-2.6Z"/></svg></button></div>'
+      +'</div>'
+
+      +'<div class="card sd-card">'
+      +'<div class="card-head"><span class="card-title">设备 '+site.devices+' 台</span>'
+      +'<span class="muted" style="font-size:12px">在线 '+site.online+(offline?' · <b style="color:var(--danger)">离线 '+offline+'</b>':'')+'</span></div>'
+      +typeChips()
+      +'<div class="list" id="sdDevs">'+(rows.length?rows.map(devHtml).join(''):'<div class="empty" style="padding:32px 20px"><p>该类型下暂无设备</p><span>切换到「全部」查看</span></div>')+'</div>'
+      +'</div>'
+
+      +(moreRows?'<div class="card sd-card"><button class="sd-fold" type="button" id="sdFold">更多信息<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></button><div class="rows" id="sdMore" hidden style="padding:0 14px 6px">'+moreRows+'</div></div>':'');
+  }
+
+  document.getElementById('sdBody').addEventListener('click',function(event){
+    var chip=event.target.closest('[data-type]');
+    if(chip){ state.type=chip.dataset.type; render(); return }
+    var fold=event.target.closest('#sdFold');
+    if(fold){ var m=document.getElementById('sdMore'); var open=fold.classList.toggle('open'); m.hidden=!open; return }
+    var dev=event.target.closest('[data-sn]');
+    if(dev){ copy(dev.dataset.sn); return }
+    var call=event.target.closest('[data-call]');
+    if(call){ toast('正在唤起拨号 · '+site.phone); return }
+  });
+
+  function copy(text){
+    try{
+      var job=navigator.clipboard&&navigator.clipboard.writeText&&navigator.clipboard.writeText(text);
+      if(job&&job.catch)job.catch(function(){});
+    }catch(e){}
+    toast('已复制编号 '+text);
+  }
+
+  document.getElementById('sdCall').addEventListener('click',function(){toast('正在唤起拨号 · '+site.phone)});
+  document.getElementById('sdNav').addEventListener('click',function(){toast('正在唤起系统地图…')});
+
+  render();
+})();
+</script>
+</body>
+</html>
