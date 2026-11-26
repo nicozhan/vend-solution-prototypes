@@ -758,6 +758,81 @@
   .loc-add-row.added{opacity:.5;cursor:default}
   .loc-add-row .flag{font-size:18px;line-height:1}
   .loc-add-row .state{font-size:11px;color:var(--text-3);text-align:right}
+  /* ===== 组件与参数（设备级控制参数 · 型号覆盖 · 配方工艺） ===== */
+  .pc-new{margin-left:auto;font-size:9px;font-weight:700;line-height:1;color:var(--accent);background:var(--accent-weak);border:1px solid var(--accent-line);border-radius:3px;padding:2px 4px}
+  body.nav-rail .pc-new{display:none}
+  .pc-dr .field select{width:100%;height:38px;border:1px solid var(--ds-border-input);border-radius:var(--r-sm);padding:0 11px;font-family:inherit;font-size:13px;color:var(--ds-text);background:var(--ds-surface);cursor:pointer}
+  .pc-dr .field select:hover{border-color:var(--ds-border-hover)}
+  .pc-dr .field select:focus{outline:none;border-color:var(--ds-brand);box-shadow:var(--ds-focus)}
+  .pc-back{display:flex;align-items:center;gap:10px;font-size:12.5px;color:var(--text-2);margin-bottom:10px}
+  .pc-metabar{display:flex;flex-wrap:wrap;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:12px 16px;margin-bottom:14px}
+  .pc-meta{flex:1 1 0;min-width:126px;padding:0 16px;border-right:1px solid var(--border)}
+  .pc-meta:first-child{padding-left:0}
+  .pc-meta:last-child{border-right:0;padding-right:0}
+  .pc-meta .l{font-size:11px;color:var(--text-3);margin-bottom:5px}
+  .pc-meta .v{font-size:13px;font-weight:600;line-height:1.4}
+  .pc-meta .v .sub{display:block;font-size:11px;font-weight:400;color:var(--text-3);margin-top:2px}
+  .pc-code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:11.5px;color:var(--text-3);letter-spacing:-.2px}
+  .pc-flag{color:#b4560c;font-weight:600}
+  .pc-note{background:var(--ds-info-bg);color:var(--ds-info-text);border-radius:var(--r-sm);padding:10px 13px;font-size:12px;line-height:1.75;margin-bottom:12px}
+  .pc-note.warn{background:var(--ds-caution-bg);color:var(--ds-caution-text)}
+  .pc-note b{font-weight:700}
+  .pc-grp{border:1px solid var(--border);border-radius:var(--radius);background:var(--surface);margin-bottom:12px;overflow:hidden}
+  .pc-grp-hd{display:flex;align-items:center;gap:10px;padding:11px 16px;background:var(--surface-2);cursor:pointer;font-size:12.5px;font-weight:600;user-select:none}
+  .pc-grp-hd .caret{color:var(--text-3);font-size:10px;transition:transform .15s;display:inline-block}
+  .pc-grp.collapsed .caret{transform:rotate(-90deg)}
+  .pc-grp-hd .c{margin-left:auto;display:flex;align-items:center;gap:8px;font-weight:400;color:var(--text-3);font-size:11.5px}
+  .pc-grp.collapsed .pc-grp-bd{display:none}
+  .pc-grp-bd td,.pc-grp-bd th{font-size:12.5px}
+  .pc-grp-bd td{height:46px}
+  .pc-empty{padding:36px 16px;text-align:center;color:var(--text-3);font-size:12.5px;line-height:1.9}
+  .pc-models{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-bottom:14px}
+  .pc-mcard{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:13px 15px;cursor:pointer;transition:border-color .12s,box-shadow .12s}
+  .pc-mcard:hover{border-color:var(--ds-border-hover)}
+  .pc-mcard.on{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
+  .pc-mcard .nm{font-size:13px;font-weight:700;display:flex;align-items:center;gap:8px}
+  .pc-mcard .bd{font-size:11.5px;color:var(--text-3);margin-top:7px;display:flex;gap:12px;flex-wrap:wrap}
+  .pc-mcard .bd b{color:var(--text);font-weight:600;font-variant-numeric:tabular-nums}
+  .pc-dgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+  .pc-dgrid .k{font-size:11px;color:var(--text-3);margin-bottom:4px}
+  .pc-dgrid .v{font-size:12.5px;font-weight:600}
+  .pc-modal-mask{position:fixed;inset:0;background:rgba(26,26,26,.45);z-index:70}
+  .pc-modal{position:fixed;z-index:71;left:50%;top:50%;transform:translate(-50%,-50%);width:600px;max-width:calc(100vw - 32px);max-height:86vh;background:var(--surface);border-radius:12px;box-shadow:var(--sh-modal);display:flex;flex-direction:column}
+  .pc-modal-hd{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding:17px 20px;border-bottom:1px solid var(--border)}
+  .pc-modal-hd h3{font-size:14.5px;font-weight:700}
+  .pc-modal-hd .s{font-size:11.5px;color:var(--text-3);margin-top:4px;line-height:1.6}
+  .pc-modal-bd{padding:18px 20px;overflow-y:auto}
+  .pc-modal-ft{display:flex;justify-content:flex-end;gap:8px;padding:14px 20px;border-top:1px solid var(--border)}
+  .pc-bar{height:8px;background:var(--ds-surface-2);border-radius:99px;overflow:hidden;margin:14px 0 8px}
+  .pc-bar i{display:block;height:100%;background:var(--accent);border-radius:99px;transition:width .22s ease}
+  .pc-steps{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+  .pc-step{display:inline-flex;align-items:center;gap:6px;font-size:11.5px;color:var(--text-3);background:var(--surface-2);border:1px solid var(--border);border-radius:99px;padding:4px 10px}
+  .pc-step b{font-weight:700}
+  .pc-step.on{color:var(--accent);border-color:var(--accent-line);background:var(--accent-weak)}
+  .pc-step.done{color:var(--ds-success-text);border-color:var(--ds-success-bg);background:var(--ds-success-bg)}
+  .pc-kv{display:grid;grid-template-columns:110px minmax(0,1fr);gap:8px 12px;font-size:12.5px;margin-bottom:6px}
+  .pc-kv .k{color:var(--text-3)}
+  .pc-kv .v{font-weight:600;font-variant-numeric:tabular-nums}
+  .pc-chk{display:flex;gap:9px;align-items:flex-start;font-size:12.5px;line-height:1.7;padding:11px 13px;background:var(--surface-2);border:1px solid var(--border);border-radius:var(--r-sm);margin:12px 0}
+  .pc-chk input{margin-top:3px;flex:0 0 auto;width:15px;height:15px;accent-color:var(--accent)}
+  .pc-err{color:var(--ds-critical-text);font-size:12px;margin:-4px 0 10px}
+  .pc-rgrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+  .pc-rcard{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:12px 14px;cursor:pointer}
+  .pc-rcard:hover{border-color:var(--ds-border-hover)}
+  .pc-rcard.on{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
+  .pc-rcard .no{font-size:10.5px;color:var(--text-3);font-variant-numeric:tabular-nums}
+  .pc-rcard .nm{font-size:12.5px;font-weight:600;margin-top:3px;line-height:1.5}
+  .pc-rcard .mt{font-size:11px;color:var(--text-3);margin-top:6px}
+  .pc-stage{border:1px solid var(--border);border-radius:var(--radius);background:var(--surface);margin-bottom:10px;overflow:hidden}
+  .pc-stage-hd{display:flex;align-items:center;gap:10px;padding:10px 15px;background:var(--surface-2);cursor:pointer;font-size:12.5px;font-weight:600}
+  .pc-stage-hd .c{margin-left:auto;font-weight:400;color:var(--text-3);font-size:11.5px}
+  .pc-stage-hd .caret{color:var(--text-3);font-size:10px;transition:transform .15s;display:inline-block}
+  .pc-stage.collapsed .pc-stage-hd .caret{transform:rotate(-90deg)}
+  .pc-stage.collapsed .pc-stage-bd{display:none}
+  .pc-stage-bd td{height:42px;font-size:12px}
+  @media(max-width:1100px){.pc-models,.pc-rgrid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+  @media(max-width:760px){.pc-models,.pc-rgrid{grid-template-columns:1fr}.pc-metabar{padding:12px}.pc-meta{flex:1 1 50%;border-right:0;padding:0 8px}}
+
 </style>
 </head>
 <body class="nav-rail">
@@ -770,6 +845,7 @@
   <symbol id="i-device" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l9 5-9 5-9-5 9-5zM3 13l9 5 9-5M3 17l9 5 9-5"/></symbol>
   <symbol id="i-settings" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M19.1 4.9L17 7M7 17l-2.1 2.1"/></symbol>
   <symbol id="i-globe" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.7 3.8 5.7 3.8 9S14.5 18.3 12 21c-2.5-2.7-3.8-5.7-3.8-9S9.5 5.7 12 3z"/></symbol>
+<symbol id="i-param" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 7h8M17 7h3M4 12h3M11 12h9M4 17h9M17 17h3"/><circle cx="14.5" cy="7" r="2.2"/><circle cx="8.5" cy="12" r="2.2"/><circle cx="14.5" cy="17" r="2.2"/></symbol>
 </svg>
 <div class="app">
   <!-- 一级菜单 -->
@@ -788,6 +864,7 @@
     <button class="nav-item" data-mod="analytics" data-tip="报表与分析"><svg class="ic"><use href="#i-analytics"/></svg><span class="nav-label">报表与分析</span></button>
     <div class="nav-sec">平台</div>
     <button class="nav-item" data-mod="devicecfg" data-tip="品牌型号与组件"><svg class="ic"><use href="#i-device"/></svg><span class="nav-label">品牌型号与组件</span></button>
+    <button class="nav-item" data-mod="params" data-tip="组件与参数"><svg class="ic"><use href="#i-param"/></svg><span class="nav-label">组件与参数</span><span class="pc-new">新</span></button>
     <button class="nav-item" data-mod="settings" data-tip="系统设置"><svg class="ic"><use href="#i-settings"/></svg><span class="nav-label">系统设置</span></button>
   </nav>
 
@@ -949,7 +1026,9 @@ const SECTIONS={
   settings:{name:'系统设置',sub:'',foot:'',
     subs:[{id:'taggroup',name:'标签&分组管理'},{id:'lang',name:'本地化和语言'}]},
   devicecfg:{name:'品牌型号与组件',sub:'品牌 · 型号 · 组件',foot:'全局组件复用<br />型号与组件双向关联',
-    subs:[{id:'brand',name:'品牌'},{id:'model',name:'型号'},{id:'component',name:'组件'},{id:'browse',name:'适配浏览'}]}
+    subs:[{id:'brand',name:'品牌'},{id:'model',name:'型号'},{id:'component',name:'组件'},{id:'browse',name:'适配浏览'}]},
+  params:{name:'组件与参数',sub:'控制组件 · 参数定义 · 配方工艺',foot:'5 个控制组件 · 36 项参数<br/>118 项工艺参数 · 12 个配方',
+    subs:[{id:'library',name:'组件库'},{id:'modelparam',name:'型号参数'},{id:'recipe',name:'配方与工艺'}]}
 };
 
 /* ============================================================
@@ -4419,6 +4498,7 @@ function contentHTML(){
   if(state.tagOpen) return tagsPage();
   if(SET.open) return settingsPage();
   if(state.sec==='devicecfg') return deviceConfigPage();
+  if(state.sec==='params') return paramsPage();
   if(state.sec==='settings') return (state.mod==='lang'||state.mod==='matrix')?localizationPage():tagGroupAdminPage();
   if(state.role==='root') return pageHTML();
   if(state.sec==='analytics') return pageHTML();
@@ -6048,6 +6128,955 @@ function dcCreateNewComp(){
     if(localStorage.getItem('vendSubCollapsed')==='1') document.body.classList.add('sub-collapsed');
   }catch(e){}
 })();
+
+
+/* ============================================================
+   11. 组件与参数（设备级控制参数 · 型号覆盖 · 配方工艺）
+   依据：大容量奶茶设备_组件与功能对接确认书 v1.0
+   ============================================================ */
+const PC_TYPE={control:['控制组件','info'],part:['执行部件','neutral'],sensor:['传感器','success']};
+const PC_TYPES=[['int','整数'],['dec','小数'],['bool','布尔'],['enum','枚举'],['time','时间'],['str','字符串']];
+const PC_RWS=[['rw','可写'],['ro','只读'],['eng','仅工程师']];
+const PC_EFFS=['立即','下一杯','空闲时','重启后'];
+const PC={view:'list',compId:'',tab:'params',q:'',type:'',cat:'',st:'',closed:{},sel:'',draft:null,err:'',modelId:'MK-450',mComp:'',ov:'',ovDraft:null,modal:'',chk:false,reason:'',bus:null,recipe:0,stage:0,procQ:'',procStage:'',newDraft:null,log:[]};
+
+function pcP(o){
+  const p={type:'int',unit:'',ust:'ok',min:'',max:'',step:'1',def:'',rw:'rw',eff:'立即',st:'ok',note:'',doc:''};
+  for(const k in o) p[k]=o[k];
+  return p;
+}
+
+const PC_COMP=[
+{id:'C-WATER',code:'WATER_CONTROL',name:'进水与流量控制',type:'control',cat:'水系统',desc:'负责进水量设定与流量计校准参数。',ver:'v1.0',pub:true,upd:'2026-11-26',doc:'确认书 3.1',
+ groups:[
+  {k:'in',n:'进水设定',p:[pcP({code:'base_water_intake',name:'进水量',def:'140',unit:'',ust:'pending',st:'pending',note:'140 代表毫升、脉冲数、计量单位还是内部计数？'})]},
+  {k:'cal',n:'流量校准',p:[pcP({code:'flowmeter_k_value',name:'流量调节器 K 参数',def:'2150',min:'1',max:'99999',unit:'脉冲/L',note:'单位按脉冲/升暂定，校准流程待客户补充'})]}
+ ],points:[
+  {code:'flow_rate',name:'瞬时流量',type:'dec',unit:'L/min',freq:'1s',st:'pending',note:'是否安装流量计未确认'},
+  {code:'flow_total',name:'累计流量',type:'dec',unit:'L',freq:'60s',st:'pending',note:'是否安装流量计未确认'}
+ ]},
+{id:'C-PNEU',code:'PNEUMATIC_CONTROL',name:'气泵与气动控制',type:'control',cat:'气动',desc:'负责气泵吹气，以及外罩升起相关的气泵开启、关闭时长。',ver:'v0.9',pub:false,upd:'2026-11-26',doc:'确认书 3.2',
+ groups:[
+  {k:'blow',n:'气泵吹气',p:[pcP({code:'air_pump_inflation_time_ms',name:'气泵吹气时间',def:'1500',min:'0',max:'10000',unit:'ms',note:'对应哪个动作或工艺阶段待确认'})]},
+  {k:'hood',n:'外罩升起',p:[
+    pcP({code:'last_lift_airpump_on_ms',name:'最后升起外罩气泵开启时长',def:'300',min:'0',max:'5000',unit:'ms',st:'pending',note:'触发条件与动作顺序待确认'}),
+    pcP({code:'last_lift_airpump_off_ms',name:'最后升起外罩气泵关闭时长',def:'700',min:'0',max:'5000',unit:'ms',st:'pending',note:'触发条件与动作顺序待确认'})]}
+ ],points:[]},
+{id:'C-STIR',code:'STIRRING_CONTROL',name:'搅拌控制',type:'control',cat:'搅拌',desc:'负责搅拌脉冲次数；配方中的空气搅拌强度、时间归配方工艺配置。',ver:'v1.0',pub:true,upd:'2026-11-25',doc:'确认书 3.3',
+ groups:[
+  {k:'pulse',n:'搅拌脉冲',p:[pcP({code:'last_stir_pulse_count',name:'最后一次搅拌脉冲次数',def:'1',unit:'',ust:'pending',st:'pending',note:'对应哪个电机、一个脉冲的定义待确认'})]}
+ ],points:[]},
+{id:'C-LIFT',code:'LIFT_MECHANISM',name:'升降机构控制',type:'control',cat:'升降',desc:'负责分段升降、全行程升降及行程、速度、次数参数。',ver:'v0.3',pub:false,upd:'2026-11-26',doc:'确认书 3.4',
+ groups:[
+  {k:'step',n:'分段升降',p:[
+    pcP({code:'pice_lift_down_count',name:'分段下降次数',def:'3',min:'1',max:'99',unit:'次',st:'pending',note:'原始标识与正式名称待确认'}),
+    pcP({code:'pice_lift_down_distance',name:'分段下降距离',def:'32',unit:'',ust:'pending',st:'pending',note:'单位：毫米 / 脉冲 / 步数？'}),
+    pcP({code:'pice_lift_down_speed',name:'分段下降速度',def:'3',unit:'',ust:'pending',st:'pending',note:'单位与范围待确认'}),
+    pcP({code:'pice_lift_up_distance',name:'分段上升距离',def:'2',unit:'',ust:'pending',st:'pending',note:'单位与范围待确认'}),
+    pcP({code:'pice_lift_up_speed',name:'分段上升速度',def:'20',unit:'',ust:'pending',st:'pending',note:'单位与范围待确认'})]},
+  {k:'full',n:'全行程升降',p:[
+    pcP({code:'full_lift_lift_count',name:'全行程升降次数',def:'2',min:'1',max:'99',unit:'次',st:'pending',note:'行程范围待确认'}),
+    pcP({code:'full_lift_lift_stroke',name:'全行程升降行程',def:'94',unit:'',ust:'pending',st:'pending',note:'94 是毫米还是控制器步数？'}),
+    pcP({code:'full_lift_down_speed',name:'全行程下降速度',def:'40',unit:'',ust:'pending',st:'pending',note:'单位与范围待确认'}),
+    pcP({code:'full_lift_up_speed',name:'全行程上升速度',def:'40',unit:'',ust:'pending',st:'pending',note:'单位与范围待确认'})]}
+ ],points:[
+  {code:'lift_position',name:'升降当前位置',type:'int',unit:'',freq:'1s',st:'pending',note:'是否有编码器/限位反馈待确认'},
+  {code:'lift_limit_up',name:'上限位',type:'bool',unit:'',freq:'事件',st:'pending',note:'是否有上限位开关待确认'},
+  {code:'lift_limit_down',name:'下限位',type:'bool',unit:'',freq:'事件',st:'pending',note:'是否有下限位开关待确认'}
+ ]},
+{id:'C-CLEAN',code:'CLEANING_SYSTEM',name:'清洁系统控制',type:'control',cat:'清洁',desc:'负责上部、下部、深度清洁，以及定时清洁和搅拌后自动清洁设置。',ver:'v0.8',pub:false,upd:'2026-11-26',doc:'确认书 3.5',
+ groups:[
+  {k:'upper',n:'上部清洗',p:[
+    pcP({code:'upper_clean_wait_time',name:'上部分清洗停留时间',def:'1',min:'0',max:'99',unit:'秒',note:'单位按秒暂定'}),
+    pcP({code:'upper_clean_lift_count',name:'上部分清洗升降次数',def:'5',min:'1',max:'99',unit:'次'}),
+    pcP({code:'upper_clean_lift_stroke',name:'上部分清洗升降行程',def:'20',unit:'',ust:'pending',st:'pending',note:'单位与安全范围待确认'}),
+    pcP({code:'upper_clean_lift_speed',name:'上部分清洗升降速度',def:'50',unit:'',ust:'pending',st:'pending',note:'单位与安全范围待确认'})]},
+  {k:'lower',n:'下部清洗',p:[
+    pcP({code:'upfull_water_clean_lift_count',name:'下部分清洗升降次数',def:'2',min:'1',max:'99',unit:'次'}),
+    pcP({code:'upfull_water_clean_lift_stroke',name:'下部分清洗升降行程',def:'90',unit:'',ust:'pending',st:'pending',note:'单位与安全范围待确认'}),
+    pcP({code:'upfull_water_clean_down_speed',name:'下部分清洗下降速度',def:'50',min:'1',max:'99',unit:'档'}),
+    pcP({code:'upfull_water_clean_up_speed',name:'下部分清洗上升速度',def:'50',min:'1',max:'99',unit:'档'})]},
+  {k:'deep',n:'深度清洗',p:[
+    pcP({code:'Dupper_manual_clean_distance',name:'深度清洗上升距离',def:'50',unit:'',ust:'pending',st:'pending',note:'是否为手动深度清洗的独立参数，安全边界待确认'}),
+    pcP({code:'Dupper_clean_wait_time',name:'上部分深度清洗停留时间',def:'3',min:'0',max:'99',unit:'秒'}),
+    pcP({code:'Dupper_clean_lift_count',name:'上部分深度清洗升降次数',def:'13',min:'1',max:'99',unit:'次'}),
+    pcP({code:'Dupper_clean_lift_stroke',name:'上部分深度清洗升降行程',def:'20',min:'0',max:'999',unit:'单位待定'}),
+    pcP({code:'Dupper_clean_lift_speed',name:'上部分深度清洗升降速度',def:'50',min:'1',max:'99',unit:'档'}),
+    pcP({code:'Dupfull_water_clean_lift_count',name:'下部分深度清洗升降次数',def:'7',min:'1',max:'99',unit:'次'}),
+    pcP({code:'Dupfull_water_clean_lift_stroke',name:'下部分深度清洗升降行程',def:'90',min:'0',max:'999',unit:'单位待定'}),
+    pcP({code:'Dupfull_water_clean_down_speed',name:'下部分深度清洗下降速度',def:'50',min:'1',max:'99',unit:'档'}),
+    pcP({code:'Dupfull_water_clean_up_speed',name:'下部分深度清洗上升速度',def:'50',min:'1',max:'99',unit:'档'})]},
+  {k:'timer',n:'定时与自动清洁',p:[
+    pcP({code:'Dclean_enable',name:'定时清洁使能',type:'bool',def:'1',rw:'rw',eff:'立即',st:'pending',note:'0/1 语义待确认；界面按 0=关闭 / 1=开启 展示'}),
+    pcP({code:'Dclean_time',name:'定时清洁时间',type:'time',def:'10:00',rw:'rw',eff:'立即',st:'pending',note:'设备本地时间 / UTC / 服务器时间待确认'}),
+    pcP({code:'Dclean_interval_time',name:'定时清洁间隔',def:'12',unit:'',ust:'pending',st:'pending',note:'12 代表小时、天还是循环次数？'}),
+    pcP({code:'auto_clean_enable',name:'搅拌后自动清洗使能',type:'bool',def:'1',rw:'rw',eff:'立即',st:'pending',note:'0/1 语义待确认'})]}
+ ],points:[
+  {code:'clean_state',name:'清洁运行状态',type:'enum',unit:'',freq:'事件',st:'pending',note:'状态枚举待客户提供'},
+  {code:'clean_last_at',name:'最近清洁完成时间',type:'time',unit:'',freq:'事件',st:'pending',note:'是否有完成事件待确认'}
+ ]},
+{id:'C-PUMP',code:'WATER_PUMP',name:'上水水泵',type:'part',cat:'水系统',desc:'执行部件：负责按进水量定量供水，向上游控制组件上报运行状态。',ver:'v1.2',pub:true,upd:'2026-11-20',doc:'确认书 五·供水与流量系统',
+ groups:[],points:[
+  {code:'pump_run',name:'运行状态',type:'enum',unit:'',freq:'1s',st:'ok'},
+  {code:'pump_current',name:'工作电流',type:'dec',unit:'A',freq:'5s',st:'pending',note:'是否有电流采样待确认'},
+  {code:'pump_total_hours',name:'累计运行时长',type:'int',unit:'h',freq:'300s',st:'ok'}
+ ]},
+{id:'C-GRIND',code:'GRINDER',name:'磨豆电机',type:'part',cat:'豆仓',desc:'执行部件：研磨时间与转速由配方工艺下发，本组件只定义硬件通道与状态点。',ver:'v1.1',pub:true,upd:'2026-11-20',doc:'确认书 五·豆仓与研磨系统',
+ groups:[],points:[
+  {code:'grind_run',name:'运行状态',type:'enum',unit:'',freq:'1s',st:'ok'},
+  {code:'grind_speed',name:'研磨转速',type:'int',unit:'rpm',freq:'5s',st:'pending',note:'转速是否可读待确认'},
+  {code:'grind_temp',name:'电机温度',type:'dec',unit:'℃',freq:'30s',st:'pending',note:'是否有温度传感器待确认'}
+ ]},
+{id:'C-FLOW',code:'FLOW_METER',name:'流量计',type:'sensor',cat:'水系统',desc:'候选传感器：确认书仅提供 K 参数，是否实际安装、型号与输出字段均待确认。',ver:'v0.1',pub:false,upd:'2026-11-26',doc:'确认书 六·流量计',
+ groups:[],points:[
+  {code:'flow_pulse',name:'脉冲计数',type:'int',unit:'pulse',freq:'1s',st:'pending'},
+  {code:'flow_fault',name:'流量故障',type:'bool',unit:'',freq:'事件',st:'pending'}
+ ]}
+];
+
+const PC_MODEL=[
+  {id:'MK-450',name:'MK-450 大容量奶咖',brand:'WSD',devices:128,online:96,fw:'1.4.2'},
+  {id:'MK-650',name:'MK-650 双豆仓版',brand:'WSD',devices:64,online:51,fw:'1.4.2'},
+  {id:'TCN-800',name:'TCN-800 高杯版',brand:'TCN',devices:37,online:29,fw:'1.3.8'}
+];
+
+let PC_OV=[
+  {model:'MK-450',code:'full_lift_lift_stroke',value:'90',reason:'杯高 110mm，行程下调避免顶杯',by:'祥',at:'2026-11-24 15:02'},
+  {model:'MK-450',code:'flowmeter_k_value',value:'2100',reason:'该批次流量计实测标定值',by:'祥',at:'2026-11-24 15:20'},
+  {model:'MK-650',code:'air_pump_inflation_time_ms',value:'1800',reason:'腔体容积更大，气压建立慢，延长吹气',by:'陈工',at:'2026-11-25 10:11'},
+  {model:'TCN-800',code:'Dclean_interval_time',value:'8',reason:'高杯版清洗频次提高（单位仍待确认）',by:'陈工',at:'2026-11-25 10:40'}
+];
+
+const PC_LOG=[
+  {comp:'C-CLEAN',at:'2026-11-26 14:12',who:'祥',act:'保存草稿',detail:'v0.8 · 修改 3 项参数（定时清洁间隔、深度清洗上升距离、下部清洗行程）'},
+  {comp:'C-CLEAN',at:'2026-11-26 11:30',who:'陈工',act:'标记待确认',detail:'Dclean_interval_time 单位改为待确认，等待固件方回复'},
+  {comp:'C-LIFT',at:'2026-11-25 17:45',who:'陈工',act:'新建组件',detail:'v0.1 · 从确认书 3.4 导入 9 项参数'},
+  {comp:'C-WATER',at:'2026-11-24 15:20',who:'祥',act:'型号覆盖',detail:'MK-450 · flowmeter_k_value 2150 → 2100'},
+  {comp:'C-WATER',at:'2026-11-24 09:05',who:'祥',act:'发布',detail:'v1.0 · 已知 1 项待确认，按演示版本发布'}
+];
+
+const PC_RECIPES=[
+  {no:1,name:'原味混合咖啡 S',ml:180},{no:2,name:'原味混合咖啡 M',ml:240},{no:3,name:'原味混合咖啡 L',ml:300},
+  {no:4,name:'淡味混合 S',ml:180},{no:5,name:'淡味混合 M',ml:240},{no:6,name:'淡味混合 L',ml:300},
+  {no:7,name:'原味混合咖啡 大杯',ml:400},{no:8,name:'浓缩滴滤',ml:120},{no:9,name:'冰咖啡 S',ml:200},
+  {no:10,name:'冰咖啡 M',ml:260},{no:11,name:'冰咖啡 L',ml:320},{no:12,name:'冰咖啡 大杯',ml:420}
+];
+const PC_STAGES=['预润阶段','第 1 次萃取','第 2 次萃取','第 3 次萃取','第 4 次萃取','第 5 次萃取','结束后清洗'];
+
+/* 118 项工艺参数：编号、阶段、含义、范围按确认书原文归纳 */
+function pcBuildProc(){
+  const out=[];
+  const s0=[
+    ['设定豆 1 的原料量','0~36.0g',2],['设定豆 2 的原料量','0~36.0g',2],['设定豆 3 的原料量','0~36.0g',2],
+    ['设置从搅拌、蒸到提取的一系列动作（No.19–37）的重复次数','1~5',1],
+    ['设置豆仓开始运行的时机','0~99.9s',2],['设置从豆仓取出的豆子到研磨器的等待时间','0~99.9s',2],
+    ['设置研磨器的运行时间','0~99s',1],['设置粉和豆热水 1 接触的时间','0~99.9s',2],
+    ['设置最初投入到气缸中的热水量','0~150ml',2],['设定豆热水 2 的投入时机','0~99.9s',2],
+    ['设定豆热水 2 的热水量','0~50ml',2],['设置到第 1 次空气搅拌开始的间隔','0~99.9s',2],
+    ['设置第 1 次空气搅拌的搅拌水平','1~5',1],['设置第 1 次空气搅拌的时间','0~99.9s',2],
+    ['设置到第 2 次空气搅拌的延迟时间','0~99.9s',2],['设置第 2 次空气搅拌的搅拌水平','1~5',1],
+    ['设置第 2 次空气搅拌的时间','0~99.9s',2],['设置从研磨电机停止到顶部密封夹紧的间隔','0~99.9s',2]
+  ];
+  s0.forEach(function(r,i){ out.push({no:i+1,stage:0,name:r[0],range:r[1],bytes:r[2]}); });
+  for(let k=1;k<=5;k++){
+    const b=19+(k-1)*19, nxt=k<5?'（'+k+' 次萃取时，到第 '+(k+1)+' 次萃取开始的延迟时间）':'';
+    const rows=[
+      [k===1?'设置研磨机停止后蒸煮的等待时间':'设置第 '+k+' 次萃取蒸煮的等待时间','0~99.9s',2],
+      ['设置第 '+k+' 次萃取时第 1 次喷淋热水投入前的延迟时间','0~99.9s',2],
+      ['设置第 '+k+' 次萃取时第 1 次喷淋热水的强度（投入速度）','1~4',1],
+      ['设置第 '+k+' 次萃取时第 1 次喷淋热水的热水量',k===1?'0~150ml':'0~150ml',2],
+      ['设置第 '+k+' 次萃取开始到第 1 次空气搅拌的延迟时间','0~99.9s',2],
+      ['设置第 '+k+' 次萃取第 1 次空气搅拌的强度','1~5',1],
+      ['设置第 '+k+' 次萃取第 1 次空气搅拌的搅拌时间','0~99.9s',2],
+      ['设置第 '+k+' 次萃取第 1 次空气搅拌后蒸煮的等待时间','0~99.9s',2],
+      ['设置第 '+k+' 次萃取时第 2 次喷淋热水的强度（投入速度）',k===1?'1~5':'1~4',1],
+      ['设置第 '+k+' 次萃取时第 2 次喷淋热水的水量',k===1?'0~50ml':'0~150ml',2],
+      ['设置第 '+k+' 次萃取时第 1 次空气抽出开始之前的延迟时间','0~99.9s',2],
+      ['设置第 '+k+' 次萃取时添加热水投入前的延迟时间','0~99.9s',2],
+      ['设置第 '+k+' 次萃取时添加热水的热水量','0~150ml',2],
+      ['设置第 '+k+' 次萃取时第 1 次空气抽出的加压强度','1~5',1],
+      ['设置第 '+k+' 次萃取时第 1 次空气抽出的时间','0~99.9s',2],
+      ['设置第 '+k+' 次萃取时第 2 次空气抽出之前的延迟时间','0~99.9s',2],
+      ['设置第 '+k+' 次萃取时第 2 次空气抽出的空气强度',(k===3||k===5)?'1~4':'1~5',1],
+      ['设置第 '+k+' 次萃取时第 2 次空气抽出的时间','0~99.9s',2],
+      ['设置结束清洗开始之前的延迟时间'+nxt,'0~99.9s',2]
+    ];
+    rows.forEach(function(r,i){ out.push({no:b+i,stage:k,name:r[0],range:r[1],bytes:r[2]}); });
+  }
+  const end=[
+    ['设置从整个制作操作结束到销售结束之间的时间间隔','0~99.9g',2],
+    ['设置在咖啡制作中的冲洗量','0~50ml',2],
+    ['设置冲洗过程中的搅拌水平','1~5',1],
+    ['设置一个冲洗时间','0~99.9g',2],
+    ['设置刮板动作的次数','1~2',1]
+  ];
+  end.forEach(function(r,i){ out.push({no:114+i,stage:6,name:r[0],range:r[1],bytes:r[2]}); });
+  out.forEach(function(p){
+    if(p.no===5||p.no===30) p.flag='空值';
+    if(p.no===114||p.no===117) p.flag='单位待确认';
+  });
+  return out;
+}
+const PC_PROC=pcBuildProc();
+
+/* ---------- 基础取值 ---------- */
+function pcCompOf(id){ return PC_COMP.find(function(c){ return c.id===id||c.code===id; }); }
+function pcParams(c){ const out=[]; (c.groups||[]).forEach(function(g){ g.p.forEach(function(p){ out.push(p); }); }); return out; }
+function pcAll(){ const out=[]; PC_COMP.forEach(function(c){ if(c.type==='control') pcParams(c).forEach(function(p){ out.push({c:c,p:p}); }); }); return out; }
+function pcPending(c){ return pcParams(c).filter(function(p){ return p.st==='pending'; }).length; }
+function pcModelOf(id){ return PC_MODEL.find(function(m){ return m.id===id; }); }
+function pcOvOf(mid,code){ return PC_OV.find(function(o){ return o.model===mid&&o.code===code; }); }
+function pcParamsTotal(){ return pcAll().length; }
+function pcPendingTotal(){ return pcAll().filter(function(x){ return x.p.st==='pending'; }).length; }
+function pcTypeName(t){ const f=PC_TYPE[t]; return f?f[0]:t; }
+function pcTypeTone(t){ const f=PC_TYPE[t]; return f?f[1]:'neutral'; }
+function pcTypeLabel(t){ const f=PC_TYPES.find(function(x){ return x[0]===t; }); return f?f[1]:t; }
+function pcRwLabel(t){ const f=PC_RWS.find(function(x){ return x[0]===t; }); return f?f[1]:t; }
+function pcRange(p){
+  if(p.type==='bool') return '0 / 1';
+  if(p.min!==''&&p.max!=='') return p.min+' ~ '+p.max;
+  return '<span class="pc-flag">待确认</span>';
+}
+function pcUnit(p){
+  if(p.type==='bool') return '<span class="muted">—</span>';
+  if(p.type==='time') return '<span class="muted">时:分</span>';
+  if(!p.unit) return '<span class="pc-flag">待确认</span>';
+  return esc(p.unit)+(p.ust==='pending'?' <span class="pc-flag">待确认</span>':'');
+}
+function pcStTag(st){ return st==='ok'?'<span class="badge success">已确认</span>':'<span class="badge warn">待确认</span>'; }
+function pcToday(){ const d=new Date(); const z=function(n){ return (n<10?'0':'')+n; }; return d.getFullYear()+'-'+z(d.getMonth()+1)+'-'+z(d.getDate())+' '+z(d.getHours())+':'+z(d.getMinutes()); }
+function pcLog(comp,act,detail){ PC_LOG.unshift({comp:comp,at:pcToday(),who:'祥',act:act,detail:detail}); }
+
+/* ---------- 组件库 ---------- */
+function paramsPage(){
+  let body='';
+  if(state.mod==='library') body=PC.view==='detail'?pcDetailPage():pcLibraryPage();
+  else if(state.mod==='modelparam') body=pcModelPage();
+  else body=pcRecipePage();
+  return body+'<div id="pcModalHost">'+pcModalHTML()+'</div>'+(PC.sel?pcParamDrawer():'')+(PC.ov?pcOvDrawer():'');
+}
+function pcLibFiltered(){
+  let list=PC_COMP.slice();
+  if(PC.type) list=list.filter(function(c){ return c.type===PC.type; });
+  if(PC.cat) list=list.filter(function(c){ return c.cat===PC.cat; });
+  if(PC.st==='pending') list=list.filter(function(c){ return pcPending(c)>0; });
+  if(PC.st==='clear') list=list.filter(function(c){ return pcPending(c)===0; });
+  if(PC.q){
+    const q=PC.q.toLowerCase();
+    list=list.filter(function(c){
+      if(c.name.toLowerCase().indexOf(q)>=0||c.code.toLowerCase().indexOf(q)>=0) return true;
+      return pcParams(c).some(function(p){ return p.code.toLowerCase().indexOf(q)>=0||p.name.toLowerCase().indexOf(q)>=0; });
+    });
+  }
+  return list;
+}
+function pcLibraryPage(){
+  const total=pcParamsTotal(), pend=pcPendingTotal(), ctrl=PC_COMP.filter(function(c){ return c.type==='control'; }).length;
+  const pub=PC_COMP.filter(function(c){ return c.pub; }).length;
+  const cats=[]; PC_COMP.forEach(function(c){ if(cats.indexOf(c.cat)<0) cats.push(c.cat); });
+  const list=pcLibFiltered();
+  const rows=list.length?list.map(function(c){
+    const n=pcParams(c).length, pd=pcPending(c);
+    const paramCell=c.type==='control'
+      ? (n?('<b>'+n+'</b>'+(pd?' <span class="badge warn">'+pd+' 待确认</span>':'')):'<span class="muted">0</span>')
+      : '<span class="muted" title="该组件无设备级参数">—</span>';
+    return '<tr class="pcrow" data-pccomp="'+c.id+'">'+
+      '<td><span class="strong">'+esc(c.name)+'</span><div class="pc-code">'+esc(c.code)+'</div></td>'+
+      '<td><span class="badge '+pcTypeTone(c.type)+'">'+pcTypeName(c.type)+'</span></td>'+
+      '<td>'+esc(c.cat)+'</td>'+
+      '<td class="num">'+paramCell+'</td>'+
+      '<td class="num">'+(c.points&&c.points.length?c.points.length:'<span class="muted">0</span>')+'</td>'+
+      '<td class="num">'+PC_MODEL.length+'</td>'+
+      '<td>'+esc(c.ver)+' '+(c.pub?'<span class="badge success">已发布</span>':'<span class="badge muted">草稿</span>')+'</td>'+
+      '<td class="muted">'+esc(c.upd)+'</td>'+
+      '<td><div class="row-actions"><span class="lnk" data-pccomp="'+c.id+'">详情</span><span class="lnk" data-pccopy="'+c.id+'">复制</span></div></td></tr>';
+  }).join(''):'<tr><td colspan="9" class="pc-empty">没有匹配的组件。放宽筛选，或新建一个控制组件。</td></tr>';
+  return '<div class="page">'+
+    '<div class="page-hd"><div><div class="ttl"><h2>组件与参数</h2><span class="badge info">新模块</span></div>'+
+    '<p>控制组件定义参数 schema，型号继承并覆盖，设备只存生效值。参数定义与配方工艺分开管理。</p></div>'+
+    '<div class="hd-act"><button class="btn" data-pcexport>导出参数表</button><button class="btn accent" data-pcnew>＋ 新建组件</button></div></div>'+
+    '<div class="kpis k5">'+
+      pcKPI('组件总数',PC_COMP.length,'控制 / 部件 / 传感器')+
+      pcKPI('控制组件',ctrl,'承载 36 项设备级参数')+
+      pcKPI('设备级参数',total,'已确认 '+(total-pend)+' · 待确认 <b class="pc-flag">'+pend+'</b>')+
+      pcKPI('待确认参数','<span class="pc-flag">'+pend+'</span>','发布前必须显式勾选')+
+      pcKPI('已发布组件',pub,'草稿 '+(PC_COMP.length-pub)+' 个')+
+    '</div>'+
+    '<div class="filterbar"><span class="note">FILTER</span>'+
+      '<label class="fitem">搜索 '+dcSearchInput('data-pcq',PC.q,'名称、编码或参数标识')+'</label>'+
+      '<label class="fitem">类型 <select data-pctype>'+[['','全部类型'],['control','控制组件'],['part','执行部件'],['sensor','传感器']].map(function(o){ return '<option value="'+o[0]+'"'+(PC.type===o[0]?' selected':'')+'>'+o[1]+'</option>'; }).join('')+'</select></label>'+
+      '<label class="fitem">分类 <select data-pccat><option value="">全部分类</option>'+cats.map(function(x){ return '<option value="'+esc(x)+'"'+(PC.cat===x?' selected':'')+'>'+esc(x)+'</option>'; }).join('')+'</select></label>'+
+      '<label class="fitem">确认状态 <select data-pcst>'+[['','全部'],['pending','含待确认'],['clear','全部已确认']].map(function(o){ return '<option value="'+o[0]+'"'+(PC.st===o[0]?' selected':'')+'>'+o[1]+'</option>'; }).join('')+'</select></label>'+
+    '</div>'+
+    '<div class="tbl-panel"><div class="tbl-hd"><span class="t">全局组件库</span><span class="a">共 '+list.length+' 项</span></div>'+
+    '<div class="tbl-wrap"><table><thead><tr><th>组件名称 / 编码</th><th>类型</th><th>分类</th><th class="num">参数</th><th class="num">数据点</th><th class="num">适配型号</th><th>版本</th><th>更新</th><th>操作</th></tr></thead><tbody>'+rows+'</tbody></table></div>'+
+    '<div class="tbl-ft"><span>参数列中的橙色「待确认」就是发布门禁：待确认项不允许进入正式下发，只能按演示版本发布。</span></div></div>'+
+    '</div>';
+}
+function pcKPI(l,v,s){
+  return '<div class="kpi"><span class="note">KPI</span><div class="kpi-l">'+l+'</div><div class="kpi-v">'+v+'</div><div class="kpi-d"><span>'+s+'</span></div></div>';
+}
+
+/* ---------- 组件详情 ---------- */
+function pcDetailPage(){
+  const c=pcCompOf(PC.compId);
+  if(!c){ PC.view='list'; return ''; }
+  const ps=pcParams(c), pd=pcPending(c);
+  const tabs=[['params','参数 '+(ps.length||'—')],['points','数据点 '+((c.points||[]).length)],['models','适配型号 '+PC_MODEL.length],['history','变更记录']];
+  let body='';
+  if(PC.tab==='params') body=pcParamTab(c);
+  else if(PC.tab==='points') body=pcPointTab(c);
+  else if(PC.tab==='models') body=pcModelTab(c);
+  else body=pcHistoryTab(c);
+  return '<div class="page">'+
+    '<div class="pc-back"><span class="lnk" data-pcback>← 组件库</span><span class="muted">/</span><span>'+esc(c.name)+'</span></div>'+
+    '<div class="page-hd"><div><div class="ttl"><h2>'+esc(c.name)+'</h2>'+
+      '<span class="badge '+pcTypeTone(c.type)+'">'+pcTypeName(c.type)+'</span>'+
+      (c.type!=='control'?'<span class="badge neutral">无设备级参数</span>':(pd?'<span class="badge warn">'+pd+' 项待确认</span>':'<span class="badge success">参数已全部确认</span>'))+
+      (c.pub?'<span class="badge success">已发布 '+esc(c.ver)+'</span>':'<span class="badge muted">草稿 '+esc(c.ver)+'</span>')+'</div>'+
+      '<p>'+esc(c.desc)+'</p></div>'+
+      '<div class="hd-act">'+(c.type==='control'?'<button class="btn" data-pcexport>导出本组件</button><button class="btn accent" data-pcpublish>'+(c.pub?'发布新版本':'发布')+'</button>':'')+'</div></div>'+
+    '<div class="pc-metabar">'+
+      '<div class="pc-meta"><div class="l">组件编码</div><div class="v"><span class="pc-code">'+esc(c.code)+'</span></div></div>'+
+      '<div class="pc-meta"><div class="l">参数 / 已确认</div><div class="v">'+ps.length+' / '+(ps.length-pd)+'</div></div>'+
+      '<div class="pc-meta"><div class="l">适配型号</div><div class="v">'+PC_MODEL.length+'<span class="sub">'+PC_MODEL.slice(0,2).map(function(m){ return m.name.split(' ')[0]; }).join(' · ')+(PC_MODEL.length>2?' 等 '+(PC_MODEL.length-2)+' 个':'')+'</span></div></div>'+
+      '<div class="pc-meta"><div class="l">数据来源</div><div class="v" style="font-weight:400">'+esc(c.doc)+'</div></div>'+
+      '<div class="pc-meta"><div class="l">最近更新</div><div class="v" style="font-weight:400">'+esc(c.upd)+'</div></div>'+
+    '</div>'+
+    '<div class="tabs">'+tabs.map(function(t){ return '<div class="tab'+(PC.tab===t[0]?' active':'')+'" data-pctab="'+t[0]+'">'+t[1]+'</div>'; }).join('')+'</div>'+
+    body+'</div>';
+}
+function pcParamTab(c){
+  const ps=pcParams(c);
+  if(!ps.length) return '<div class="pc-empty">该组件尚无参数定义。<br>控制组件应先在「参数组」中定义参数 schema，再被型号继承。</div>';
+  return '<div class="pc-note">参数是<b>配置值，不是实时读数</b>。这里只维护定义（类型、单位、范围、读写、生效方式）；具体取值在型号参数与设备实例上。</div>'+
+    (c.groups||[]).map(function(g){
+      const closed=!!PC.closed[g.k], pd=g.p.filter(function(p){ return p.st==='pending'; }).length;
+      const rows=g.p.map(function(p){
+        return '<tr data-pcparam="'+esc(p.code)+'">'+
+          '<td><span class="strong">'+esc(p.name)+'</span></td>'+
+          '<td><span class="pc-code">'+esc(p.code)+'</span></td>'+
+          '<td>'+pcTypeLabel(p.type)+'</td>'+
+          '<td>'+pcUnit(p)+'</td>'+
+          '<td class="num">'+esc(p.def)+'</td>'+
+          '<td>'+pcRange(p)+'</td>'+
+          '<td>'+pcRwLabel(p.rw)+'</td>'+
+          '<td>'+esc(p.eff)+'</td>'+
+          '<td>'+pcStTag(p.st)+'</td>'+
+          '<td><span class="lnk" data-pcparam="'+esc(p.code)+'">编辑</span></td></tr>';
+      }).join('');
+      return '<div class="pc-grp'+(closed?' collapsed':'')+'"><div class="pc-grp-hd" data-pcgrp="'+g.k+'">'+
+        '<span class="caret">▼</span><span>'+esc(g.n)+'</span>'+
+        '<span class="c">'+g.p.length+' 项'+(pd?'<span class="badge warn">'+pd+' 待确认</span>':'<span class="badge success">已确认</span>')+'</span></div>'+
+        '<div class="pc-grp-bd"><div class="tbl-wrap"><table><thead><tr><th>参数名称</th><th>原始标识</th><th>类型</th><th>单位</th><th class="num">默认值</th><th>范围</th><th>读写</th><th>生效</th><th>确认</th><th>操作</th></tr></thead><tbody>'+rows+'</tbody></table></div></div></div>';
+    }).join('');
+}
+function pcPointTab(c){
+  const pts=c.points||[];
+  if(!pts.length) return '<div class="pc-note warn">该组件没有定义数据点。控制参数不等于遥测：如果设备没有对应传感器，不要在这里造一条读数。</div>'+
+    '<div class="pc-empty">暂无数据点。<br>确认硬件点位表后，再补充数据点与上报周期。</div>';
+  const rows=pts.map(function(p){
+    return '<tr><td><span class="strong">'+esc(p.name)+'</span></td><td><span class="pc-code">'+esc(p.code)+'</span></td><td>'+pcTypeLabel(p.type)+'</td><td>'+(p.unit?esc(p.unit):'<span class="muted">—</span>')+'</td><td>'+esc(p.freq)+'</td><td>'+pcStTag(p.st)+'</td><td class="muted">'+esc(p.note||'')+'</td></tr>';
+  }).join('');
+  return '<div class="pc-note">数据点是<b>设备上报的遥测/状态</b>，与控制参数分开存储、分开授权；只有实际安装且能被控制板读取的点位才应建立。</div>'+
+    '<div class="tbl-panel"><div class="tbl-hd"><span class="t">数据点</span><span class="a">共 '+pts.length+' 项</span></div>'+
+    '<div class="tbl-wrap"><table><thead><tr><th>名称</th><th>数据点标识</th><th>类型</th><th>单位</th><th>上报</th><th>确认</th><th>说明</th></tr></thead><tbody>'+rows+'</tbody></table></div></div>';
+}
+function pcModelTab(c){
+  const rows=PC_MODEL.map(function(m){
+    const ovs=PC_OV.filter(function(o){ return o.model===m.id&&pcAll().some(function(x){ return x.p.code===o.code&&x.c.id===c.id; }); });
+    return '<tr><td><span class="strong">'+esc(m.name)+'</span></td><td>'+esc(m.brand)+'</td><td>'+esc(m.fw)+'</td>'+
+      '<td class="num">'+m.devices+'</td><td class="num">'+m.online+'</td>'+
+      '<td class="num">'+(ovs.length?'<span class="badge info">'+ovs.length+' 项覆盖</span>':'<span class="muted">全部继承</span>')+'</td>'+
+      '<td><span class="lnk" data-pcgotomodel="'+m.id+'">去配置</span></td></tr>';
+  }).join('');
+  return '<div class="pc-note">型号只保存「覆盖」，未覆盖的参数继续继承组件默认值。改组件默认值会影响所有未覆盖该参数的型号。</div>'+
+    '<div class="tbl-panel"><div class="tbl-hd"><span class="t">适配型号</span><span class="a">共 '+PC_MODEL.length+' 个</span></div>'+
+    '<div class="tbl-wrap"><table><thead><tr><th>型号</th><th>品牌</th><th>固件</th><th class="num">设备</th><th class="num">在线</th><th class="num">覆盖</th><th>操作</th></tr></thead><tbody>'+rows+'</tbody></table></div></div>';
+}
+function pcHistoryTab(c){
+  const logs=PC_LOG.filter(function(l){ return l.comp===c.id; });
+  if(!logs.length) return '<div class="pc-empty">暂无变更记录。</div>';
+  const rows=logs.map(function(l){
+    return '<tr><td>'+esc(l.at)+'</td><td>'+esc(l.who)+'</td><td><span class="badge neutral">'+esc(l.act)+'</span></td><td>'+esc(l.detail)+'</td></tr>';
+  }).join('');
+  return '<div class="pc-note">发布、覆盖、确认都会写入记录；确认类操作必须带依据，便于回溯是谁把「待确认」变成了「已确认」。</div>'+
+    '<div class="tbl-panel"><div class="tbl-hd"><span class="t">变更记录</span><span class="a">最近 '+logs.length+' 条</span></div>'+
+    '<div class="tbl-wrap"><table><thead><tr><th>时间</th><th>操作人</th><th>动作</th><th>说明</th></tr></thead><tbody>'+rows+'</tbody></table></div></div>';
+}
+
+/* ---------- 型号参数配置 ---------- */
+let PC_DISP=[
+  {at:'2026-11-25 18:20',model:'MK-450',ver:'v1.1',scope:'36 项 · 含 2 项覆盖',result:'成功 94 / 失败 2 / 离线 32 待补偿',who:'祥'},
+  {at:'2026-11-22 10:05',model:'MK-650',ver:'v1.1',scope:'36 项 · 含 4 项覆盖',result:'成功 51 / 离线 13 待补偿',who:'陈工'},
+  {at:'2026-11-18 16:40',model:'TCN-800',ver:'v1.0',scope:'36 项 · 含 1 项覆盖',result:'成功 29 / 离线 8 待补偿',who:'陈工'}
+];
+function pcModelPage(){
+  const m=pcModelOf(PC.modelId)||PC_MODEL[0];
+  const comps=PC_COMP.filter(function(c){ return c.type==='control'&&(!PC.mComp||c.id===PC.mComp); });
+  let rows='';
+  comps.forEach(function(c){
+    pcParams(c).forEach(function(p){
+      const ov=pcOvOf(m.id,p.code);
+      rows+='<tr data-pcov="'+esc(p.code)+'">'+
+        '<td><span class="strong">'+esc(p.name)+'</span><div class="pc-code">'+esc(p.code)+'</div></td>'+
+        '<td>'+esc(c.name)+'</td>'+
+        '<td class="num">'+esc(p.def)+'</td>'+
+        '<td class="num">'+(ov?'<b style="color:var(--accent)">'+esc(ov.value)+'</b>':'<span class="muted">'+esc(p.def)+'</span>')+'</td>'+
+        '<td>'+(ov?'<span class="badge info">覆盖</span>':'<span class="badge neutral">继承</span>')+'</td>'+
+        '<td>'+pcStTag(p.st)+'</td>'+
+        '<td>'+(ov?'<span class="lnk" data-pcov="'+esc(p.code)+'">修改</span> <span class="lnk danger" data-pcovreset="'+esc(p.code)+'">恢复继承</span>':'<span class="lnk" data-pcov="'+esc(p.code)+'">覆盖</span>')+'</td></tr>';
+    });
+  });
+  const ovCount=PC_OV.filter(function(o){ return o.model===m.id; }).length;
+  const devTotal=PC_MODEL.reduce(function(a,x){ return a+x.devices; },0);
+  const onTotal=PC_MODEL.reduce(function(a,x){ return a+x.online; },0);
+  const cards=PC_MODEL.map(function(x){
+    const n=PC_OV.filter(function(o){ return o.model===x.id; }).length;
+    return '<div class="pc-mcard'+(x.id===m.id?' on':'')+'" data-pcmodel="'+x.id+'">'+
+      '<div class="nm">'+esc(x.name)+'</div>'+
+      '<div class="bd"><span>设备 <b>'+x.devices+'</b></span><span>在线 <b>'+x.online+'</b></span><span>覆盖 <b>'+n+'</b></span><span>固件 '+esc(x.fw)+'</span></div></div>';
+  }).join('');
+  const dispRows=PC_DISP.map(function(d){
+    return '<tr><td>'+esc(d.at)+'</td><td>'+esc(d.model)+'</td><td>'+esc(d.ver)+'</td><td>'+esc(d.scope)+'</td><td>'+esc(d.result)+'</td><td>'+esc(d.who)+'</td></tr>';
+  }).join('');
+  return '<div class="page">'+
+    '<div class="page-hd"><div><div class="ttl"><h2>型号参数</h2><span class="badge info">继承 + 覆盖</span></div>'+
+    '<p>型号只保存覆盖项，其余继承组件默认值。发布前会提示影响设备数与待确认项，失败保留最后一次有效配置。</p></div>'+
+    '<div class="hd-act"><button class="btn" data-pcexport>导出参数表</button><button class="btn accent" data-pcdispatch>发布到设备</button></div></div>'+
+    '<div class="kpis k5">'+
+      pcKPI('型号',PC_MODEL.length,'全部适配 5 个控制组件')+
+      pcKPI('设备 / 在线',devTotal+' <span class="cu">/ '+onTotal+'</span>','离线设备下次上线补偿')+
+      pcKPI('覆盖项',PC_OV.length,'覆盖必须填写原因')+
+      pcKPI('待确认参数','<span class="pc-flag">'+pcPendingTotal()+'</span>','继承待确认状态')+
+      pcKPI('最近下发',PC_DISP[0]?PC_DISP[0].result.split(' / ')[0]:'—',PC_DISP[0]?PC_DISP[0].at:'')+
+    '</div>'+
+    '<div class="pc-models">'+cards+'</div>'+
+    '<div class="filterbar"><span class="note">FILTER</span>'+
+      '<label class="fitem">组件 <select data-pcmcomp><option value="">全部控制组件</option>'+PC_COMP.filter(function(c){ return c.type==='control'; }).map(function(c){ return '<option value="'+c.id+'"'+(PC.mComp===c.id?' selected':'')+'>'+esc(c.name)+'</option>'; }).join('')+'</select></label>'+
+      '<span class="muted" style="font-size:12px">当前型号：'+esc(m.name)+' · 固件 '+esc(m.fw)+' · '+m.devices+' 台设备</span>'+
+    '</div>'+
+    '<div class="tbl-panel"><div class="tbl-hd"><span class="t">参数与覆盖</span><span class="a">'+pcParamsTotal()+' 项 · 覆盖 '+ovCount+' 项</span></div>'+
+    '<div class="tbl-wrap"><table><thead><tr><th>参数</th><th>所属组件</th><th class="num">组件默认</th><th class="num">本型号值</th><th>来源</th><th>确认</th><th>操作</th></tr></thead><tbody>'+rows+'</tbody></table></div>'+
+    '<div class="tbl-ft"><span>点任意行修改覆盖值。未覆盖的参数显示为灰色，改组件默认值会同时影响它们。</span></div></div>'+
+    '<div class="tbl-panel" style="margin-top:14px"><div class="tbl-hd"><span class="t">下发记录</span><span class="a">最近 3 次</span></div>'+
+    '<div class="tbl-wrap"><table><thead><tr><th>时间</th><th>型号</th><th>版本</th><th>范围</th><th>结果</th><th>操作人</th></tr></thead><tbody>'+dispRows+'</tbody></table></div></div>'+
+    '</div>';
+}
+
+/* ---------- 配方与工艺 ---------- */
+function pcRecipeVal(ri,p){
+  if(p.flag==='空值') return '';
+  const m=String(p.range).match(/([\d.]+)~([\d.]+)/);
+  if(!m) return '';
+  const mn=parseFloat(m[1]), mx=parseFloat(m[2]);
+  const seed=((p.no*37+ri*17)%89)/89;
+  let v=mn+(mx-mn)*(0.22+seed*0.6);
+  v=String(p.range).indexOf('.')>=0?Math.round(v*10)/10:Math.round(v);
+  return String(v);
+}
+function pcRecipePage(){
+  const tab=PC.rtab||'list';
+  const tabs=[['list','配方清单 '+PC_RECIPES.length],['dict','工艺参数字典 '+PC_PROC.length]];
+  let body='';
+  if(tab==='dict'){
+    let list=PC_PROC.slice();
+    if(PC.procStage!=='') list=list.filter(function(p){ return p.stage===Number(PC.procStage); });
+    if(PC.procQ){ const q=PC.procQ.toLowerCase(); list=list.filter(function(p){ return p.name.toLowerCase().indexOf(q)>=0||String(p.no)===q; }); }
+    const rows=list.map(function(p){
+      return '<tr'+(p.flag?' style="background:var(--ds-caution-bg)"':'')+'><td class="num">'+p.no+'</td><td>'+esc(PC_STAGES[p.stage])+'</td><td class="num">'+p.bytes+'</td><td>'+esc(p.name)+'</td><td>'+esc(p.range)+'</td><td>'+(p.flag?'<span class="badge warn">'+esc(p.flag)+'</span>':'<span class="badge success">可解析</span>')+'</td></tr>';
+    }).join('');
+    body='<div class="pc-note warn">参数 5、30 在 12 个配方中均为空值（不等于 0）；参数 114、117 原表范围写为 <b>0~99.9g</b> 但描述是时间，单位按原文保留，不做校验。</div>'+
+      '<div class="filterbar"><span class="note">FILTER</span>'+
+      '<label class="fitem">阶段 <select data-pcprocstage><option value="">全部 7 个阶段</option>'+PC_STAGES.map(function(s,i){ return '<option value="'+i+'"'+(String(PC.procStage)===String(i)?' selected':'')+'>'+s+'</option>'; }).join('')+'</select></label>'+
+      '<label class="fitem">搜索 '+dcSearchInput('data-pcprocq',PC.procQ,'编号或参数含义')+'</label>'+
+      '<span class="muted" style="font-size:12px">共 '+list.length+' 项</span></div>'+
+      '<div class="tbl-panel"><div class="tbl-hd"><span class="t">工艺参数字典</span><span class="a">'+list.length+' / '+PC_PROC.length+' 项</span></div>'+
+      '<div class="tbl-wrap"><table><thead><tr><th class="num">编号</th><th>阶段</th><th class="num">字节</th><th>参数含义</th><th>设定范围</th><th>状态</th></tr></thead><tbody>'+rows+'</tbody></table></div></div>';
+  }else{
+    const cards=PC_RECIPES.map(function(r,i){
+      return '<div class="pc-rcard'+(PC.recipe===i+1?' on':'')+'" data-pcrecipe="'+i+'">'+
+        '<div class="no">配方 '+r.no+' · '+r.ml+'ml</div><div class="nm">'+esc(r.name)+'</div>'+
+        '<div class="mt">118 项 · 7 阶段 · 空值 2</div></div>';
+    }).join('');
+    let detail='';
+    if(PC.recipe>0){
+      const r=PC_RECIPES[PC.recipe-1];
+      detail='<div class="pc-metabar" style="margin-top:14px">'+
+          '<div class="pc-meta"><div class="l">当前配方</div><div class="v">'+esc(r.name)+'<span class="sub">配方 '+r.no+' · '+r.ml+'ml</span></div></div>'+
+          '<div class="pc-meta"><div class="l">工艺参数</div><div class="v">'+PC_PROC.length+'</div></div>'+
+          '<div class="pc-meta"><div class="l">阶段</div><div class="v">7</div></div>'+
+          '<div class="pc-meta"><div class="l">异常字段</div><div class="v"><span class="pc-flag">2 空值 · 2 单位待确认</span></div></div>'+
+          '<div class="pc-meta"><div class="l">状态</div><div class="v"><span class="badge muted">只读</span></div></div>'+
+        '</div>'+
+        PC_STAGES.map(function(sn,si){
+          const ps=PC_PROC.filter(function(p){ return p.stage===si; });
+          const closed=si!==PC.stage;
+          const rows=ps.map(function(p){
+            const v=pcRecipeVal(PC.recipe-1,p);
+            const valCell=p.flag==='空值'?'<span class="badge warn">空值</span>':
+              (p.flag==='单位待确认'?'<b class="pc-flag">'+v+' g</b> <span class="badge warn">单位待确认</span>':('<b>'+v+'</b>'));
+            return '<tr><td class="num">'+p.no+'</td><td>'+esc(p.name)+'</td><td>'+esc(p.range)+'</td><td>'+valCell+'</td></tr>';
+          }).join('');
+          return '<div class="pc-stage'+(closed?' collapsed':'')+'"><div class="pc-stage-hd" data-pcstage="'+si+'"><span class="caret">▼</span><span>'+esc(sn)+'</span><span class="c">'+ps.length+' 项 · No.'+ps[0].no+'–'+ps[ps.length-1].no+'</span></div>'+
+            '<div class="pc-stage-bd"><div class="tbl-wrap"><table><thead><tr><th class="num">编号</th><th>参数含义</th><th>设定范围</th><th>值（样例）</th></tr></thead><tbody>'+rows+'</tbody></table></div></div></div>';
+        }).join('');
+    }else{
+      detail='<div class="pc-empty">选择一个配方查看 7 个工艺阶段的参数值。</div>';
+    }
+    body='<div class="pc-note warn"><b>只读：</b>编号、阶段与范围为确认书原文；配方数值未从原始 xlsx 导入，当前值按范围生成，仅用于确认字段与阶段划分，不能用于生产。单位未定之前不开放编辑。</div>'+
+      '<div class="pc-rgrid">'+cards+'</div>'+detail;
+  }
+  return '<div class="page">'+
+    '<div class="page-hd"><div><div class="ttl"><h2>配方与工艺</h2><span class="badge info">与组件参数分离</span></div>'+
+    '<p>118 项工艺参数描述「一杯饮品怎么做」，按 7 个阶段组织，不属于任何设备级控制组件。</p></div>'+
+    '<div class="hd-act"><button class="btn" disabled title="单位未确认前不开放编辑">导入配方</button><button class="btn" data-pcexport>导出参数字典</button></div></div>'+
+    '<div class="kpis k4">'+
+      pcKPI('配方',PC_RECIPES.length,'12 列，参数值未导入')+
+      pcKPI('工艺参数',PC_PROC.length,'7 个阶段 · 118 项')+
+      pcKPI('异常字段','<span class="pc-flag">4</span>','2 空值 · 2 单位疑点')+
+      pcKPI('可解析范围','<span class="pc-flag">未确认</span>','字节序、倍率、小数位待提供')+
+    '</div>'+
+    '<div class="tabs">'+tabs.map(function(t){ return '<div class="tab'+(tab===t[0]?' active':'')+'" data-pcrtab="'+t[0]+'">'+t[1]+'</div>'; }).join('')+'</div>'+
+    body+'</div>';
+}
+
+/* ---------- 参数详情抽屉 ---------- */
+function pcFindParam(code){
+  let hit=null;
+  PC_COMP.forEach(function(c){ pcParams(c).forEach(function(p){ if(p.code===code) hit={c:c,p:p}; }); });
+  return hit;
+}
+function pcValidate(d){
+  const numeric=d.type==='int'||d.type==='dec';
+  if(!String(d.name||'').trim()) return '中文名称不能为空。';
+  if(numeric&&!String(d.unit||'').trim()&&d.ust!=='pending') return '数值型参数必须有单位，或把「单位状态」设为待确认。';
+  if(numeric){
+    if(d.min!==''&&isNaN(Number(d.min))) return '最小值必须是数字（未知范围请留空）。';
+    if(d.max!==''&&isNaN(Number(d.max))) return '最大值必须是数字（未知范围请留空）。';
+    if(d.def!==''&&isNaN(Number(d.def))) return '默认值必须是数字。';
+  }
+  if(numeric&&d.min!==''&&d.max!==''&&Number(d.min)>=Number(d.max)) return '最小值必须小于最大值。';
+  if(numeric&&d.def!==''&&d.min!==''&&Number(d.def)<Number(d.min)) return '默认值小于最小值。';
+  if(numeric&&d.def!==''&&d.max!==''&&Number(d.def)>Number(d.max)) return '默认值大于最大值。';
+  return '';
+}
+function pcField(label,inner){
+  return '<div class="field"><label>'+label+'</label>'+inner+'</div>';
+}
+function pcInp(f,val,ph,extra){
+  return '<input data-pcf="'+f+'" value="'+esc(val==null?'':val)+'" placeholder="'+esc(ph||'')+'"'+(extra||'')+'>';
+}
+function pcSel(f,val,opts){
+  return '<select data-pcf="'+f+'">'+opts.map(function(o){ return '<option value="'+o[0]+'"'+(String(val)===String(o[0])?' selected':'')+'>'+o[1]+'</option>'; }).join('')+'</select>';
+}
+function pcSec(t,sub){
+  return '<div style="font-size:12px;font-weight:700;margin:20px 0 12px;padding-bottom:7px;border-bottom:1px solid var(--border)">'+t+(sub?'<span style="font-weight:400;color:var(--text-3);margin-left:8px">'+sub+'</span>':'')+'</div>';
+}
+function pcParamDrawer(){
+  const hit=pcFindParam(PC.sel);
+  if(!hit) return '';
+  const p=hit.p, c=hit.c, d=PC.draft||p;
+  const numeric=d.type==='int'||d.type==='dec';
+  return '<div class="mask on" data-pcclose></div><div class="drawer on pc-dr" style="width:620px">'+
+    '<div class="drawer-hd"><div><h3>'+esc(p.name)+'</h3><div class="mx-sub"><span class="pc-code">'+esc(p.code)+'</span> · '+esc(c.name)+'</div></div><button class="drawer-x" data-pcclose aria-label="关闭">×</button></div>'+
+    '<div class="drawer-bd">'+
+      (PC.err?'<div class="pc-err">'+esc(PC.err)+'</div>':'')+
+      pcSec('1 · 标识','原始标识不随界面改名')+
+        pcField('原始参数标识','<div class="src" style="font-family:ui-monospace,Menlo,monospace">'+esc(p.code)+'</div>')+
+        pcField('中文名称（界面显示）',pcInp('name',d.name,'参数中文名'))+
+        pcField('所属组件','<div class="src">'+esc(c.name)+' · '+esc(c.code)+'</div>')+
+      pcSec('2 · 类型与校验','类型决定能否下发')+
+        '<div style="display:grid;grid-template-columns:1fr 1fr;gap:0 14px">'+
+          pcField('参数类型',pcSel('type',d.type,PC_TYPES))+
+          pcField('单位状态',pcSel('ust',d.ust,[['ok','已确认'],['pending','待确认']]))+
+          pcField('单位',pcInp('unit',d.unit,numeric?'例如 ms / ml / 次':'非数值型可留空'))+
+          pcField('默认值',pcInp('def',d.def,'当前参数表数值'))+
+        '</div>'+
+        '<div id="pcNumFields" style="display:'+(numeric?'block':'none')+'">'+
+          '<div style="display:grid;grid-template-columns:1fr 1fr;gap:0 14px">'+
+            pcField('最小值',pcInp('min',d.min,'待确认可留空'))+
+            pcField('最大值',pcInp('max',d.max,'待确认可留空'))+
+            pcField('步长 / 精度',pcInp('step',d.step,'1'))+
+          '</div>'+
+          '<div class="pc-note" style="margin-top:-4px">范围为空会被视为「未定义范围」，可以存草稿，但不能进入正式下发。</div>'+
+        '</div>'+
+      pcSec('3 · 权限与生效','')+
+        '<div style="display:grid;grid-template-columns:1fr 1fr;gap:0 14px">'+
+          pcField('读写权限',pcSel('rw',d.rw,PC_RWS))+
+          pcField('生效方式',pcSel('eff',d.eff,PC_EFFS.map(function(x){ return [x,x]; })))+
+        '</div>'+
+        pcField('适用范围','<div class="src">型号默认值 → 设备实例覆盖 → 配方（仅工艺参数）</div>')+
+        (c.id==='C-LIFT'||c.id==='C-CLEAN'?'<div class="pc-note warn">升降与清洁参数涉及动作安全：仅工程师可写，下发前需满足「设备空闲 + 舱门关闭 + 无制作任务」互锁条件。</div>':'')+
+      pcSec('4 · 下发与反馈','')+
+        '<div style="display:grid;grid-template-columns:1fr 1fr;gap:0 14px">'+
+          pcField('命令字段','<div class="src"><span class="pc-code">'+esc(p.code)+'</span> · 单项写入</div>')+
+          pcField('超时 / 重试','<div class="src">3s · 1 次（幂等，不重复执行动作）</div>')+
+        '</div>'+
+        pcField('应答要求','<div class="src">成功 / 失败原因 / 实际生效值；不一致时保留最后一次有效配置</div>')+
+      pcSec('5 · 来源与确认','')+
+        pcField('来源文档','<div class="src">'+esc(c.doc)+' · 参数.xlsx</div>')+
+        pcField('确认状态','<div style="padding-top:2px">'+pcStTag(p.st)+(p.by?'<span class="muted" style="font-size:11.5px;margin-left:8px">'+esc(p.by)+' · '+esc(p.at||'')+'</span>':'')+'</div>')+
+        pcField('确认依据（必填）','<div class="src" style="margin-bottom:6px">'+(p.basis?esc(p.basis):'尚未确认')+'</div>'+pcInp('basis',d.basis,'文档页码 / 邮件 / 实测记录'))+
+        pcField('备注','<textarea data-pcf="note" rows="3" placeholder="单位、范围、动作顺序等未决说明">'+esc(d.note||'')+'</textarea>')+
+    '</div>'+
+    '<div class="drawer-ft">'+
+      (p.st==='pending'?'<button class="btn" data-pcconfirm>标记已确认</button>':'<button class="btn" data-pcunconfirm>撤销确认</button>')+
+      '<button class="btn" data-pcclose>取消</button><button class="btn accent" data-pcsave>保存修改</button>'+
+    '</div></div>';
+}
+
+/* ---------- 型号覆盖抽屉 ---------- */
+function pcOvDrawer(){
+  const hit=pcFindParam(PC.ov);
+  if(!hit) return '';
+  const p=hit.p, c=hit.c, m=pcModelOf(PC.modelId)||PC_MODEL[0];
+  const ov=pcOvOf(m.id,p.code);
+  const d=PC.ovDraft||{value:ov?ov.value:'',reason:ov?ov.reason:''};
+  return '<div class="mask on" data-pcclose></div><div class="drawer on pc-dr" style="width:560px">'+
+    '<div class="drawer-hd"><div><h3>型号覆盖 · '+esc(p.name)+'</h3><div class="mx-sub">'+esc(m.name)+' · <span class="pc-code">'+esc(p.code)+'</span></div></div><button class="drawer-x" data-pcclose>×</button></div>'+
+    '<div class="drawer-bd">'+
+      (PC.err?'<div class="pc-err">'+esc(PC.err)+'</div>':'')+
+      '<div class="pc-dgrid" style="margin-bottom:16px">'+
+        '<div><div class="k">组件默认</div><div class="v">'+esc(p.def)+' <span class="muted" style="font-weight:400">'+esc(p.unit||'')+'</span></div></div>'+
+        '<div><div class="k">影响设备</div><div class="v">'+m.devices+' 台 <span class="muted" style="font-weight:400">/ 在线 '+m.online+'</span></div></div>'+
+        '<div><div class="k">确认状态</div><div class="v">'+pcStTag(p.st)+'</div></div>'+
+      '</div>'+
+      pcField('本型号值','<input data-pcovval value="'+esc(d.value)+'" placeholder="例如 90">')+
+      pcField('覆盖原因（必填）','<textarea data-pcovreason rows="3" placeholder="为什么这个型号需要不同取值">'+esc(d.reason||'')+'</textarea>')+
+      (p.st==='pending'?'<div class="pc-note warn">该参数仍是待确认状态：覆盖可以先存，但发布到设备时仍会被拦下。</div>':'')+
+      '<div class="pc-note">覆盖只作用于该型号的设备；恢复继承会删除这条覆盖，设备端在下次下发后回到组件默认值。</div>'+
+    '</div>'+
+    '<div class="drawer-ft">'+(ov?'<button class="btn danger" data-pcovreset="'+esc(p.code)+'">恢复继承</button>':'')+
+      '<button class="btn" data-pcclose>取消</button><button class="btn accent" data-pcovsave>保存覆盖</button></div></div>';
+}
+
+/* ---------- 弹窗 ---------- */
+function pcModalHTML(){
+  if(!PC.modal) return '';
+  if(PC.modal==='publish') return pcPublishModal();
+  if(PC.modal==='dispatch') return pcDispatchModal();
+  if(PC.modal==='new') return pcNewModal();
+  return '';
+}
+function pcPublishModal(){
+  const c=pcCompOf(PC.compId)||{name:'',ver:'',id:''};
+  const pd=pcPending(c);
+  return '<div class="pc-modal-mask" data-pcclose></div><div class="pc-modal pc-dr">'+
+    '<div class="pc-modal-hd"><div><h3>发布 '+esc(c.name)+' '+esc(c.ver)+'</h3><div class="s">发布后型号可引用、设备可下发；待确认项不会自动变成已确认。</div></div><button class="drawer-x" data-pcclose>×</button></div>'+
+    '<div class="pc-modal-bd">'+
+      (PC.err?'<div class="pc-err">'+esc(PC.err)+'</div>':'')+
+      '<div class="pc-kv"><span class="k">参数</span><span class="v">'+pcParams(c).length+' 项 · 待确认 '+pd+' 项</span></div>'+
+      '<div class="pc-kv"><span class="k">影响型号</span><span class="v">'+PC_MODEL.length+' 个 · 设备 '+PC_MODEL.reduce(function(a,x){ return a+x.devices; },0)+' 台</span></div>'+
+      '<div class="pc-kv"><span class="k">校验</span><span class="v">'+(pd?'<span class="pc-flag">'+pd+' 项未通过完整校验</span>':'全部通过')+'</span></div>'+
+      '<div class="pc-note'+(pd?' warn':'')+'" style="margin-top:14px">'+(pd
+        ?'存在待确认参数：单位或范围未定，设备端无法校验。可以按「演示版本」发布，但需要勾选确认并填写原因。'
+        :'所有参数均已确认，可以直接发布为正式版本。')+'</div>'+
+      (pd?'<div class="pc-chk"><input type="checkbox" data-pcchk'+(PC.chk?' checked':'')+'><span>我已知晓存在 '+pd+' 项待确认参数，本次仅用于演示，不进入正式生产下发。</span></div>'+
+        '<div class="field"><label>发布原因（必填）</label><textarea data-pcreason rows="2" placeholder="例如：客户要求先看链路，待固件方回填单位">'+esc(PC.reason)+'</textarea></div>':'')+
+    '</div>'+
+    '<div class="pc-modal-ft"><button class="btn" data-pcclose>取消</button><button class="btn accent" data-pcpubok>发布</button></div></div>';
+}
+function pcDispatchModal(){
+  const m=pcModelOf(PC.modelId)||PC_MODEL[0];
+  const b=PC.bus||{step:'check'};
+  if(b.step==='running'){
+    return '<div class="pc-modal-mask"></div><div class="pc-modal"><div class="pc-modal-hd"><div><h3>正在下发 · '+esc(m.name)+'</h3><div class="s">逐项写入 + 读取生效值校验，失败会保留最后一次有效配置。</div></div></div>'+
+      '<div class="pc-modal-bd"><div class="pc-steps"><span class="pc-step on"><b>2</b> 下发中</span><span class="pc-step">3 校验结果</span></div>'+
+      '<div class="pc-bar"><i style="width:'+Math.min(100,Math.round(b.pct))+'%"></i></div>'+
+      '<div class="muted" style="font-size:12px">已完成 '+Math.min(100,Math.round(b.pct))+'% · 目标 '+m.online+' 台在线设备</div></div></div>';
+  }
+  if(b.step==='done'){
+    const retry=!!b.retry;
+    const fails=retry?[]:[['MK-450-0117','超时 3s · 无应答'],['MK-450-0246','返回参数越界 · 0x04']];
+    return '<div class="pc-modal-mask" data-pcclose></div><div class="pc-modal"><div class="pc-modal-hd"><div><h3>下发结果 · '+esc(m.name)+'</h3><div class="s">共 '+m.devices+' 台，在线 '+m.online+' 台，离线 '+(m.devices-m.online)+' 台将在下次上线后补偿。</div></div><button class="drawer-x" data-pcclose>×</button></div>'+
+      '<div class="pc-modal-bd"><div class="pc-steps"><span class="pc-step done"><b>1</b> 预检</span><span class="pc-step done"><b>2</b> 下发</span><span class="pc-step on"><b>3</b> 结果</span></div>'+
+      '<div class="pc-dgrid" style="margin-bottom:14px">'+
+        '<div><div class="k">成功</div><div class="v" style="color:var(--ds-success-text);font-size:18px">'+(retry?m.online:m.online-fails.length)+'</div></div>'+
+        '<div><div class="k">失败</div><div class="v" style="color:'+(fails.length?'var(--ds-critical-text)':'var(--text)')+';font-size:18px">'+fails.length+'</div></div>'+
+        '<div><div class="k">离线待补偿</div><div class="v" style="font-size:18px">'+(m.devices-m.online)+'</div></div>'+
+      '</div>'+
+      (fails.length?'<div class="tbl-panel"><div class="tbl-wrap"><table><thead><tr><th>设备</th><th>失败原因</th></tr></thead><tbody>'+fails.map(function(f){ return '<tr><td>'+esc(f[0])+'</td><td class="pc-flag">'+esc(f[1])+'</td></tr>'; }).join('')+'</tbody></table></div></div>':'<div class="pc-note">全部在线设备下发成功，重试项已清零。</div>')+
+      '<div class="pc-note" style="margin-top:12px">重试按「参数级别」幂等：同一参数重复下发只覆盖值，不会重复执行动作。'+(retry?'':'失败设备在修复后可单独重试，不需要整批重发。')+'</div>'+
+      '</div>'+
+      '<div class="pc-modal-ft">'+(fails.length?'<button class="btn" data-pcretry>重试失败项</button>':'')+'<button class="btn accent" data-pcclose>完成</button></div></div>';
+  }
+  const pd=pcPendingTotal();
+  return '<div class="pc-modal-mask" data-pcclose></div><div class="pc-modal pc-dr">'+
+    '<div class="pc-modal-hd"><div><h3>发布到设备 · '+esc(m.name)+'</h3><div class="s">先预检，再逐项下发并校验设备端生效值。</div></div><button class="drawer-x" data-pcclose>×</button></div>'+
+    '<div class="pc-modal-bd">'+
+      (PC.err?'<div class="pc-err">'+esc(PC.err)+'</div>':'')+
+      '<div class="pc-steps"><span class="pc-step on"><b>1</b> 预检</span><span class="pc-step">2 下发</span><span class="pc-step">3 结果</span></div>'+
+      '<div class="pc-kv"><span class="k">固件版本</span><span class="v">'+esc(m.fw)+'</span></div>'+
+      '<div class="pc-kv"><span class="k">参数范围</span><span class="v">'+pcParamsTotal()+' 项 · 覆盖 '+PC_OV.filter(function(o){ return o.model===m.id; }).length+' 项</span></div>'+
+      '<div class="pc-kv"><span class="k">待确认</span><span class="v"><span class="pc-flag">'+pd+' 项</span>（继承自组件）</span></div>'+
+      '<div class="pc-kv"><span class="k">设备</span><span class="v">'+m.devices+' 台 · 在线 '+m.online+' · 离线 '+(m.devices-m.online)+'</span></div>'+
+      '<div class="pc-note'+(pd?' warn':'')+'" style="margin-top:14px">'+(pd?'待确认参数会在下发时被跳过，不会写入设备；其余参数照常下发。':'参数已全部确认。')+' 离线设备不会阻塞本次下发，上线后自动补偿。</div>'+
+      '<div class="pc-chk"><input type="checkbox" data-pcchk'+(PC.chk?' checked':'')+'><span>我确认本次下发范围与影响设备数，并知晓失败设备会保留最后一次有效配置。</span></div>'+
+    '</div>'+
+    '<div class="pc-modal-ft"><button class="btn" data-pcclose>取消</button><button class="btn accent" data-pcdisstart>开始下发</button></div></div>';
+}
+function pcNewModal(){
+  const d=PC.newDraft||{name:'',code:'',type:'control',cat:'清洁'};
+  const cats=[]; PC_COMP.forEach(function(c){ if(cats.indexOf(c.cat)<0) cats.push(c.cat); });
+  const inp=function(f,v,ph){ return '<input data-pcnewf="'+f+'" value="'+esc(v==null?'':v)+'" placeholder="'+esc(ph||'')+'">'; };
+  const sel=function(f,v,opts){ return '<select data-pcnewf="'+f+'">'+opts.map(function(o){ return '<option value="'+o[0]+'"'+(String(v)===String(o[0])?' selected':'')+'>'+o[1]+'</option>'; }).join('')+'</select>'; };
+  return '<div class="pc-modal-mask" data-pcclose></div><div class="pc-modal pc-dr">'+
+    '<div class="pc-modal-hd"><div><h3>新建组件</h3><div class="s">组件只承载定义，不承载具体设备的取值。</div></div><button class="drawer-x" data-pcclose>×</button></div>'+
+    '<div class="pc-modal-bd">'+(PC.err?'<div class="pc-err">'+esc(PC.err)+'</div>':'')+
+      pcField('组件名称',inp('name',d.name,'例如：奶路清洗控制'))+
+      '<div style="display:grid;grid-template-columns:1fr 1fr;gap:0 14px">'+
+        pcField('组件编码',inp('code',d.code,'UPPER_SNAKE_CASE'))+
+        pcField('组件类型',sel('type',d.type,[['control','控制组件'],['part','执行部件'],['sensor','传感器']]))+
+        pcField('分类',sel('cat',d.cat,cats.map(function(x){ return [x,x]; })))+
+      '</div>'+
+      '<div class="pc-note">新建后从「参数组」开始维护参数定义；同一编码不可重复。</div></div>'+
+    '<div class="pc-modal-ft"><button class="btn" data-pcclose>取消</button><button class="btn accent" data-pcnewok>创建</button></div></div>';
+}
+function pcRefreshModal(){
+  const host=document.getElementById('pcModalHost');
+  if(host) host.innerHTML=pcModalHTML();
+}
+
+/* ---------- 动作 ---------- */
+function pcCloseOverlays(){
+  PC.sel=''; PC.ov=''; PC.ovDraft=null; PC.modal=''; PC.err=''; PC.newDraft=null; PC.bus=null;
+  if(PC.timer){ clearInterval(PC.timer); PC.timer=null; }
+}
+function pcOpenComp(id){
+  PC.compId=id; PC.view='detail'; PC.tab='params'; PC.sel=''; PC.err=''; PC.modal='';
+  render();
+}
+function pcCopyComp(id){
+  const c=pcCompOf(id); if(!c) return;
+  const copy={id:'C-'+Date.now(),code:c.code+'_COPY',name:c.name+' 副本',type:c.type,cat:c.cat,
+    desc:c.desc,ver:'v0.1',pub:false,upd:pcToday().slice(0,10),doc:'复制自 '+c.name,
+    groups:JSON.parse(JSON.stringify(c.groups||[])),points:JSON.parse(JSON.stringify(c.points||[]))};
+  PC_COMP.push(copy);
+  pcLog(copy.id,'新建组件','v0.1 · 复制自 '+c.code);
+  toast('已复制为「'+copy.name+'」，参数定义一并继承');
+  render();
+}
+function pcCommitDraft(){
+  const hit=pcFindParam(PC.sel); if(!hit) return false;
+  const d=PC.draft||{};
+  const err=pcValidate(d);
+  if(err){ PC.err=err; render(); return false; }
+  ['name','type','unit','ust','min','max','step','def','rw','eff','note'].forEach(function(k){ hit.p[k]=d[k]; });
+  if(!String(d.unit||'').trim()&&d.ust==='ok'&&(d.type==='int'||d.type==='dec')) hit.p.ust='pending';
+  hit.c.upd=pcToday().slice(0,10);
+  pcLog(hit.c.id,'保存草稿',hit.c.name+' · '+hit.p.code+' 已更新');
+  return true;
+}
+function pcSaveParam(){
+  if(!pcCommitDraft()) return;
+  PC.err=''; PC.sel=''; PC.modal=''; toast('已保存参数定义'); render();
+}
+function pcConfirmParam(){
+  const hit=pcFindParam(PC.sel); if(!hit) return;
+  const d=PC.draft||{};
+  const err=pcValidate(d);
+  if(err){ PC.err=err; render(); return; }
+  if((d.type==='int'||d.type==='dec')&&!String(d.unit||'').trim()){ PC.err='单位为空的数值型参数不能标记已确认，请先补单位或明确「不适用」。'; render(); return; }
+  if(!String(d.basis||'').trim()||String(d.basis).trim().length<4){ PC.err='标记已确认必须填写依据（文档页码 / 邮件 / 实测记录），否则门禁形同虚设。'; render(); return; }
+  ['name','type','unit','ust','min','max','step','def','rw','eff','note'].forEach(function(k){ hit.p[k]=d[k]; });
+  hit.p.st='ok'; hit.p.ust='ok'; hit.p.basis=String(d.basis).trim(); hit.p.by='祥'; hit.p.at=pcToday();
+  hit.c.upd=pcToday().slice(0,10);
+  pcLog(hit.c.id,'确认参数',hit.p.code+' · 依据：'+hit.p.basis);
+  PC.err=''; PC.sel=''; toast('已确认，依据与确认人已记录'); render();
+}
+function pcUnconfirmParam(){
+  const hit=pcFindParam(PC.sel); if(!hit) return;
+  hit.p.st='pending';
+  pcLog(hit.c.id,'撤销确认',hit.p.code+' · 回到待确认');
+  PC.err=''; PC.sel=''; toast('已撤销确认，该参数重新进入待确认'); render();
+}
+function pcDoPublish(){
+  const c=pcCompOf(PC.compId); if(!c) return;
+  const pd=pcPending(c);
+  if(pd>0&&(!PC.chk||String(PC.reason||'').trim().length<4)){
+    PC.err='存在 '+pd+' 项待确认：需勾选「仅用于演示」并填写发布原因。'; render(); return;
+  }
+  c.pub=true; c.upd=pcToday().slice(0,10);
+  pcLog(c.id,'发布',c.ver+' · '+(pd?'已知 '+pd+' 项待确认，按演示版本发布':'全部参数已确认，正式发布'));
+  PC.modal=''; PC.chk=false; PC.reason=''; PC.err='';
+  toast('已发布 '+c.name+' '+c.ver); render();
+}
+function pcSaveOv(){
+  const hit=pcFindParam(PC.ov); if(!hit) return;
+  const p=hit.p, c=hit.c, m=pcModelOf(PC.modelId)||PC_MODEL[0];
+  const d=PC.ovDraft||{};
+  const val=String(d.value==null?'':d.value).trim();
+  const reason=String(d.reason||'').trim();
+  if(!val){ PC.err='本型号值为空。若不需要覆盖，请使用「恢复继承」。'; render(); return; }
+  if(reason.length<5){ PC.err='覆盖必须填写原因（至少 5 个字），否则无法追溯差异来源。'; render(); return; }
+  if((p.type==='int'||p.type==='dec')&&p.min!==''&&p.max!==''){
+    const n=Number(val);
+    if(isNaN(n)||n<Number(p.min)||n>Number(p.max)){ PC.err='本型号值超出允许范围 '+p.min+' ~ '+p.max+'。'; render(); return; }
+  }
+  const ex=pcOvOf(m.id,p.code);
+  if(ex){ ex.value=val; ex.reason=reason; ex.by='祥'; ex.at=pcToday(); }
+  else PC_OV.push({model:m.id,code:p.code,value:val,reason:reason,by:'祥',at:pcToday()});
+  pcLog(c.id,'型号覆盖',m.id+' · '+p.code+' → '+val);
+  PC.ov=''; PC.ovDraft=null; PC.err=''; toast('已保存覆盖'); render();
+}
+function pcResetOv(code){
+  const m=pcModelOf(PC.modelId)||PC_MODEL[0];
+  const hit=pcFindParam(code);
+  PC_OV=PC_OV.filter(function(o){ return !(o.model===m.id&&o.code===code); });
+  if(hit) pcLog(hit.c.id,'恢复继承',m.id+' · '+code+' 回到组件默认值');
+  PC.ov=''; PC.ovDraft=null; PC.err=''; toast('已恢复继承'); render();
+}
+function pcRunDispatch(retry){
+  const m=pcModelOf(PC.modelId)||PC_MODEL[0];
+  PC.bus={step:'running',pct:0,retry:!!retry};
+  pcRefreshModal();
+  if(PC.timer) clearInterval(PC.timer);
+  PC.timer=setInterval(function(){
+    if(!PC.bus){ clearInterval(PC.timer); PC.timer=null; return; }
+    PC.bus.pct=Math.min(100,PC.bus.pct+Math.random()*16+9);
+    if(PC.bus.pct>=100){
+      PC.bus.pct=100; PC.bus.step='done'; PC.bus.retry=!!retry;
+      clearInterval(PC.timer); PC.timer=null;
+      PC_DISP.unshift({at:pcToday(),model:m.id,ver:'v1.1',scope:pcParamsTotal()+' 项 · 含 '+PC_OV.filter(function(o){ return o.model===m.id; }).length+' 项覆盖',
+        result:retry?('成功 '+m.online+' / 失败 0 / 离线 '+(m.devices-m.online)+' 待补偿'):('成功 '+(m.online-2)+' / 失败 2 / 离线 '+(m.devices-m.online)+' 待补偿'),who:'祥'});
+    }
+    pcRefreshModal();
+  },240);
+}
+function pcStartDispatch(){
+  if(!PC.chk){ PC.err='请先勾选确认本次下发范围与影响设备数。'; render(); return; }
+  PC.err=''; pcRunDispatch(false);
+}
+function pcCreateComp(){
+  const d=PC.newDraft||{};
+  const name=String(d.name||'').trim();
+  const code=String(d.code||'').trim().toUpperCase();
+  if(!name){ PC.err='组件名称不能为空。'; render(); return; }
+  if(!/^[A-Z][A-Z0-9_]{2,}$/.test(code)){ PC.err='组件编码需为大写字母开头的 UPPER_SNAKE_CASE，例如 MILK_CLEAN。'; render(); return; }
+  if(PC_COMP.some(function(c){ return c.code===code; })){ PC.err='组件编码已存在，请换一个。'; render(); return; }
+  const id='C-'+Date.now();
+  PC_COMP.push({id:id,code:code,name:name,type:d.type||'control',cat:d.cat||'清洁',desc:'新建组件，待补充职责说明。',ver:'v0.1',pub:false,upd:pcToday().slice(0,10),doc:'手工创建',groups:[],points:[]});
+  pcLog(id,'新建组件','v0.1 · '+code);
+  PC.modal=''; PC.newDraft=null; PC.err=''; toast('已创建「'+name+'」，可以开始定义参数');
+  render();
+}
+function pcExportCSV(){
+  const rows=[['组件','组件编码','参数组','原始标识','中文名称','类型','单位','单位状态','最小值','最大值','默认值','读写','生效方式','确认状态','确认依据']];
+  if(state.mod==='recipe'){
+    rows[0]=['编号','阶段','字节','参数含义','设定范围','状态'];
+    PC_PROC.forEach(function(p){ rows.push([p.no,PC_STAGES[p.stage],p.bytes,p.name,p.range,p.flag||'']); });
+  }else if(PC.view==='detail'&&PC.compId){
+    const c=pcCompOf(PC.compId);
+    (c.groups||[]).forEach(function(g){ g.p.forEach(function(p){
+      rows.push([c.name,c.code,g.n,p.code,p.name,pcTypeLabel(p.type),p.unit,p.ust==='pending'?'待确认':'已确认',p.min,p.max,p.def,pcRwLabel(p.rw),p.eff,p.st==='ok'?'已确认':'待确认',p.basis||'']);
+    }); });
+  }else{
+    PC_COMP.forEach(function(c){
+      if(c.type!=='control') return;
+      (c.groups||[]).forEach(function(g){ g.p.forEach(function(p){
+        rows.push([c.name,c.code,g.n,p.code,p.name,pcTypeLabel(p.type),p.unit,p.ust==='pending'?'待确认':'已确认',p.min,p.max,p.def,pcRwLabel(p.rw),p.eff,p.st==='ok'?'已确认':'待确认',p.basis||'']);
+      }); });
+    });
+  }
+  const csv='\ufeff'+rows.map(function(r){ return r.map(function(x){ return '"'+String(x==null?'':x).replace(/"/g,'""')+'"'; }).join(','); }).join('\r\n');
+  const blob=new Blob([csv],{type:'text/csv;charset=utf-8'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download=state.mod==='recipe'?'工艺参数字典_118项.csv':'设备控制参数表_v1.0.csv';
+  document.body.appendChild(a); a.click();
+  setTimeout(function(){ URL.revokeObjectURL(a.href); a.remove(); },1200);
+  toast('已导出 CSV，可直接发给固件方按表回填');
+}
+
+/* ---------- 事件 ---------- */
+document.addEventListener('click',function(e){
+  const nav=e.target.closest('.nav-item')||e.target.closest('.sub-item');
+  if(nav){
+    if(PC.view!=='list'||PC.sel||PC.modal||PC.ov){ PC.view='list'; pcCloseOverlays(); }
+    return;
+  }
+  const t=e.target;
+  const q=function(sel){ return t.closest(sel); };
+
+  if(q('[data-pcback]')){ PC.view='list'; PC.sel=''; render(); return; }
+  if(q('[data-pccomp]')){ pcOpenComp(q('[data-pccomp]').getAttribute('data-pccomp')); return; }
+  if(q('[data-pccopy]')){ pcCopyComp(q('[data-pccopy]').getAttribute('data-pccopy')); return; }
+  if(q('[data-pctab]')){ PC.tab=q('[data-pctab]').getAttribute('data-pctab'); PC.sel=''; render(); return; }
+  if(q('[data-pcgrp]')){
+    const k=q('[data-pcgrp]').getAttribute('data-pcgrp');
+    if(PC.closed[k]) delete PC.closed[k]; else PC.closed[k]=true;
+    render(); return;
+  }
+  if(q('[data-pcparam]')){
+    const code=q('[data-pcparam]').getAttribute('data-pcparam');
+    const hit=pcFindParam(code); if(!hit) return;
+    PC.sel=code; PC.draft=JSON.parse(JSON.stringify(hit.p)); PC.err=''; render(); return;
+  }
+  if(q('[data-pcsave]')){ pcSaveParam(); return; }
+  if(q('[data-pcconfirm]')){ pcConfirmParam(); return; }
+  if(q('[data-pcunconfirm]')){ pcUnconfirmParam(); return; }
+  if(q('[data-pcpublish]')){ PC.modal='publish'; PC.chk=false; PC.reason=''; PC.err=''; render(); return; }
+  if(q('[data-pcpubok]')){ pcDoPublish(); return; }
+  if(q('[data-pcdispatch]')){ PC.modal='dispatch'; PC.chk=false; PC.bus={step:'check'}; PC.err=''; render(); return; }
+  if(q('[data-pcdisstart]')){ pcStartDispatch(); return; }
+  if(q('[data-pcretry]')){ pcRunDispatch(true); return; }
+  if(q('[data-pcmodel]')){ PC.modelId=q('[data-pcmodel]').getAttribute('data-pcmodel'); PC.ov=''; render(); return; }
+  if(q('[data-pcgotomodel]')){
+    PC.modelId=q('[data-pcgotomodel]').getAttribute('data-pcgotomodel');
+    state.mod='modelparam'; PC.view='list'; PC.sel=''; render(); return;
+  }
+  if(q('[data-pcov]')){
+    const code=q('[data-pcov]').getAttribute('data-pcov');
+    const ov=pcOvOf(PC.modelId,code);
+    PC.ov=code; PC.ovDraft={value:ov?ov.value:'',reason:ov?ov.reason:''}; PC.err=''; render(); return;
+  }
+  if(q('[data-pcovsave]')){ pcSaveOv(); return; }
+  if(q('[data-pcovreset]')){ pcResetOv(q('[data-pcovreset]').getAttribute('data-pcovreset')); return; }
+  if(q('[data-pcrtab]')){ PC.rtab=q('[data-pcrtab]').getAttribute('data-pcrtab'); render(); return; }
+  if(q('[data-pcrecipe]')){ PC.recipe=Number(q('[data-pcrecipe]').getAttribute('data-pcrecipe'))+1; PC.stage=0; render(); return; }
+  if(q('[data-pcstage]')){
+    const si=Number(q('[data-pcstage]').getAttribute('data-pcstage'));
+    PC.stage=(PC.stage===si)?-1:si; render(); return;
+  }
+  if(q('[data-pcnew]')){ PC.modal='new'; PC.newDraft={name:'',code:'',type:'control',cat:'清洁'}; PC.err=''; render(); return; }
+  if(q('[data-pcnewok]')){ pcCreateComp(); return; }
+  if(q('[data-pcexport]')){ pcExportCSV(); return; }
+  if(q('[data-pcclose]')){ pcCloseOverlays(); render(); return; }
+},true);
+
+document.addEventListener('input',function(e){
+  const a=e.target.dataset;
+  if(a.pcq!==undefined){ PC.q=e.target.value; dcRerenderFocus('[data-pcq]'); return; }
+  if(a.pcprocq!==undefined){ PC.procQ=e.target.value; dcRerenderFocus('[data-pcprocq]'); return; }
+  if(a.pcf!==undefined){ if(PC.draft) PC.draft[a.pcf]=e.target.value; return; }
+  if(a.pcovval!==undefined){ if(PC.ovDraft) PC.ovDraft.value=e.target.value; return; }
+  if(a.pcovreason!==undefined){ if(PC.ovDraft) PC.ovDraft.reason=e.target.value; return; }
+  if(a.pcreason!==undefined){ PC.reason=e.target.value; return; }
+  if(a.pcnewf!==undefined){ if(PC.newDraft) PC.newDraft[a.pcnewf]=e.target.value; return; }
+});
+
+document.addEventListener('change',function(e){
+  const a=e.target.dataset;
+  if(a.pcchk!==undefined){ PC.chk=e.target.checked; return; }
+  if(a.pctype!==undefined){ PC.type=e.target.value; render(); return; }
+  if(a.pccat!==undefined){ PC.cat=e.target.value; render(); return; }
+  if(a.pcst!==undefined){ PC.st=e.target.value; render(); return; }
+  if(a.pcmcomp!==undefined){ PC.mComp=e.target.value; render(); return; }
+  if(a.pcprocstage!==undefined){ PC.procStage=e.target.value; render(); return; }
+  if(a.pcf==='type'){
+    if(PC.draft) PC.draft.type=e.target.value;
+    const box=document.getElementById('pcNumFields');
+    if(box) box.style.display=(e.target.value==='int'||e.target.value==='dec')?'block':'none';
+    return;
+  }
+  if(a.pcf!==undefined){ if(PC.draft) PC.draft[a.pcf]=e.target.value; return; }
+  if(a.pcnewf!==undefined){ if(PC.newDraft) PC.newDraft[a.pcnewf]=e.target.value; return; }
+});
+
+document.addEventListener('keydown',function(e){
+  if(e.key==='Escape'&&(PC.sel||PC.ov||PC.modal)){ pcCloseOverlays(); render(); }
+});
 
 /* 初始路由 */
 (function(){
