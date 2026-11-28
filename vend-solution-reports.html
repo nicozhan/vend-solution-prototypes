@@ -1693,11 +1693,10 @@ const NAV=[
   {sec:'settings',icon:'i-settings'}
 ];
 
-/* 系统设置下的四项：品牌与型号 / 组件库与本地化同级 */
+/* 系统设置下的三项：品牌与型号已并入组件库，做成页内两个页签 */
 const SYS_SUBS=[
   {id:'taggroup',name:'标签&分组'},
   {id:'lang',name:'本地化和语言'},
-  {id:'brand',name:'品牌与型号'},
   {id:'component',name:'组件库'}
 ];
 
@@ -1712,7 +1711,7 @@ const SECTIONS={
           {id:'freshbrew',name:'原料报表'},{id:'device',name:'设备报表'},{id:'custom',name:'自定义报表'}]},
   ops:{name:'运营',sub:'运营效率 · 库存与损耗',foot:'运营分析<br />P1 需数据前提',
     subs:[{id:'advanced',name:'运营分析'}]},
-  settings:{name:'系统设置',sub:'标签 · 本地化 · 机型配置',foot:'主数据与配置<br />品牌与型号 → 组件',
+  settings:{name:'系统设置',sub:'标签 · 本地化 · 组件库',foot:'主数据与配置<br />品牌与型号 / 组件库',
     subs:SYS_SUBS}
 };
 
@@ -5340,7 +5339,7 @@ function renderNav(){
   document.getElementById('subnavHd').textContent=(state.role==='root'&&state.sec==='analytics')?'平台级视图':sec.name;
   document.getElementById('subnavSub').textContent=sub;
   document.getElementById('subFoot').innerHTML=foot;
-  const actMod=state.mod==='model'?'brand':((state.sec==='settings'&&state.mod==='matrix')?'lang':state.mod);
+  const actMod=(state.mod==='model'||state.mod==='brand')?'component':((state.sec==='settings'&&state.mod==='matrix')?'lang':state.mod);
   document.getElementById('subItems').innerHTML=list.map(function(m){
     const tsec=m.sec||state.sec;
     const on=(m.id===actMod)&&(state.sec===tsec);
@@ -5393,7 +5392,11 @@ function render(){
       crumb='系统设置 / 品牌与型号 / 型号 / <b>'+esc(mm?mm.name:CFG.mdId)+'</b> / '+esc(ms?ms[1]:'');
       title='VendSolution · '+esc(mm?mm.name:CFG.mdId)+' · '+esc(ms?ms[1]:'');
     }else{
-      crumb='系统设置 / <b>'+esc(sub?sub.name:'')+'</b>'; title='VendSolution · '+esc(sub?sub.name:sec.name);
+      const tabName=state.mod==='brand'?'品牌与型号':(DC.dcTab==='comp'?'组件库':'品牌与型号');
+      const subName=sub?sub.name:'';
+      /* 页签名与菜单名相同时不重复写一遍 */
+      crumb='系统设置 / <b>'+esc(subName)+'</b>'+(tabName===subName?'':' / '+esc(tabName));
+      title='VendSolution · '+esc(tabName===subName?subName:tabName);
     }
   }else if(state.role==='root'&&state.sec==='analytics'){
     crumb='报表 / <b>平台总览</b>'; title='VendSolution · 平台总览';
@@ -5414,7 +5417,9 @@ function render(){
   renderNav();
   document.getElementById('content').innerHTML=contentHTML();
   if(state.role==='admin' && state.sec==='analytics' && state.mod==='custom') updateBuilder();
-  const modHash=(state.sec==='settings'&&state.mod==='model')?(CFG.sub||'brand'):state.mod;
+  const modHash=(state.sec==='settings'&&state.mod==='model')?(CFG.sub||'brand')
+    :(state.sec==='settings'&&state.mod==='component'&&DC.dcTab!=='comp')?'brand'
+    :state.mod;
   location.hash=state.role==='root'?'#/analytics/platform/'+state.rootRole+'/'+state.rootTab
     :'#/'+state.sec+'/'+modHash+(state.sec==='analytics'&&state.tab?'/'+state.tab:'');
   window.scrollTo(0,0);
@@ -5436,6 +5441,7 @@ function gotoSub(mod){
   state.tagOpen=false; SET.open=false;
   /* 品牌与型号 / 组件库各自一套筛选，切页不互相带过去 */
   if(isDevCfg()&&state.mod!==mod&&DC){ DC.q=''; DC.lfBrand=''; DC.catOpen=false; }
+  if(mod==='brand'&&DC){ DC.dcTab='brand'; }
   state.mod=mod;
   if(state.sec==='analytics'||state.sec==='ops'){
     const m=MODULES.find(x=>x.id===mod);
@@ -5557,6 +5563,16 @@ document.addEventListener('click',e=>{
   }
   /* 品牌型号与组件 */
   if(isDevCfg()){
+    /* 组件库页内的两个页签：品牌与型号 / 组件库 */
+    const dcTabBtn=e.target.closest('[data-dctab]');
+    if(dcTabBtn){
+      const t=dcTabBtn.dataset.dctab;
+      if(DC.dcTab!==t){
+        DC.dcTab=t; DC.q=''; DC.lfBrand=''; DC.catOpen=false; DC.catSel={};
+        DC.newMenu=false; DC.expBrands={}; DC.drawer=null; DC.edit=null;
+      }
+      render(); return;
+    }
     /* 数据点子弹窗与复制弹窗（优先于编辑弹窗遮罩处理） */
     const dptMask=e.target.closest('[data-dcptmask]');
     if(dptMask && e.target===dptMask){ DC.pointEdit=null; rerender(); return; }
@@ -7547,7 +7563,7 @@ function dcCatMatch(c,sel){
   });
 }
 const DC={q:'',brandFilter:'',lfBrand:'',catSel:{},catOpen:false,edit:null,confirm:null,drawer:null,picker:null,cmdEdit:null,pointEdit:null,
-  newMenu:false,wiz:null,expBrands:{},mTab:'comp',
+  newMenu:false,wiz:null,expBrands:{},mTab:'comp',dcTab:'brand',
   rcp:{q:'',sel:'',open:-1,pop:false,mode:'tpl',cat:'',pick:false,pickSel:{},tsum:false},
   cln:{sel:''},bay:{pick:false},expInst:{}};
 /* 适配浏览：双向层级状态 */
@@ -7687,14 +7703,20 @@ function dcSaveCmd(){
   DC.cmdEdit=null; rerender(); toast('控制编码已更新');
 }
 const CFG_SUBS=[['overview','总览'],['comp','装机清单'],['recipe','配方制作'],['silo','料仓'],['clean','清洗'],['calib','校准'],['remote','远程功能']];
+/* 组件库页签：品牌与型号 / 组件库 */
+function dcCfgTabs(on){
+  return '<div class="tabs" style="margin:-2px 0 8px">'+
+    [['brand','品牌与型号'],['comp','组件库']].map(function(t){
+      return '<div class="tab'+(on===t[0]?' active':'')+'" data-dctab="'+t[0]+'">'+t[1]+'</div>';
+    }).join('')+'</div>';
+}
 function deviceConfigPage(){
   const m=state.mod, inModel=(m==='model'&&!!CFG.mdId);
-  /* 型号页已删除：这一层只剩品牌、组件库，页头与页签都不再需要，导航交给左栏；
-     机型工作台（装机清单/料仓/配方/清洗/校准/远程）先留着，等新结构回来再接入口 */
-  const body= m==='component'?dcComponentTab()
-    : (m==='model'&&inModel)?cfgModelWorkspace()
-    : dcBrandTab();
-  return '<div class="page">'+body+(inModel?'':dcOverlays())+'</div>';
+  /* 品牌与型号已并入组件库，成为页内两个页签；型号工作台仍从这里进入 */
+  if(inModel) return '<div class="page">'+cfgModelWorkspace()+'</div>';
+  const tab=m==='brand'?'brand':(DC.dcTab==='comp'?'comp':'brand');
+  const body= tab==='comp'?dcComponentTab():dcBrandTab();
+  return '<div class="page">'+body+dcOverlays()+'</div>';
 }
 /* 型号工作台：品牌/型号只在左栏选，进来以后不再切型号，避免改错机器 */
 function cfgModelWorkspace(){
@@ -7760,7 +7782,7 @@ function dcBrandTab(){
     return '<option value="'+b.id+'"'+(DC.lfBrand===b.id?' selected':'')+'>'+esc(b.name)+'</option>';
   }).join('');
   const modelN=list.reduce(function(n,b){ return n+DC_MODEL.filter(function(m){ return m.brand===b.id; }).length; },0);
-  return '<div class="page-hd"><div><h3 style="font-size:14px">品牌与型号</h3><p>一个品牌下可以有多个型号；点型号名称查看它包含的组件。</p></div>'+
+  return '<div class="page-hd"><div>'+dcCfgTabs('brand')+'<p>一个品牌下可以有多个型号；点型号名称查看它包含的组件。</p></div>'+
     '<div class="hd-act dc-newwrap"><button class="btn accent" data-dcnewmenu>＋ 新建 <i>▾</i></button>'+
       (DC.newMenu?'<div class="dc-newmask" data-dcnewclose></div><div class="dc-newmenu">'+
         '<button data-dcnew="brand"><span class="nm">新建品牌</span><i>名称与图片</i></button>'+
@@ -7921,7 +7943,7 @@ function dcComponentTab(){
       '<span class="lnk" data-dcedit="component:'+c.id+'">编辑</span><span class="lnk danger" data-dcdelete="component:'+c.id+'">删除</span></div></td></tr>';
   }).join('') : '<tr><td colspan="5" class="muted" style="text-align:center;padding:26px">'+(DC.q||dcCatSelected().length?'未找到匹配结果。':'暂无组件，添加第一个组件。')+'</td></tr>';
   const picked=dcCatSelected();
-  return '<div class="page-hd"><div><h3 style="font-size:14px">组件库</h3><p>全局组件库：一个组件只维护一份资料，可供多个品牌机型复用；点组件名称看它在每个品牌机型里的参数。</p></div>'+
+  return '<div class="page-hd"><div>'+dcCfgTabs('comp')+'<p>全局组件库：一个组件只维护一份资料，可供多个品牌机型复用；点组件名称看它在每个品牌机型里的参数。</p></div>'+
     '<div class="hd-act"><button class="btn accent" data-dcnew="component">＋ 新增组件</button></div></div>'+
     '<div class="filterbar"><span class="note">FILTER</span><label class="fitem">搜索组件 '+dcSearchInput('data-dcq',DC.q,'搜索组件名称')+'</label>'+
     '<div class="fitem catf"><span>分类</span><button class="catbtn'+(picked.length?' on':'')+'" data-dccatopen>'+(picked.length?('已选 '+picked.length+' 项'):'全部分类')+' <i>▾</i></button>'+
@@ -10453,7 +10475,7 @@ document.addEventListener('click',function(e){
     var mm=dcModelOf(v); if(mm) CFG.brand=mm.brand;
     cfgSync(); rerender(); return;
   }
-  if((v=hit('data-cfgmdback'))!==null){ CFG.mdId=''; CFG.sub='overview'; CFG.pend=null; CFG.addOpen=false; rerender(); return; }
+  if((v=hit('data-cfgmdback'))!==null){ CFG.mdId=''; CFG.sub='overview'; CFG.pend=null; CFG.addOpen=false; DC.dcTab='brand'; rerender(); return; }
   if((v=hit('data-cfgsub'))!==null){ CFG.sub=v; CFG.pend=null; CFG.addOpen=false; CFG.err='';
     try{ history.replaceState(null,'','#/settings/'+v); }catch(e){}
     rerender(); return; }
@@ -10671,6 +10693,12 @@ document.addEventListener('input',function(e){
   if(h && h[1]==='devicecfg'){ h[1]='settings'; }
   /* 型号页已删除，旧链接回到品牌 */
   if(h && h[1]==='settings' && h[2]==='model'){ h[2]='brand'; }
+  /* 品牌与型号已并入组件库：旧链接 #/settings/brand 落到页签一，component 落到页签二 */
+  if(h && h[1]==='settings' && (h[2]==='brand'||h[2]==='component')){
+    state.sec='settings'; state.mod='component';
+    DC.dcTab=h[2]==='component'?'comp':'brand';
+    render(); return;
+  }
   /* 型号工作台的二级页支持直接打开：#/settings/recipe、#/settings/silo … */
   if(h && h[1]==='settings' && ['overview','comp','recipe','silo','clean','calib','remote'].indexOf(h[2])>=0){
     state.sec='settings'; state.mod='model';
@@ -10698,8 +10726,8 @@ document.addEventListener('input',function(e){
     const sec=SECTIONS[secId];
     const extraMods=secId==='settings'?['matrix']:[];
     /* 机器模板 / 机型模板 → 系统设置 · 品牌与型号 */
-    if(secId==='machine'&&(h[2]==='template'||h[2]==='brand')){ state.sec='settings'; state.mod='brand'; render(); return; }
-    if(secId==='machine'&&h[2]==='component'){ state.sec='settings'; state.mod='component'; render(); return; }
+    if(secId==='machine'&&(h[2]==='template'||h[2]==='brand')){ state.sec='settings'; state.mod='component'; DC.dcTab='brand'; render(); return; }
+    if(secId==='machine'&&h[2]==='component'){ state.sec='settings'; state.mod='component'; DC.dcTab='comp'; render(); return; }
     state.mod=(sec.subs.some(s=>s.id===h[2])||extraMods.indexOf(h[2])>=0)?h[2]:sec.subs[0].id;
     render(); return;
   }
