@@ -856,6 +856,7 @@
   .pp-k{flex:0 0 128px;font-size:11.5px;color:var(--text-2)}
   .pp-v{font-size:11.5px;color:var(--ds-text);font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
   .pp-none{font-size:11.5px;color:var(--text-3);padding:8px 2px}
+  .pp-tag{margin-left:6px;padding:1px 5px;border-radius:4px;background:var(--ds-warn-bg,#fef3c7);color:var(--ds-warn,#b45309);font-size:10px}
   .bopt-have{font-size:10px;color:var(--text-3);margin-left:8px;background:var(--surface-2);border:1px solid var(--border);
     border-radius:8px;padding:0 6px;margin-left:6px;white-space:nowrap}
   .bopt-qty{display:flex;align-items:center;gap:3px;flex:0 0 auto}
@@ -5578,6 +5579,8 @@ document.addEventListener('click',e=>{
     if(dcMask && e.target===dcMask){ dcCloseAll(); rerender(); return; }
     const dcClose=e.target.closest('[data-dcclose]');
     if(dcClose){ dcCloseAll(); rerender(); return; }
+    const dcExp=e.target.closest('[data-dcexport]');
+    if(dcExp){ dcExportXlsx(dcExp.dataset.dcexport); return; }
     const catOpen=e.target.closest('[data-dccatopen]');
     if(catOpen){ DC.catOpen=!DC.catOpen; rerender(); return; }
     const catClear=e.target.closest('[data-dccatclear]');
@@ -6878,9 +6881,21 @@ const TPL_ACT={
   preheat:{n:'预热',  d:'出杯前预热',p:[{c:'preheat_s',n:'预热时长',u:'s',min:0,max:60,st:1,d:10}]}
 };
 const DC_TPL={};
-function dcTplParams(mid,cid){
+/* 参数优先取这台实例（实例级），传组件编码时退回该型号的第一台 */
+function dcTplParams(mid,key){
+  if(!key) return [];
+  var l=dcInstByCmd(mid,key)||DC_LINK.filter(function(x){ return x[0]===mid&&x[1]===key; })[0];
+  var cid=l?l[1]:key, cmd=l?l[2]:'';
+  var ps;
+  if(cmd){ ps=dcInstPts(mid,cmd); }
+  else{
+    ps=(PARAM_REG[cid]||[]).map(function(p){
+      return {c:p.code,code:p.code,n:p.name,u:p.u,t:p.t,type:p.t,min:p.min,max:p.max,
+        st:p.st,d:p.def,vals:p.vals,scope:p.scope,src:p.src};
+    });
+  }
+  ps=ps.filter(function(p){ return p.scope!=='comp'; });
   var allow=(TPL_P_MODEL[mid]||{})[cid];
-  var ps=TPL_P[cid]||[];
   if(allow) ps=ps.filter(function(p){ return allow.indexOf(p.c)>=0; });
   return ps;
 }
@@ -6907,7 +6922,7 @@ function dcTplEnsure(mid){
         var keep=null;
         for(var i=0;i<old.length;i++) if(old[i].cmd===l[2]&&!old[i].__used){ keep=old[i]; old[i].__used=1; break; }
         if(keep){ keep.cid=cid; next.push(keep); }
-        else next.push({cid:cid,cmd:l[2],use:1,on:dcTplParams(mid,cid).map(function(p){ return p.c; })});
+        else next.push({cid:cid,cmd:l[2],use:1,on:dcTplParams(mid,l[2]).map(function(p){ return p.c; })});
       });
     });
     old.forEach(function(o){ delete o.__used; });
@@ -6947,7 +6962,7 @@ function dcTplUsed(mid,cat,cmd,except){
   return n;
 }
 function dcTplCard(m,cat,it,i){
-  var c=dcCompOf(it.cid), ps=dcTplParams(m.id,it.cid), on=it.on||[];
+  var c=dcCompOf(it.cid), ps=dcTplParams(m.id,it.cmd), on=it.on||[];
   var l=dcInstByCmd(m.id,it.cmd), iid=l?dcInstId(l):'';
   var chips=ps.map(function(p){
     var off=on.indexOf(p.c)<0;
@@ -7051,7 +7066,7 @@ function dcTplPickModal(m){
     (t.cats[cat]||[]).forEach(function(it){ cnt[it.cmd]=(cnt[it.cmd]||0)+1; });
     allow.forEach(function(cid){
       dcInstsOf(m.id,cid).forEach(function(l){
-        var ps=dcTplParams(m.id,cid); if(!ps.length) return;
+        var ps=dcTplParams(m.id,l[2]); if(!ps.length) return;
         mode=1;
         var key=l[2]+':'+((cnt[l[2]]||0)+1), on=!!sel[key];
         rows+='<button class="dc-opt'+(on?' on':'')+'" data-tplpick="'+key+'">'+
@@ -7082,7 +7097,7 @@ function dcTplSumModal(m){
     var grp=[];
     items.forEach(function(it){
       var isAct=cd.k==='global';
-      var ps=isAct?((TPL_ACT[it.k]||{}).p||[]):dcTplParams(m.id,it.cid);
+      var ps=isAct?((TPL_ACT[it.k]||{}).p||[]):dcTplParams(m.id,it.cmd);
       var on=it.on||[];
       ps.forEach(function(p){
         if(on.indexOf(p.c)<0) return;
@@ -7120,7 +7135,7 @@ function dcTplAddSel(m){
       var l=dcInstByCmd(m.id,cmd); if(!l) return;
       var has=t.cats[cat].some(function(x){ return x.cmd===cmd; });
       t.cats[cat].push({cid:l[1],cmd:cmd,use:Number(p[1])||1,dup:has,
-        on:dcTplParams(m.id,l[1]).map(function(x){ return x.c; })});
+        on:dcTplParams(m.id,l[2]).map(function(x){ return x.c; })});
     });
   }
   DC.rcp.pick=false; DC.rcp.pickSel={}; rerender();
@@ -7424,6 +7439,63 @@ DC_COMP.forEach(function(c){
     return dcClonePoint(pt);
   });
 });
+/* ============================================================
+   参数注册表：组件库参数 + 配方参数合成一张表
+   同一个物理参数在「组件」和「配方」两处共用一个 code，
+   编码以物模型字段为准，UI 短码只作别名，导出 Excel 才对得上
+   ============================================================ */
+const DC_PARAM_CANON={
+  'C-GRIND':{rate:{code:'grind_rate',src:'配方扩展'}},
+  'C-DISP':{rate:{code:'disp_rate',src:'物模型'}},
+  'C-MIXL':{rate:{code:'mix_speed',src:'配方扩展'}}
+};
+const PARAM_REG={};
+(function(){
+  DC_COMP.forEach(function(c){
+    const canon=DC_PARAM_CANON[c.id]||{}, list=[], seen={};
+    (c.points||[]).forEach(function(p){
+      const cv=canon[p.code]||{}, code=cv.code||p.code;
+      seen[code]=true;
+      list.push({code:code,alias:(code===p.code?'':p.code),name:p.name,u:p.unit||'',
+        t:p.type||'value',min:p.min,max:p.max,st:p.step,def:p.def,vals:(p.enumVals||[]).slice(),
+        scope:'comp',src:cv.src||'组件库'});
+    });
+    (TPL_P[c.id]||[]).forEach(function(p){
+      if(seen[p.c]){
+        list.forEach(function(x){
+          if(x.code!==p.c) return;
+          x.scope='both';
+          if(x.min===''||x.min==null){ x.min=p.min; x.max=p.max; x.st=p.st; }
+          if(x.def===''||x.def==null) x.def=p.d;
+        });
+        return;
+      }
+      seen[p.c]=true;
+      list.push({code:p.c,alias:'',name:p.n,u:p.u,t:'value',min:p.min,max:p.max,st:p.st,def:p.d,
+        vals:[],scope:'rcp',src:'物模型'});
+    });
+    PARAM_REG[c.id]=list;
+  });
+})();
+/* 实例级参数：每台硬件一份，初值来自注册表，之后可单独改
+   Excel 导入改的就是这里，不会波及同型号的其他台 */
+const DC_IP={};
+function dcInstPts(mid,cmd){
+  const l=dcInstByCmd(mid,cmd); if(!l) return [];
+  const reg=PARAM_REG[l[1]]||[], key=mid+'|'+cmd, st=DC_IP[key]||(DC_IP[key]={});
+  return reg.map(function(p){
+    const o=st[p.code]||(st[p.code]={min:p.min,max:p.max,st:p.st,def:p.def,on:true});
+    return {c:p.code,code:p.code,n:p.name,u:p.u,t:p.t,type:p.t,min:o.min,max:o.max,st:o.st,d:o.def,
+      vals:p.vals,scope:p.scope,src:p.src,alias:p.alias,on:o.on!==false,lib:{min:p.min,max:p.max,def:p.def}};
+  });
+}
+function dcInstPt(mid,cmd,code){
+  const l=dcInstByCmd(mid,cmd); if(!l) return null;
+  const reg=(PARAM_REG[l[1]]||[]).filter(function(p){ return p.code===code; })[0];
+  if(!reg) return null;
+  const st=DC_IP[mid+'|'+cmd]||(DC_IP[mid+'|'+cmd]={});
+  return st[code]||(st[code]={min:reg.min,max:reg.max,st:reg.st,def:reg.def,on:true});
+}
 /* ---------- 分类工具：一级归组、二级多选 ---------- */
 function dcCatGroupOf(name){
   for(var i=0;i<DC_CAT_TREE.length;i++){
@@ -8194,11 +8266,15 @@ function dcPointSpec(p){
   if(String(p.min)===String(p.max)) return '固定 '+p.min+u;
   return p.min+'–'+p.max+u;
 }
-function dcInstParamBox(c){
-  var pts=(c&&c.points)?c.points.filter(function(p){ return p.enabled!==false; }):[];
+function dcInstParamBox(c,mid,cmd){
+  var pts=(mid&&cmd)
+    ?dcInstPts(mid,cmd).filter(function(p){ return p.scope!=='rcp'&&p.on; })
+    :((c&&c.points)?c.points.filter(function(p){ return p.enabled!==false; }):[]);
   if(!pts.length) return '<div class="pp-none">这台组件没有可调参数。</div>';
   return '<div class="pp">'+pts.map(function(p){
-    return '<div class="pp-row"><span class="pp-k">'+esc(p.name||p.code||'')+'</span>'+
+    var chg=(p.lib&&(String(p.min)!==String(p.lib.min)||String(p.max)!==String(p.lib.max)))
+      ?'<span class="pp-tag">本台</span>':'';
+    return '<div class="pp-row"><span class="pp-k">'+esc(p.name||p.code||'')+chg+'</span>'+
       '<span class="pp-v">'+esc(dcPointSpec(p))+'</span></div>';
   }).join('')+'</div>';
 }
@@ -8221,7 +8297,7 @@ function dcModelCompTab(m){
         '<td>'+dcCatCell(x.c,2)+'</td>'+
         '<td class="r"><span class="ins-del" data-dcreminst="'+x.i+'" title="只移除这一台">移除</span></td></tr>'+
         '<tr class="ins-param" data-instparamrow="'+esc(x.iid)+'"'+(open?'':' style="display:none"')+'><td></td>'+
-        '<td colspan="4">'+dcInstParamBox(x.c)+'</td></tr>';
+        '<td colspan="4">'+dcInstParamBox(x.c,mid,x.l[2])+'</td></tr>';
     }).join('');
   }else{
     rows='<tr><td colspan="5" class="muted" style="text-align:center;padding:26px 12px">这个型号还没有组件。'+
@@ -8565,12 +8641,12 @@ function dcRemoveInst(idx){
    仓位 = 机器上的一个储料位；一仓最多绑定这台机器的一台同类硬件
    ============================================================ */
 const DC_BAY_TYPE=[
-  {k:'bean',  n:'咖啡豆仓', s:'豆', cap:'1.2 kg', cats:['咖啡豆仓'], hint:'磨豆出粉'},
-  {k:'powder',n:'粉料仓',  s:'粉', cap:'4.3 L',  cats:['粉料仓'],   hint:'螺旋出料'},
-  {k:'water', n:'水',      s:'水', cap:'8 L',    cats:['水'],       hint:'冷水 / 温水 / 热水'},
-  {k:'ice',   n:'冰',      s:'冰', cap:'3 kg',   cats:['冰'],       hint:'冰块，无出料机构'},
-  {k:'cup',   n:'杯子',    s:'杯', cap:'100 个', cats:['杯子'],     hint:'落杯'},
-  {k:'lid',   n:'盖子',    s:'盖', cap:'100 个', cats:['杯盖'],     hint:'落盖'}
+  {k:'bean',  n:'咖啡豆仓', s:'豆', cap:'1.2 kg', v:1.2,u:'kg', cats:['咖啡豆仓'], hint:'磨豆出粉'},
+  {k:'powder',n:'粉料仓',  s:'粉', cap:'4.3 L',  v:4.3,u:'L',  cats:['粉料仓'],   hint:'螺旋出料'},
+  {k:'water', n:'水',      s:'水', cap:'8 L',    v:8,  u:'L',  cats:['水'],       hint:'冷水 / 温水 / 热水'},
+  {k:'ice',   n:'冰',      s:'冰', cap:'3 kg',   v:3,  u:'kg', cats:['冰'],       hint:'冰块，无出料机构'},
+  {k:'cup',   n:'杯子',    s:'杯', cap:'100 个', v:100,u:'个', cats:['杯子'],     hint:'落杯'},
+  {k:'lid',   n:'盖子',    s:'盖', cap:'100 个', v:100,u:'个', cats:['杯盖'],     hint:'落盖'}
 ];
 /* 仓位按用途分三组：料仓（咖啡/粉料）、水冰、耗材（杯/盖） */
 const DC_BAY_GROUP=[
@@ -8586,16 +8662,23 @@ function dcBaySort(){
   const ord={}; DC_BAY_TYPE.forEach(function(t,i){ ord[t.k]=i; });
   DC_BAY.sort(function(a,b){ return ord[a.k]-ord[b.k]; });
 }
+/* 仓位现在带实体字段：容量、单位、缺料阈值、当前物料（导出与补货都用它） */
+function dcBayNew(mid,k,cmd){
+  const t=dcBayType(k);
+  return {mid:mid,k:k,cmd:cmd||'',capV:t.v,unit:t.u,warn:20,mat:''};
+}
 let DC_BAY=[];
 (function(){
   /* 初始：型号已装的料仓类硬件各占一个仓位 */
   DC_LINK.forEach(function(l){
     const c=dcCompOf(l[1]); if(!c) return;
+    /* 流量计、气泵是管路器件，不占仓位 */
+    if(c.id==='C-FLOW'||c.id==='C-AIR') return;
     const t=DC_BAY_TYPE.filter(function(x){
       return x.cats.some(function(n){ return dcHasCat(c,n); });
     })[0];
     if(!t) return;
-    DC_BAY.push({mid:l[0],k:t.k,cmd:l[2]});
+    DC_BAY.push(dcBayNew(l[0],t.k,l[2]));
   });
   /* 冰路由 C-ICE 实例自动生成仓位，见下方 DC_LINK 真机 BOM 补齐 */
   dcBaySort();
@@ -8676,7 +8759,7 @@ function dcBayAdd(k){
   const d=DC.drawer; if(!d||d.kind!=='model') return;
   const t=dcBayType(k), mid=d.id;
   const cmd=dcBayFreeCmd(mid,t,null);
-  DC_BAY.push({mid:mid,k:k,cmd:cmd});
+  DC_BAY.push(dcBayNew(mid,k,cmd));
   dcBaySort(); rerender();
   const n=dcBayList(mid).filter(function(b){ return b.k===k; }).length;
   const nm=t.n+(n>1?' '+n:'');
@@ -8702,7 +8785,7 @@ function dcBayAttach(mid,cid,cmd){
   const c=dcCompOf(cid); if(!c) return;
   const t=DC_BAY_TYPE.filter(function(x){ return dcBaySameComp(c,x); })[0];
   if(!t) return;
-  DC_BAY.push({mid:mid,k:t.k,cmd:cmd});
+  DC_BAY.push(dcBayNew(mid,t.k,cmd));
   dcBaySort();
 }
 function dcBayDetach(mid,cmd){
@@ -8870,6 +8953,250 @@ function dcCleanDel(){
   DC_CLEAN.splice(DC_CLEAN.indexOf(cur),1);
   DC.cln.sel=''; rerender(); toast('清洗程序已删除');
 }
+/* ============================================================
+   导出：一个机型一份 xlsx，4 个页签（组件 / 料仓 / 配方 / 清洗）
+   不引第三方库：自己拼 zip（store 不压缩）+ sheet XML
+   列定义与导入共用，改这里两边同时生效
+   ============================================================ */
+var DC_CRC_T=null;
+function dcCrc32(u8){
+  if(!DC_CRC_T){
+    DC_CRC_T=new Uint32Array(256);
+    for(var n=0;n<256;n++){ var c=n; for(var k=0;k<8;k++) c=(c&1)?(0xEDB88320^(c>>>1)):(c>>>1); DC_CRC_T[n]=c>>>0; }
+  }
+  var crc=0xFFFFFFFF;
+  for(var i=0;i<u8.length;i++) crc=DC_CRC_T[(crc^u8[i])&0xFF]^(crc>>>8);
+  return (crc^0xFFFFFFFF)>>>0;
+}
+function dcZip(files){
+  var enc=new TextEncoder(), parts=[], cen=[], off=0;
+  var dt=((2026-1980)<<9)|(11<<5)|28, tm=(9<<11)|(0<<5)|0;
+  files.forEach(function(f){
+    var nm=enc.encode(f.name);
+    var data=(f.data instanceof Uint8Array)?f.data:enc.encode(String(f.data));
+    var crc=dcCrc32(data);
+    var lh=new Uint8Array(30+nm.length), lv=new DataView(lh.buffer);
+    lv.setUint32(0,0x04034b50,true); lv.setUint16(4,20,true); lv.setUint16(6,0x0800,true);
+    lv.setUint16(8,0,true); lv.setUint16(10,tm,true); lv.setUint16(12,dt,true);
+    lv.setUint32(14,crc,true); lv.setUint32(18,data.length,true); lv.setUint32(22,data.length,true);
+    lv.setUint16(26,nm.length,true); lv.setUint16(28,0,true);
+    lh.set(nm,30);
+    parts.push(lh,data);
+    var ch=new Uint8Array(46+nm.length), cv=new DataView(ch.buffer);
+    cv.setUint32(0,0x02014b50,true); cv.setUint16(4,20,true); cv.setUint16(6,20,true);
+    cv.setUint16(8,0x0800,true); cv.setUint16(10,0,true); cv.setUint16(12,tm,true); cv.setUint16(14,dt,true);
+    cv.setUint32(16,crc,true); cv.setUint32(20,data.length,true); cv.setUint32(24,data.length,true);
+    cv.setUint16(28,nm.length,true); cv.setUint16(30,0,true); cv.setUint16(32,0,true);
+    cv.setUint16(34,0,true); cv.setUint16(36,0,true); cv.setUint32(38,0,true); cv.setUint32(42,off,true);
+    ch.set(nm,46);
+    cen.push(ch);
+    off+=lh.length+data.length;
+  });
+  var csz=cen.reduce(function(a,b){ return a+b.length; },0);
+  var eo=new Uint8Array(22), ev=new DataView(eo.buffer);
+  ev.setUint32(0,0x06054b50,true); ev.setUint16(8,files.length,true); ev.setUint16(10,files.length,true);
+  ev.setUint32(12,csz,true); ev.setUint32(16,off,true);
+  var all=parts.concat(cen,[eo]);
+  var total=all.reduce(function(a,b){ return a+b.length; },0);
+  var out=new Uint8Array(total), p=0;
+  all.forEach(function(b){ out.set(b,p); p+=b.length; });
+  return out;
+}
+function dcXlEsc(v){
+  return String(v==null?'':v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+function dcXlCol(i){
+  var s=''; i++;
+  while(i>0){ var m=(i-1)%26; s=String.fromCharCode(65+m)+s; i=Math.floor((i-1)/26); }
+  return s;
+}
+function dcXlNum(v){
+  if(v===''||v==null) return '';
+  var n=Number(v);
+  return isNaN(n)?v:n;
+}
+function dcSheetXml(rows,widths){
+  var out='<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'+
+    '<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">';
+  out+='<sheetViews><sheetView workbookViewId="0"><pane ySplit="1" topLeftCell="A2" activePane="bottomLeft" state="frozen"/></sheetView></sheetViews>';
+  if(widths){
+    out+='<cols>'+widths.map(function(w,i){
+      return '<col min="'+(i+1)+'" max="'+(i+1)+'" width="'+w+'" customWidth="1"/>';
+    }).join('')+'</cols>';
+  }
+  out+='<sheetData>';
+  rows.forEach(function(r,ri){
+    out+='<row r="'+(ri+1)+'">';
+    r.forEach(function(v,ci){
+      if(v===null||v===undefined||v==='') return;
+      var ref=dcXlCol(ci)+(ri+1), st=ri===0?' s="1"':'';
+      if(typeof v==='number'&&isFinite(v)) out+='<c r="'+ref+'"'+st+'><v>'+v+'</v></c>';
+      else out+='<c r="'+ref+'"'+st+' t="inlineStr"><is><t xml:space="preserve">'+dcXlEsc(v)+'</t></is></c>';
+    });
+    out+='</row>';
+  });
+  out+='</sheetData></worksheet>';
+  return out;
+}
+var DC_XL_STYLES='<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'+
+  '<styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">'+
+  '<fonts count="2"><font><sz val="11"/><name val="Calibri"/></font>'+
+  '<font><b/><sz val="11"/><color rgb="FFFFFFFF"/><name val="Calibri"/></font></fonts>'+
+  '<fills count="3"><fill><patternFill patternType="none"/></fill><fill><patternFill patternType="gray125"/></fill>'+
+  '<fill><patternFill patternType="solid"><fgColor rgb="FF185FA5"/><bgColor indexed="64"/></patternFill></fill></fills>'+
+  '<borders count="1"><border><left/><right/><top/><bottom/><diagonal/></border></borders>'+
+  '<cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs>'+
+  '<cellStyles count="1"><cellStyle name="Normal" xfId="0" builtinId="0"/></cellStyles>'+
+  '<cellXfs count="2"><xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0"/>'+
+  '<xf numFmtId="0" fontId="1" fillId="2" borderId="0" xfId="0" applyFont="1" applyFill="1"/></cellXfs>'+
+  '</styleSheet>';
+function dcXlsx(sheets){
+  var files=[], ct='<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'+
+    '<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">'+
+    '<Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>'+
+    '<Default Extension="xml" ContentType="application/xml"/>'+
+    '<Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/>'+
+    '<Override PartName="/xl/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml"/>';
+  sheets.forEach(function(_,i){
+    ct+='<Override PartName="/xl/worksheets/sheet'+(i+1)+'.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/>';
+  });
+  ct+='</Types>';
+  files.push({name:'[Content_Types].xml',data:ct});
+  files.push({name:'_rels/.rels',data:'<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'+
+    '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">'+
+    '<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/>'+
+    '</Relationships>'});
+  var wb='<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'+
+    '<workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" '+
+    'xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><sheets>';
+  sheets.forEach(function(sh,i){ wb+='<sheet name="'+dcXlEsc(sh.name)+'" sheetId="'+(i+1)+'" r:id="rId'+(i+1)+'"/>'; });
+  wb+='</sheets></workbook>';
+  files.push({name:'xl/workbook.xml',data:wb});
+  var rel='<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'+
+    '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">';
+  sheets.forEach(function(_,i){
+    rel+='<Relationship Id="rId'+(i+1)+'" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet'+(i+1)+'.xml"/>';
+  });
+  rel+='<Relationship Id="rId'+(sheets.length+1)+'" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/>';
+  rel+='</Relationships>';
+  files.push({name:'xl/_rels/workbook.xml.rels',data:rel});
+  files.push({name:'xl/styles.xml',data:DC_XL_STYLES});
+  sheets.forEach(function(sh,i){
+    files.push({name:'xl/worksheets/sheet'+(i+1)+'.xml',data:dcSheetXml(sh.rows,sh.widths)});
+  });
+  return dcZip(files);
+}
+/* —— 四个页签的列定义（导入按表头取值，顺序可调）—— */
+const DC_XL_COLS={
+  comp:['型号','型号名称','组件编码','组件名称','控制编码','实例ID','分类','台序','参数编码','参数名称','单位','类型','最小值','最大值','步长','默认值','参数来源','是否启用'],
+  bay: ['型号','型号名称','序号','仓位名称','仓位类型','仓位类型编码','绑定控制编码','组件','容量','单位','缺料阈值(%)','当前物料','状态'],
+  tpl: ['型号','型号名称','类别','类别名称','能力编码','控制编码','实例ID','参数编码','参数名称','单位','最小值','最大值','步长','默认值','是否启用','引用序号'],
+  clean:['型号','型号名称','程序编号','程序名称','类型','覆盖范围','触发方式','触发值','清洗剂','剂量','组件控制编码','组件名称','参数编码','参数名称','参数值','单位','最小值','最大值']
+};
+function dcXlComp(mid,m){
+  var rows=[DC_XL_COLS.comp.slice()];
+  DC_LINK.forEach(function(l){
+    if(l[0]!==mid) return;
+    var c=dcCompOf(l[1])||{name:l[1],cats:[]};
+    var sibs=DC_LINK.filter(function(x){ return x[0]===mid&&x[1]===l[1]; }), idx=0;
+    sibs.forEach(function(x,i){ if(x[2]===l[2]) idx=i; });
+    var base=[mid,m.name,l[1],c.name,l[2],dcInstId(l),(c.cats||[]).join('/'),idx+1];
+    var ps=dcInstPts(mid,l[2]).filter(function(p){ return p.scope!=='rcp'; });
+    if(!ps.length){ rows.push(base.concat(['','','','','','','','','',''])); return; }
+    ps.forEach(function(p){
+      rows.push(base.concat([p.c,p.n,p.u||'',p.t||'value',dcXlNum(p.min),dcXlNum(p.max),
+        dcXlNum(p.st),dcXlNum(p.d),p.src||'',p.on?'是':'否']));
+    });
+  });
+  return rows;
+}
+function dcXlBay(mid,m){
+  var rows=[DC_XL_COLS.bay.slice()];
+  dcBayRows(mid).forEach(function(r,i){
+    var l=r.b.cmd?dcInstByCmd(mid,r.b.cmd):null;
+    rows.push([mid,m.name,i+1,r.name,r.t.n,r.b.k,r.b.cmd||'',
+      l?((dcCompOf(l[1])||{}).name||''):'',
+      dcXlNum(r.b.capV!=null?r.b.capV:r.t.v),r.b.unit||r.t.u,
+      dcXlNum(r.b.warn),r.b.mat||'',r.b.cmd?'启用':'空置']);
+  });
+  return rows;
+}
+function dcXlTpl(mid,m){
+  var rows=[DC_XL_COLS.tpl.slice()], t=dcTplEnsure(mid);
+  TPL_CAT.forEach(function(cd){
+    if(cd.k==='global'){
+      (t.acts||[]).forEach(function(a){
+        var d=TPL_ACT[a.k]||{n:a.k,p:[]}, on=a.on||[];
+        (d.p||[]).forEach(function(p){
+          rows.push([mid,m.name,cd.k,cd.n,a.k,'','',p.c,p.n,p.u||'',dcXlNum(p.min),
+            dcXlNum(p.max),dcXlNum(p.st),dcXlNum(p.d),on.indexOf(p.c)>=0?'是':'否',a.use||1]);
+        });
+      });
+      return;
+    }
+    (t.cats[cd.k]||[]).forEach(function(it){
+      var l=dcInstByCmd(mid,it.cmd), on=it.on||[];
+      (dcTplParams(mid,it.cmd)||[]).forEach(function(p){
+        rows.push([mid,m.name,cd.k,cd.n,it.cid,it.cmd,l?dcInstId(l):'',p.c,p.n,p.u||'',
+          dcXlNum(p.min),dcXlNum(p.max),dcXlNum(p.st),dcXlNum(p.d),
+          on.indexOf(p.c)>=0?'是':'否',it.use||1]);
+      });
+    });
+  });
+  return rows;
+}
+function dcXlClean(mid,m){
+  var rows=[DC_XL_COLS.clean.slice()];
+  dcCleanList(mid).forEach(function(pl){
+    (pl.steps||[]).forEach(function(st){
+      var l=dcInstByCmd(mid,st.cmd), c=l?dcCompOf(l[1]):null;
+      dcWashParams(c,pl,mid,st.cmd).forEach(function(f){
+        var trig=(pl.trigger||{}).mode||'';
+        rows.push([mid,m.name,pl.id,pl.name,pl.kind,pl.scope,trig,
+          trig==='每 N 杯'?(pl.trigger.n||''):(pl.trigger.at||''),pl.agent||'无',
+          dcXlNum(pl.agentG),st.cmd,c?c.name:'',f.k||f.code,f.l,(st.p||{})[f.k]||'',
+          f.u||'',dcXlNum(f.min),dcXlNum(f.max)]);
+      });
+    });
+  });
+  return rows;
+}
+function dcXlWidths(k){
+  return {
+    comp:[15,9,9,11,13,10,17,5,15,15,5,7,7,7,5,7,9,7],
+    bay:[15,9,5,12,10,11,14,8,6,5,11,10,7],
+    tpl:[15,9,8,9,11,13,10,15,14,5,7,7,5,7,7,7],
+    clean:[15,9,9,14,6,8,11,9,9,5,13,9,26,16,8,5,7,7]
+  }[k];
+}
+function dcConfigBook(mid){
+  var m=dcModelOf(mid); if(!m) return null;
+  var sheets=[
+    {name:'组件',rows:dcXlComp(mid,m),widths:dcXlWidths('comp')},
+    {name:'料仓',rows:dcXlBay(mid,m),widths:dcXlWidths('bay')},
+    {name:'配方',rows:dcXlTpl(mid,m),widths:dcXlWidths('tpl')},
+    {name:'清洗',rows:dcXlClean(mid,m),widths:dcXlWidths('clean')}
+  ];
+  var d=new Date(), p=function(n){ return String(n).padStart(2,'0'); };
+  var stamp=d.getFullYear()+p(d.getMonth()+1)+p(d.getDate());
+  return {name:m.name+'_机型配置_'+stamp+'.xlsx',sheets:sheets,bytes:dcXlsx(sheets)};
+}
+function dcExportXlsx(mid){
+  var book=dcConfigBook(mid); if(!book){ toast('没有找到这个型号'); return; }
+  var blob=new Blob([book.bytes],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
+  var a=document.createElement('a');
+  a.href=URL.createObjectURL(blob); a.download=book.name;
+  document.body.appendChild(a); a.click();
+  setTimeout(function(){ URL.revokeObjectURL(a.href); a.remove(); },1200);
+  var n=book.sheets.reduce(function(s,x){ return s+x.rows.length-1; },0);
+  toast('已导出 '+book.name+'（4 个页签 · '+n+' 行）');
+}
+function dcBook64(mid){
+  var book=dcConfigBook(mid); if(!book) return '';
+  var b=book.bytes, s='';
+  for(var i=0;i<b.length;i++) s+=String.fromCharCode(b[i]);
+  return btoa(s);
+}
 function dcDrawer(){
   const d=DC.drawer;
   if(d.kind==='model'){
@@ -8891,6 +9218,7 @@ function dcDrawer(){
         '<button class="drawer-x" data-dcclose aria-label="关闭" title="关闭">×</button></div>'+
       '<div class="drawer-bd'+((tab==='recipe'||tab==='clean')?' rcp-bd':'')+'">'+body+'</div>'+
       '<div class="drawer-ft"><span class="fbar-meta">'+esc(dcBrandName(m.brand))+' / '+esc(m.name)+'</span>'+
+        '<button class="btn" data-dcexport="'+esc(m.id)+'" title="导出这个机型的 4 个页签">导出 Excel</button>'+
         '<button class="btn" data-dcclose>关闭</button></div></div>';
   }
   const comp=dcCompOf(d.id); if(!comp) return '';
