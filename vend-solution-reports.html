@@ -791,7 +791,6 @@
   .dcb-tab:hover{border-color:var(--ds-border-hover)}
   .dcb-tab.on{border-color:var(--accent-line);background:var(--accent-weak)}
   .dcb-tab.on span{color:var(--accent)}
-  .dcb-note{background:var(--surface-2);border-left:2px solid var(--accent-line);border-radius:var(--r-sm);padding:9px 12px;font-size:11.5px;line-height:1.8;color:var(--text-2);margin-bottom:12px}
   .dcb-card{border:1px solid var(--border);border-radius:var(--radius);background:var(--surface);padding:13px 14px;margin-bottom:12px}
   .dcb-mhd{display:flex;align-items:center;gap:8px;margin-bottom:10px}
   .dcb-mhd .nm{font-size:14px;font-weight:600}
@@ -1717,7 +1716,7 @@ const SECTIONS={
           {id:'freshbrew',name:'原料报表'},{id:'device',name:'设备报表'},{id:'custom',name:'自定义报表'}]},
   ops:{name:'运营',sub:'运营效率 · 库存与损耗',foot:'运营分析<br />P1 需数据前提',
     subs:[{id:'advanced',name:'运营分析'}]},
-  settings:{name:'系统设置',sub:'标签 · 本地化 · 组件库',foot:'主数据与配置<br />品牌与型号 / 组件库',
+  settings:{name:'系统设置',sub:'',foot:'',
     subs:SYS_SUBS}
 };
 
@@ -5343,8 +5342,9 @@ function renderNav(){
   }
   document.getElementById('navItems').innerHTML=navHTML();
   document.getElementById('subnavHd').textContent=(state.role==='root'&&state.sec==='analytics')?'平台级视图':sec.name;
-  document.getElementById('subnavSub').textContent=sub;
-  document.getElementById('subFoot').innerHTML=foot;
+  const subEl=document.getElementById('subnavSub'), footEl=document.getElementById('subFoot');
+  subEl.textContent=sub||''; subEl.style.display=sub?'':'none';
+  footEl.innerHTML=foot||''; footEl.style.display=foot?'':'none';
   const actMod=(state.mod==='model'||state.mod==='brand')?'component':((state.sec==='settings'&&state.mod==='matrix')?'lang':state.mod);
   document.getElementById('subItems').innerHTML=list.map(function(m){
     const tsec=m.sec||state.sec;
@@ -5769,23 +5769,6 @@ document.addEventListener('click',e=>{
     if(dcCmdSave){ dcSaveCmd(); return; }
     const dcCmdCancel=e.target.closest('[data-dccmdcancel]');
     if(dcCmdCancel){ DC.cmdEdit=null; rerender(); return; }
-    /* 适配浏览 */
-    const bbDim=e.target.closest('[data-browsedim]');
-    if(bbDim){ DC_BROWSE.dim=bbDim.dataset.browsedim; if(DC_BROWSE.dim==='brand'){ DC_BROWSE.brandId=''; DC_BROWSE.modelId=''; } else { DC_BROWSE.compId=''; } rerender(); return; }
-    const bbCrumb=e.target.closest('[data-bbcrumb]');
-    if(bbCrumb){
-      const k=bbCrumb.dataset.bbcrumb;
-      if(k==='brandroot'){ DC_BROWSE.brandId=''; DC_BROWSE.modelId=''; }
-      else if(k==='brand'){ DC_BROWSE.modelId=''; }
-      else if(k==='comproot'){ DC_BROWSE.compId=''; }
-      rerender(); return;
-    }
-    const bbBrand=e.target.closest('[data-bbbrand]');
-    if(bbBrand){ DC_BROWSE.dim='brand'; DC_BROWSE.brandId=bbBrand.dataset.bbbrand; DC_BROWSE.modelId=''; rerender(); return; }
-    const bbModel=e.target.closest('[data-bbmodel]');
-    if(bbModel){ const m=dcModelOf(bbModel.dataset.bbmodel); if(m){ DC_BROWSE.dim='brand'; DC_BROWSE.brandId=m.brand; DC_BROWSE.modelId=m.id; } rerender(); return; }
-    const bbComp=e.target.closest('[data-bbcomp]');
-    if(bbComp){ DC_BROWSE.dim='component'; DC_BROWSE.compId=bbComp.dataset.bbcomp; rerender(); return; }
     const dcDelete=e.target.closest('[data-dcdelete]');
     if(dcDelete){
       const p=dcDelete.dataset.dcdelete.split(':');
@@ -6609,32 +6592,19 @@ const DC_CAT_TREE=[
 const DC_CATS={}; DC_CAT_TREE.forEach(function(g){ DC_CATS[g.k]=g.items.slice(); });
 /* 全局组件库：只放真机在用的组件，参数在 DC_POINTS_PRESET 里逐项定义 */
 const DC_COMP=[
-  {id:'C-BREW',name:'冲泡器',cats:['参与制作类型','清洗类型'],
-   note:'1008I：一次冲多少、先润多久；水温与总水量归配方步骤'},
-  {id:'C-MIXL',name:'搅拌器',cats:['参与制作类型','清洗类型'],
-   note:'1008I 装 3 台，按出料速度给强度；单步时长在配方里定'},
-  {id:'C-GRIND',name:'豆仓',cats:['咖啡豆仓','清洗类型'],
-   note:'出料速度单档；粉量→时长由校准换算'},
-  {id:'C-DISP',name:'料盒',cats:['粉料仓','清洗类型'],
-   note:'容积固定 4.3 L；满仓重量随物料：糖 4 kg、可可粉 2 kg'},
-  {id:'C-CUPBIN',name:'杯子仓',cats:['杯子'],
-   note:'只管存量，落杯动作在配方最后一步'},
-  {id:'C-LIDBIN',name:'盖子仓',cats:['杯盖'],
-   note:'与杯子仓分开补料，数量独立'},
-  {id:'C-VMIX',name:'上下搅拌电机',cats:['参与制作类型','清洗类型'],
-   note:'smooder-1：速度与上下位置分开设'},
-  {id:'C-WATER',name:'水路',cats:['水','清洗类型'],
-   note:'1008I：冷/温水与出水量按配方步骤下发'},
-  {id:'C-LIFT',name:'升降机构',cats:['清洗类型'],
-   note:'1008I 装 2 台：第 1 台上部分、第 2 台下部分，清洗参数在「清洗」页按程序配'},
-  {id:'C-FLOW',name:'流量计',cats:['水','清洗类型'],
-   note:'按 ml 计量出液'},
-  {id:'C-AIR',name:'气泵',cats:['参与制作类型','清洗类型'],
-   note:'按 ms 控制吹气时长'},
-  {id:'C-MILK',name:'奶路',cats:['鲜奶仓','BIB液体仓','参与制作类型','清洗类型'],
-   note:'1008：鲜奶泵按 ml 定量出奶，奶泡靠蒸汽棒；奶温探头只上报不参与配方'},
-  {id:'C-ICE',name:'冰路',cats:['冰','参与制作类型'],
-   note:'1008：制冰/储冰模块，按出冰时长控制份量；冰量只上报'}
+  {id:'C-BREW',name:'冲泡器',cats:['参与制作类型','清洗类型']},
+  {id:'C-MIXL',name:'搅拌器',cats:['参与制作类型','清洗类型']},
+  {id:'C-GRIND',name:'豆仓',cats:['咖啡豆仓','清洗类型']},
+  {id:'C-DISP',name:'料盒',cats:['粉料仓','清洗类型']},
+  {id:'C-CUPBIN',name:'杯子仓',cats:['杯子']},
+  {id:'C-LIDBIN',name:'盖子仓',cats:['杯盖']},
+  {id:'C-VMIX',name:'上下搅拌电机',cats:['参与制作类型','清洗类型']},
+  {id:'C-WATER',name:'水路',cats:['水','清洗类型']},
+  {id:'C-LIFT',name:'升降机构',cats:['清洗类型']},
+  {id:'C-FLOW',name:'流量计',cats:['水','清洗类型']},
+  {id:'C-AIR',name:'气泵',cats:['参与制作类型','清洗类型']},
+  {id:'C-MILK',name:'奶路',cats:['鲜奶仓','BIB液体仓','参与制作类型','清洗类型']},
+  {id:'C-ICE',name:'冰路',cats:['冰','参与制作类型']},
 ];
 /* 型号 × 组件实例：一台硬件一行 [型号, 组件, 控制编码]
    同一个组件装几台就有几行，控制编码各不相同（cmd_stir1 / cmd_stir2 …） */
@@ -7571,8 +7541,6 @@ const DC={q:'',brandFilter:'',lfBrand:'',catSel:{},catOpen:false,edit:null,confi
   newMenu:false,wiz:null,expBrands:{},mTab:'comp',dcTab:'brand',
   rcp:{q:'',sel:'',open:-1,pop:false,mode:'tpl',cat:'',pick:false,pickSel:{},tsum:false},
   cln:{sel:''},bay:{pick:false},expInst:{}};
-/* 适配浏览：双向层级状态 */
-const DC_BROWSE={dim:'brand',brandId:'',modelId:'',compId:''};
 function dcNorm(s){ return String(s||'').trim().toLowerCase(); }
 function dcBrandName(id){ const b=DC_BRAND.find(x=>x.id===id); return b?b.name:'—'; }
 function dcModelOf(id){ return DC_MODEL.find(x=>x.id===id); }
@@ -7625,7 +7593,7 @@ function dcImgBox(src,size,editable,ph){
     '<div style="min-width:0"><input type="file" accept="image/*" data-dcimgfile style="display:none">'+
     '<button class="btn" type="button" data-dcimgpick>选择图片</button> '+
     (src?'<button class="btn" type="button" data-dcimgclear>移除图片</button>':'')+
-    '<div class="src" style="margin-top:6px">支持 JPG / PNG，上传后自动居中裁切为 1:1 方形。</div></div></div>';
+    '<div class="src" style="margin-top:6px">JPG / PNG</div></div></div>';
 }
 function dcOpenEdit(kind,id){
   let img='', cats=[], points=[];
@@ -7758,7 +7726,7 @@ function dcBrandTab(){
     list=list.filter(b=>b.name.toLowerCase().indexOf(q)>=0||
       DC_MODEL.some(m=>m.brand===b.id&&m.name.toLowerCase().indexOf(q)>=0));
   }
-  const emptyTxt=DC.lfBrand?('「'+esc(dcBrandName(DC.lfBrand))+'」下没有匹配的型号。'):(DC.q?'未找到匹配的品牌或型号。':'暂无品牌，点右上角「新建 → 新建品牌」。');
+  const emptyTxt=DC.lfBrand?('「'+esc(dcBrandName(DC.lfBrand))+'」下没有匹配的型号。'):(DC.q?'未找到匹配的品牌或型号。':'暂无品牌');
   const rows=list.length? list.map(function(b){
     const ms=DC_MODEL.filter(m=>m.brand===b.id);
     const open=DC.expBrands[b.id]!==false;
@@ -7780,7 +7748,7 @@ function dcBrandTab(){
           '<td><div class="row-actions"><span class="lnk" data-dcdrawer="model:'+m.id+'">查看</span>'+
           '<span class="lnk danger" data-dcdelete="model:'+m.id+'">删除</span></div></td></tr>';
       }).join('') : '<tr class="dct-modelrow"><td><span class="muted" style="padding-left:22px">还没有型号</span></td>'+
-        '<td colspan="3" class="muted">点「＋ 型号」建第一个</td></tr>';
+        '<td colspan="3" class="muted"></td></tr>';
     }
     return head+sub;
   }).join('') : '<tr><td colspan="4" class="muted" style="text-align:center;padding:26px">'+emptyTxt+'</td></tr>';
@@ -7794,10 +7762,10 @@ function dcBrandTab(){
         '<button data-dcnew="brand"><span class="nm">新建品牌</span></button>'+
         '<button data-dcwiznew=""><span class="nm">新建型号</span></button></div>':'')+
     '</div></div>'+
-    '<div class="filterbar"><span class="note">FILTER</span><label class="fitem">搜索 '+dcSearchInput('data-dcq',DC.q,'搜索品牌或型号名称')+'</label>'+
+    '<div class="filterbar"><label class="fitem">搜索 '+dcSearchInput('data-dcq',DC.q,'搜索品牌或型号名称')+'</label>'+
     '<label class="fitem">品牌<select data-dclfbrand>'+brandOpts+'</select></label>'+
     (DC.lfBrand?'<span class="lnk" data-dclfbrandclear>清空筛选</span>':'')+'</div>'+
-    '<div class="tbl-panel"><div class="tbl-hd"><span class="t">品牌与型号</span><span class="a">'+list.length+' 个品牌 · '+modelN+' 个型号</span></div>'+
+    '<div class="tbl-panel"><div class="tbl-hd" style="justify-content:flex-end"><span class="a">'+list.length+' 个品牌 · '+modelN+' 个型号</span></div>'+
     '<div class="tbl-wrap"><table><thead><tr><th>品牌 / 型号</th><th class="num">型号 / 组件</th><th>更新时间</th><th>操作</th></tr></thead><tbody>'+rows+'</tbody></table></div></div>';
 }
 /* ============================================================
@@ -7867,8 +7835,7 @@ function dcWizStep2(){
     '<div class="wz-main">'+
       '<div class="wz-hd">已选组件 <b>'+w.rows.length+'</b> 条 <span class="muted">共 '+total+' 个</span>'+
         (w.rows.length?'<button class="btn wz-mini" style="margin-left:auto" data-dcwizduplast>＋ 复制最后一条</button>':'')+'</div>'+
-      (w.rows.length? w.rows.map(dcWizRowHTML).join('') : '<div class="wz-empty">从左边点组件加入清单；可以重复点同一个组件，也可以直接改数量。</div>')+
-      '<div class="wz-tip">数量填 6 就是 6 个相同组件；要 6 个不同料仓，用「复制上一条」再在这一条里换组件，比逐个加更快。</div>'+
+      (w.rows.length? w.rows.map(dcWizRowHTML).join('') : '<div class="wz-empty">从左侧选择组件</div>')+
     '</div>'+
   '</div>';
 }
@@ -7949,10 +7916,10 @@ function dcComponentTab(){
   const picked=dcCatSelected();
   return '<div class="lib-hd">'+dcCfgTabs('comp')+
     '<div class="hd-act"><button class="btn accent" data-dcnew="component">＋ 新增组件</button></div></div>'+
-    '<div class="filterbar"><span class="note">FILTER</span><label class="fitem">搜索组件 '+dcSearchInput('data-dcq',DC.q,'搜索组件名称')+'</label>'+
+    '<div class="filterbar"><label class="fitem">搜索组件 '+dcSearchInput('data-dcq',DC.q,'搜索组件名称')+'</label>'+
     '<div class="fitem catf"><span>分类</span><button class="catbtn'+(picked.length?' on':'')+'" data-dccatopen>'+(picked.length?('已选 '+picked.length+' 项'):'全部分类')+' <i>▾</i></button>'+
       (DC.catOpen?dcCatPop():(picked.length?'<span class="lnk" data-dccatclear>清空</span>':''))+'</div></div>'+
-    '<div class="tbl-panel"><div class="tbl-hd"><span class="t">全局组件库</span><span class="a">共 '+list.length+' 项</span></div>'+
+    '<div class="tbl-panel"><div class="tbl-hd" style="justify-content:flex-end"><span class="a">共 '+list.length+' 项</span></div>'+
     '<div class="tbl-wrap"><table><thead><tr><th>组件名称</th><th>分类</th><th>适配型号</th><th class="num">型号数量</th><th>操作</th></tr></thead><tbody>'+rows+'</tbody></table></div></div>';
 }
 /* 分类筛选浮层：一级分组，二级多选 */
@@ -7969,96 +7936,7 @@ function dcCatPop(){
       }).join('') : '<label class="cp-opt'+(DC.catSel[g.k]?' on':'')+'"><input type="checkbox" data-dccattoggle="'+esc(g.k)+'"'+(DC.catSel[g.k]?' checked':'')+'><i></i>'+esc(g.k)+'</label>';
       return '<div class="cp-grp">'+head+'<div class="cp-opts">'+opts+'</div></div>';
     }).join('')+'</div>'+
-    '<div class="cp-ft">选了 '+dcCatSelected().length+' 个分类，命中其一即显示</div></div>';
-}
-/* 适配浏览：双向维度与交叉跳转 */
-function dcBreadcrumb(){
-  const B=DC_BROWSE;
-  let h='<div class="filterbar" style="gap:8px"><span class="note">路径</span>';
-  if(B.dim==='brand'){
-    h+='<span class="'+(B.brandId?'lnk':'strong')+'" data-bbcrumb="brandroot">全部品牌</span>';
-    if(B.brandId){
-      h+='<span class="muted"> / </span><span class="'+(B.modelId?'lnk':'strong')+'" data-bbcrumb="brand">'+esc(dcBrandName(B.brandId))+'</span>';
-      if(B.modelId){ const m=dcModelOf(B.modelId); h+='<span class="muted"> / </span><span class="strong">'+esc(m?m.name:'')+'</span>'; }
-    }
-  }else{
-    h+='<span class="'+(B.compId?'lnk':'strong')+'" data-bbcrumb="comproot">全部组件</span>';
-    if(B.compId){ const c=dcCompOf(B.compId); h+='<span class="muted"> / </span><span class="strong">'+esc(c?c.name:'')+'</span>'; }
-  }
-  return h+'</div>';
-}
-function dcBrowsePage(){
-  const B=DC_BROWSE;
-  const body=B.dim==='brand'?dcBrowseBrandDim():dcBrowseCompDim();
-  return '<div class="page-hd"><div><h3 style="font-size:14px">适配浏览</h3><p>从品牌或组件任一维度进入，逐级查看适配关系，两个方向可随时互跳。</p></div></div>'+
-    '<div class="tabs">'+[['brand','按品牌看'],['component','按组件看']].map(t=>
-      '<div class="tab'+(B.dim===t[0]?' active':'')+'" data-browsedim="'+t[0]+'">'+t[1]+'</div>').join('')+'</div>'+
-    dcBreadcrumb()+body;
-}
-function dcBrowseBrandDim(){
-  const B=DC_BROWSE;
-  if(!B.brandId) return dcBrowseBrandWall();
-  if(!B.modelId) return dcBrowseModelWall(B.brandId);
-  const m=dcModelOf(B.modelId);
-  if(!m){ DC_BROWSE.modelId=''; return dcBrowseModelWall(B.brandId); }
-  const comps=dcCompsOf(m.id);
-  const rows=comps.length?comps.map(c=>{
-    const link=DC_LINK.find(l=>l[0]===m.id&&l[1]===c.id);
-    return '<tr><td><span class="strong">'+esc(c.name)+'</span></td><td>'+dcCatCell(c)+'</td><td>'+esc((link&&link[2])||'—')+'</td>'+
-      '<td><span class="lnk" data-bbcomp="'+c.id+'">查适配品牌</span></td></tr>';
-  }).join(''):'<tr><td colspan="4" class="muted" style="text-align:center;padding:24px">该型号暂无适配组件。</td></tr>';
-  return '<div class="tbl-panel"><div class="tbl-hd"><span class="t">'+esc(dcBrandName(m.brand))+' / '+esc(m.name)+' 的适配组件</span><span class="a">共 '+comps.length+' 项</span></div>'+
-    '<div class="tbl-wrap"><table><thead><tr><th>组件名称</th><th>分类</th><th>指令代码</th><th>操作</th></tr></thead><tbody>'+rows+'</tbody></table></div></div>'+
-    '<div class="note" style="margin-top:10px">点击「查适配品牌」切换到组件维度，查看该组件被哪些品牌型号复用。</div>';
-}
-function dcBrowseBrandWall(){
-  const cards=DC_BRAND.map(b=>'<div class="card" data-bbbrand="'+b.id+'" style="cursor:pointer;align-items:center;text-align:center;padding:16px 12px">'+dcImgBox(b.img,64,false,String(b.name||'').slice(0,1))+
-    '<div style="margin-top:10px;font-weight:600">'+esc(b.name)+'</div><div class="muted" style="font-size:11.5px">'+dcBrandModelCount(b.id)+' 个型号</div></div>').join('');
-  return '<div class="note" style="margin-bottom:10px">共 '+DC_BRAND.length+' 个品牌，点击品牌查看其下型号。</div>'+
-    '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px">'+(cards||'<div class="muted">暂无品牌。</div>')+'</div>';
-}
-function dcBrowseModelWall(bid){
-  const list=DC_MODEL.filter(m=>m.brand===bid);
-  const cards=list.map(m=>'<div class="card" data-bbmodel="'+m.id+'" style="cursor:pointer;align-items:center;text-align:center;padding:16px 12px">'+dcImgBox(m.img,64,false,String(m.name||'').slice(0,1))+
-    '<div style="margin-top:10px;font-weight:600">'+esc(m.name)+'</div><div class="muted" style="font-size:11.5px">'+dcCompsOf(m.id).length+' 种 / '+dcInstCount(m.id)+' 台</div></div>').join('');
-  return '<div class="note" style="margin-bottom:10px">共 '+list.length+' 个型号，点击型号查看适配组件。</div>'+
-    '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px">'+(cards||'<div class="muted">该品牌下暂无型号。</div>')+'</div>';
-}
-function dcBrowseCompDim(){
-  const B=DC_BROWSE;
-  if(!B.compId) return dcBrowseCompList();
-  const comp=dcCompOf(B.compId);
-  if(!comp){ DC_BROWSE.compId=''; return dcBrowseCompList(); }
-  const ms=dcModelsOf(comp.id);
-  const brands=[];
-  ms.forEach(m=>{ if(brands.indexOf(m.brand)<0) brands.push(m.brand); });
-  const groups=brands.map(bid=>{
-    const bm=ms.filter(m=>m.brand===bid);
-    const rows=bm.map(m=>{
-      const link=DC_LINK.find(l=>l[0]===m.id&&l[1]===comp.id);
-      return '<tr><td><span class="lnk strong" data-bbmodel="'+m.id+'">'+esc(m.name)+'</span></td><td>'+esc((link&&link[2])||'—')+'</td>'+
-        '<td><span class="lnk" data-bbmodel="'+m.id+'">看该型号组件</span></td></tr>';
-    }).join('');
-    return '<div class="tbl-panel" style="margin-bottom:12px"><div class="tbl-hd"><span class="t">'+esc(dcBrandName(bid))+'</span><span class="a">'+bm.length+' 个型号</span></div>'+
-      '<div class="tbl-wrap"><table><thead><tr><th>型号</th><th>指令代码</th><th>操作</th></tr></thead><tbody>'+rows+'</tbody></table></div></div>';
-  }).join('');
-  return '<div class="page-hd" style="margin:6px 0 10px"><div><h3 style="font-size:14px">'+esc(comp.name)+'</h3><p>被 '+brands.length+' 个品牌、'+ms.length+' 个型号使用。</p></div></div>'+
-    (groups||'<div class="muted" style="padding:24px;text-align:center">暂无适配型号。</div>')+
-    '<div class="note" style="margin-top:10px">点击型号可切换到品牌维度，查看该型号的完整组件清单。</div>';
-}
-function dcBrowseCompList(){
-  const list=DC_COMP.slice().sort((a,b)=>dcCompModelCount(b.id)-dcCompModelCount(a.id));
-  const rows=list.map(c=>{
-    const ms=dcModelsOf(c.id), brands=[];
-    ms.forEach(m=>{ if(brands.indexOf(m.brand)<0) brands.push(m.brand); });
-    return '<tr><td><span class="lnk strong" data-bbcomp="'+c.id+'">'+esc(c.name)+'</span></td>'+
-      '<td>'+dcCatCell(c)+'</td>'+
-      '<td class="num">'+brands.length+'</td><td class="num">'+ms.length+'</td>'+
-      '<td><span class="lnk" data-bbcomp="'+c.id+'">查看适配品牌</span></td></tr>';
-  }).join('');
-  return '<div class="note" style="margin-bottom:10px">共 '+list.length+' 个全局组件，按适配型号数排序；点击组件查看哪些品牌在用。</div>'+
-    '<div class="tbl-panel"><div class="tbl-hd"><span class="t">全局组件库</span><span class="a">共 '+list.length+' 项</span></div>'+
-    '<div class="tbl-wrap"><table><thead><tr><th>组件名称</th><th>分类</th><th class="num">适配品牌数</th><th class="num">适配型号数</th><th>操作</th></tr></thead><tbody>'+(rows||'<tr><td colspan="5" class="muted" style="text-align:center;padding:24px">暂无组件。</td></tr>')+'</tbody></table></div></div>';
+    '<div class="cp-ft">已选 '+dcCatSelected().length+' 个</div></div>';
 }
 function dcOverlays(){
   let h='';
@@ -8134,10 +8012,7 @@ function dcPointModal(){
       (vals?'<div style="margin-bottom:8px">'+vals+'</div>':'')+
       '<div style="display:flex;gap:6px"><input data-dcptenumnew placeholder="输入枚举值后点击添加" style="flex:1;min-width:0"><button class="btn sm" data-dcptenumadd>添加</button></div></div>';
   }else{
-    typeFields='<div class="field"><div class="src">'+
-      (p.type==='bool'?'开关型：二值（真 / 假）。':
-       p.type==='string'?'字符串型：复杂文本，本期不设长度约束。':
-       '透传型：Hex 十六进制透传，本期不设约束。')+'</div></div>';
+    typeFields='';
   }
   const noteField='<div class="field"><label>备注</label><input data-dcptnote value="'+esc(p.note||'')+'" placeholder="补充说明，如满仓重量随物料变化"></div>';
   return '<div class="mx-mask" data-dcptmask><div class="mx w620">'+
@@ -8830,7 +8705,7 @@ function dcBayPickModal(){
       '<button class="btn sm" data-bayadd="'+t.k+'">＋ 添加</button></div>';
   }).join('');
   return '<div class="mx-mask" data-baymask><div class="mx w480" data-baypanel>'+
-    '<div class="mx-hd"><div><h3>添加仓位</h3><div class="mx-sub">选类型即可，同类仓可以连续加多个</div></div>'+
+    '<div class="mx-hd"><div><h3>添加仓位</h3></div>'+
       '<button class="mx-x" data-baypickclose aria-label="关闭" title="关闭">×</button></div>'+
     '<div class="mx-bd">'+list+'</div>'+
     '<div class="mx-ft" style="justify-content:space-between">'+
@@ -9242,8 +9117,7 @@ function dcDrawer(){
           '<span class="muted">'+insts.length+' 台组件 · '+bayN+' 个仓位 · '+rcpN+' 张配方 · '+clnN+' 套清洗</span></div></div>'+
         '<button class="drawer-x" data-dcclose aria-label="关闭" title="关闭">×</button></div>'+
       '<div class="drawer-bd'+((tab==='recipe'||tab==='clean')?' rcp-bd':'')+'">'+body+'</div>'+
-      '<div class="drawer-ft"><span class="fbar-meta">'+esc(dcBrandName(m.brand))+' / '+esc(m.name)+'</span>'+
-        '<button class="btn" data-dcexport="'+esc(m.id)+'" title="导出这个机型的 4 个页签">导出 Excel</button>'+
+      '<div class="drawer-ft"><button class="btn" data-dcexport="'+esc(m.id)+'" title="导出这个机型的 4 个页签">导出 Excel</button>'+
         '<button class="btn" data-dcclose>关闭</button></div></div>';
   }
   const comp=dcCompOf(d.id); if(!comp) return '';
@@ -9273,12 +9147,11 @@ function dcDrawer(){
         '<div class="dcb-mhd"><span class="nm">'+esc(m.name)+'</span>'+
           (qty>1?'<span class="qty">×'+qty+'</span>':'')+
           '<span class="lnk danger" style="margin-left:auto" data-dcremove="model:'+m.id+'">移除</span></div>'+
-        (rows?'<div class="dcb-tblwrap"><table class="dcb-tbl"><thead><tr><th>参数</th><th>范围</th>'+(hasUnit?'<th>单位</th>':'')+'<th>当前值</th></tr></thead><tbody>'+rows+'</tbody></table></div>':'<div class="dcb-empty">这个组件还没有参数。</div>')+
-        '<div class="dcb-ft"><span>实例 '+instLine+'</span>'+(qty>1?'<span>共 '+qty+' 台，参数可分开调</span>':'')+'</div>'+
+        (rows?'<div class="dcb-tblwrap"><table class="dcb-tbl"><thead><tr><th>参数</th><th>范围</th>'+(hasUnit?'<th>单位</th>':'')+'<th>当前值</th></tr></thead><tbody>'+rows+'</tbody></table></div>':'<div class="dcb-empty">暂无参数</div>')+
+        '<div class="dcb-ft"><span>实例 '+instLine+'</span>'+(qty>1?'<span>共 '+qty+' 台</span>':'')+'</div>'+
       '</div>';
   }).join(''):'<div class="dcb-empty">这个组件还没有适配任何品牌型号。</div>';
-  const note=comp.note?'<div class="dcb-note">'+esc(comp.note)+'</div>':'';
-  const brandBar=g?'<div class="dcb-brand"><span class="b">'+esc(g.name)+'</span><span class="muted">这个品牌有 '+g.models.length+' 个型号用该组件</span></div>':'';
+  const brandBar=g?'<div class="dcb-brand"><span class="b">'+esc(g.name)+'</span></div>':'';
   const foot=total>1? '<div class="drawer-ft" style="justify-content:space-between;align-items:center">'+
       '<span class="dcb-pg">第 '+(idx+1)+' / '+total+' 页 · '+esc(g.name)+'</span>'+
       '<div style="display:flex;gap:8px">'+
@@ -9294,7 +9167,7 @@ function dcDrawer(){
     '<div class="drawer-hd"><div style="min-width:0"><h3>'+esc(comp.name)+'</h3>'+
       '<div class="dcb-sub">'+dcCatCell(comp,9)+'<span class="muted">'+total+' 个品牌 · '+dcModelsOf(comp.id).length+' 个型号在用</span></div></div>'+
       '<button class="drawer-x" data-dcclose aria-label="关闭" title="关闭">×</button></div>'+
-    '<div class="drawer-bd">'+tabs+brandBar+note+cards+'</div>'+foot+'</div>';
+    '<div class="drawer-bd">'+tabs+brandBar+cards+'</div>'+foot+'</div>';
 }
 function dcPickerModal(){
   const p=DC.picker;
@@ -9335,25 +9208,24 @@ function dcPickerModal(){
       : '<div class="dc-opt-empty">'+(p.q||p.brand?'没有匹配的型号':'没有可添加的型号')+'</div>';
   }
   const brandOpts='<option value="">全部品牌</option>'+DC_BRAND.map(b=>'<option value="'+b.id+'"'+(p.brand===b.id?' selected':'')+'>'+esc(b.name)+'</option>').join('');
-  const note=isComp?(selN?'已选 '+selN+' 台':'勾选组件后可改编码与台数'):(selN?'已选 '+selN+' 个型号':'可跨品牌多选，指令代码按型号自动填');
+  const note=selN?(isComp?'已选 '+selN+' 台':'已选 '+selN+' 个型号'):'';
   const filterBar='<div class="dcf-grid">'+
       '<div class="field"'+(isComp?' style="grid-column:1/-1"':'')+'><label>搜索</label>'+dcSearchInput('data-dcpickerq',p.q,isComp?'搜索组件名称':'搜索型号或品牌',true)+'</div>'+
       (isComp?'':'<div class="field"><label>品牌筛选</label><select data-dcpickerbrand>'+brandOpts+'</select></div>')+
     '</div>';
-  const newBlock=isComp?'<div class="dcf-sec" style="margin-top:16px;margin-bottom:0"><div class="dcf-hd"><h4>找不到组件？</h4><span class="hint">新建一个全局组件并关联当前型号</span></div>'+
+  const newBlock=isComp?'<div class="dcf-sec" style="margin-top:16px;margin-bottom:0"><div class="dcf-hd"><h4>新建组件</h4></div>'+
       '<div style="display:flex;gap:8px;align-items:flex-start">'+
         '<div class="field" style="flex:1;min-width:0;margin-bottom:0"><input data-dcnewname value="'+esc(p.newName||'')+'" placeholder="输入新组件名称"></div>'+
         '<button class="btn" data-dccreatenew style="flex:0 0 auto">新建并关联</button>'+
       '</div></div>':'';
   return '<div class="mx-mask" data-dcmask><div class="mx w620">'+
-    '<div class="mx-hd"><div><h3>'+(isComp?'添加组件':'添加适配型号')+'</h3>'+
-      '<div class="mx-sub">'+(isComp?'勾选即加装；同一组件可加多台，控制编码自动顺延':'跨品牌多选型号，可填写指令代码')+'</div></div>'+
+    '<div class="mx-hd"><div><h3>'+(isComp?'添加组件':'添加适配型号')+'</h3></div>'+
       '<button class="mx-x" data-dcpickerclose aria-label="关闭" title="关闭">×</button></div>'+
     '<div class="mx-bd">'+filterBar+
       '<div class="dc-opt-list">'+items+'</div>'+
       newBlock+
     '</div>'+
-    '<div class="mx-ft"><span class="ft-note">'+note+'</span>'+
+    '<div class="mx-ft">'+(note?'<span class="ft-note">'+note+'</span>':'')+
       '<button class="btn" data-dcpickerclose>取消</button><button class="btn accent" data-dcpickersave>添加所选</button></div></div></div>';
 }
 
@@ -9530,7 +9402,7 @@ function dcCreateNewComp(){
 
 /* KPI 卡（设备配置各页共用）：s 为空时不渲染副标题 */
 function pcKPI(l,v,s){
-  return '<div class="kpi"><span class="note">KPI</span><div class="kpi-l">'+l+'</div><div class="kpi-v">'+v+'</div>'+
+  return '<div class="kpi"><div class="kpi-l">'+l+'</div><div class="kpi-v">'+v+'</div>'+
     (s?'<div class="kpi-d"><span>'+s+'</span></div>':'')+'</div>';
 }
 
@@ -10058,8 +9930,7 @@ function cfgInstPage(){
       '<th class="num" style="width:92px">参数</th><th style="width:150px">仓位</th>'+
       '<th class="num" style="width:92px">清洗</th><th style="width:150px">操作</th>'+
       '</tr></thead><tbody>'+rows+'</tbody></table></div></div>'
-      :'<div class="cfg-empty">这个型号还没装组件。<br />先「添加组件」，后面的配方、料仓、清洗、校准、远程才有东西可配。</div>')+
-    '<div class="cfg-note">装机清单是唯一能加硬件的地方；料仓、清洗、校准、远程都只从这里取实例。移除前会先把影响摊开给你看。</div>';
+      :'<div class="cfg-empty">这个型号还没装组件。</div>');
 }
 
 /* ---------- 11.7 料仓 ---------- */
@@ -10102,10 +9973,10 @@ function cfgSiloPage(){
       pcKPI('装机实例',cfgInsts(mid).length)+
     '</div>'+
     cfgBar({act:'<button class="btn" data-cfgsiloadd>＋ 新增仓位</button><button class="btn accent" data-cfgsave>保存</button>'})+
-    (!feedInsts.length?'<div class="pc-note warn" style="margin-bottom:12px">这个型号还没有下料类组件（料盒 / 豆仓 / 泵），仓位挂不上去。先去「装机清单」添加。</div>':'')+
-    (list.length?'<div class="tbl-panel"><div class="tbl-hd"><span class="t">仓位与原料</span><span class="a">容量按料盒容积，满仓重量随物料密度变</span></div>'+
+    (!feedInsts.length?'<div class="pc-note warn" style="margin-bottom:12px">这个型号没有下料类组件（料盒 / 豆仓 / 泵），仓位挂不上去。</div>':'')+
+    (list.length?'<div class="tbl-panel"><div class="tbl-hd"><span class="t">仓位与原料</span></div>'+
       '<div class="tbl-wrap"><table class="pf-tbl"><thead><tr><th style="width:70px">仓位</th><th style="width:96px">类型</th><th style="width:190px">组件实例</th><th style="width:150px">装载原料</th><th style="width:120px">容量</th><th class="num" style="width:104px">满仓重量</th><th style="width:120px">余量下限</th><th style="width:92px">校准</th><th>操作</th></tr></thead><tbody>'+rows+'</tbody></table></div></div>'
-      :'<div class="cfg-empty">该型号还没有仓位。<br />先到「组件」页确认装机清单，再回来划仓位。</div>');
+      :'<div class="cfg-empty">该型号还没有仓位。</div>');
 }
 
 /* ---------- 11.8 清洗 ---------- */
@@ -10149,7 +10020,7 @@ function cfgCleanPage(){
     '</div></div>'+
     '<div class="tbl-panel"><div class="tbl-hd"><span class="t">清洗配置</span></div>'+
     '<div class="tbl-wrap"><table class="pf-tbl"><thead><tr><th style="width:52px">参与</th><th>组件</th><th style="width:96px">触发</th><th style="width:96px">每 N 杯</th><th style="width:104px">时长 s</th><th style="width:88px">次数</th><th style="width:112px">单次用水 ml</th><th style="width:84px">深度</th><th style="width:132px">小计</th></tr></thead><tbody>'+
-    (rows||'<tr><td colspan="9" class="pc-empty">这个型号还没装组件，清洗没有对象。先去「装机清单」添加。</td></tr>')+
+    (rows||'<tr><td colspan="9" class="pc-empty">这个型号还没装组件</td></tr>')+
     '<tr class="pf-total"><td colspan="2">合计（仅参与清洗）</td><td colspan="2">'+joinN+' 个组件</td><td colspan="3">'+dur+' 秒 · '+water+' ml</td><td colspan="2">深度 '+depthN+' 个</td></tr>'+
     '</tbody></table></div></div>';
 }
@@ -10319,13 +10190,13 @@ function cfgModelDetailPage(){
       '<td>'+(o.risk?cfgTag('需 SN 后四位','warn'):'<span class="muted">—</span>')+'</td></tr>';
   }).join('');
 
-  function sec(id,t,s,go,goLabel){
-    return '<div class="pf-sec" id="md-'+id+'"><span class="t">'+t+'</span><span class="s">'+s+'</span>'+
+  function sec(id,t,go,goLabel){
+    return '<div class="pf-sec" id="md-'+id+'"><span class="t">'+t+'</span>'+
       (go?'<span class="a"><span class="lnk" data-cfgmdgo="'+go+'" style="font-size:11.5px">'+(goLabel||'去配置')+' →</span></span>':'')+'</div>';
   }
   return '<div class="kpis k5">'+
       pcKPI('组件',insts.length+' 个实例',order.length+' 类工位 · '+esc(prof.cabinet||'无副柜'))+
-      pcKPI('可做配方',okN+' / '+fits.length,'受限项标黄，看缺什么')+
+      pcKPI('可做配方',okN+' / '+fits.length)+
       pcKPI('料仓',silos.length+' 个',siloBound+' 已绑料 · '+siloPend+' 待校准')+
       pcKPI('清洗',cJoin.length+' / '+insts.length,cDur+' s · '+cWater+' ml 每轮')+
       pcKPI('远程操作',opOk+' / '+CFG_OPS.length,'能力开关已开 '+capOn+' / '+CFG_CAPS.length)+
@@ -10336,30 +10207,27 @@ function cfgModelDetailPage(){
       }).join('')+
     '</div>'+
 
-    sec('comp','组件','该型号装了什么，按工位列，同组件多实例分开算','comp','去装机清单')+
+    sec('comp','组件','comp','去装机清单')+
     '<div class="cfg-note" style="margin:-2px 0 8px">'+catChips+'</div>'+
     '<div class="tbl-panel"><div class="tbl-wrap"><table class="pf-tbl"><thead><tr><th style="width:74px">工位</th><th>组件</th><th style="width:130px">实例</th><th class="num" style="width:64px">数量</th><th style="width:92px">标准/选配</th><th style="width:110px">料仓</th><th style="width:150px">指令代码</th></tr></thead><tbody>'+
       (compRows||'<tr><td colspan="7" class="pc-empty">这个型号还没有装机组件。</td></tr>')+'</tbody></table></div></div>'+
 
-    sec('recipe','制作配方','这个型号能做出哪些商品；缺件或缺料会直接说缺什么',null)+
+    sec('recipe','制作配方',null)+
     '<div class="tbl-panel"><div class="tbl-wrap"><table class="pf-tbl"><thead><tr><th>商品</th><th style="width:170px">规格</th><th class="num" style="width:76px">步骤</th><th class="num" style="width:86px">总水量</th><th>缺什么</th><th style="width:86px">结果</th></tr></thead><tbody>'+
       fitRows+'</tbody></table></div></div>'+
 
-    sec('silo','料仓设置','几个仓位、每仓装什么料、由哪个组件实例下料','silo','去料仓')+
+    sec('silo','料仓设置','silo','去料仓')+
     '<div class="tbl-panel"><div class="tbl-wrap"><table class="pf-tbl"><thead><tr><th style="width:80px">仓位</th><th style="width:82px">类型</th><th>对应组件实例</th><th>装载原料</th><th class="num" style="width:96px">容量</th><th class="num" style="width:100px">余量下限</th><th style="width:88px">校准</th></tr></thead><tbody>'+
       (siloRows||'<tr><td colspan="7" class="pc-empty">这个型号还没有仓位。</td></tr>')+'</tbody></table></div></div>'+
 
-    sec('clean','清洗','哪些组件参与、怎么触发、一轮用多少水','clean','去清洗')+
+    sec('clean','清洗','clean','去清洗')+
     '<div class="tbl-panel"><div class="tbl-hd"><span class="t">参与清洗的组件</span><span class="a">'+cJoin.length+' / '+insts.length+' 个实例 · 单轮 '+cDur+' s / '+cWater+' ml</span></div>'+
     '<div class="tbl-wrap"><table class="pf-tbl"><thead><tr><th>组件实例</th><th style="width:82px">触发</th><th class="num" style="width:80px">每 N 杯</th><th class="num" style="width:76px">时长</th><th class="num" style="width:66px">次数</th><th class="num" style="width:86px">单次用水</th><th style="width:74px">深度</th><th class="num" style="width:130px">小计</th></tr></thead><tbody>'+
       cleanRows+'</tbody></table></div></div>'+
-    '<div class="cfg-note">另有 '+(insts.length-cJoin.length)+' 个组件实例不参与清洗；「跟随使用」开启时，没用过的搅拌器这一轮不洗。</div>'+
 
-    sec('remote','远程功能','用户能对这个型号远程做哪些动作，前置条件写在旁边','remote','去远程功能')+
+    sec('remote','远程功能','remote','去远程功能')+
     '<div class="tbl-panel"><div class="tbl-wrap"><table class="pf-tbl"><thead><tr><th>远程操作</th><th style="width:110px">依赖组件</th><th style="width:112px">该型号</th><th>互锁条件</th><th style="width:76px">最低角色</th><th style="width:126px">二次确认</th></tr></thead><tbody>'+
-      opRows+'</tbody></table></div></div>'+
-    '<div class="cfg-note">是否允许远程控制由「远程功能」页的能力开关（已开 '+capOn+' / '+CFG_CAPS.length+' 项）控制；这里列的是动作本身与它的前置条件。'+
-      (opOk<CFG_OPS.length?' 灰掉的行表示该型号没装依赖的硬件（例如 1008C 没装门开关，打开大门只能现场操作），远程下发会被拒。':'')+'</div>';
+      opRows+'</tbody></table></div></div>';
 }
 
 function cfgRecipePage(){
@@ -10376,7 +10244,7 @@ function cfgCalibPage(){
   var silos=cfgSilos(mid).filter(function(x){ return !!x.mat&&!!x.inst; });
   if(!silos.length){
     return '<div class="kpis k5">'+pcKPI('可校准仓位','0')+pcKPI('校准版本','—')+pcKPI('实测档位','—')+pcKPI('5 档速度','—')+pcKPI('状态','待绑料')+'</div>'+
-      '<div class="cfg-empty">还没有绑料的仓位，校准没有对象。<br />先去「料仓」给仓位选一种原料。</div>';
+      '<div class="cfg-empty">还没有绑料的仓位。</div>';
   }
   var silo=cfgSiloOf(mid,CFG.calSilo)||silos[0];
   var cal=silo?cfgCalOf(mid,silo.no):{rows:[],ver:0,samples:0};
@@ -10414,8 +10282,7 @@ function cfgCalibPage(){
     '<div class="tbl-panel"><div class="tbl-hd"><span class="t">档位换算表</span></div>'+
       '<div class="tbl-wrap"><table class="pf-tbl"><thead><tr><th style="width:90px">档位</th><th style="width:130px">出料时长 s</th><th style="width:130px">实测重量 g</th><th style="width:120px">换算速度</th><th style="width:110px">每 100ms</th><th>说明</th></tr></thead><tbody>'+
       (rows||'<tr><td colspan="6" class="pc-empty">该仓位没有可校准的档位。</td></tr>')+'</tbody></table></div></div>'+
-    (bad?'<div class="pc-note warn" style="margin-top:12px"><b>相邻档位速度倒挂</b>：高档出料反而更慢，通常是称重录错或粉料结块，修正后才能生成版本。</div>':'')+
-    '<div class="cfg-note" style="margin-top:10px">换粉料品牌需重校，同档同时长不同批次可差 15%。</div>';
+    (bad?'<div class="pc-note warn" style="margin-top:12px"><b>相邻档位速度倒挂</b>：高档出料反而更慢，通常是称重录错或粉料结块，修正后才能生成版本。</div>':'');
 
 }
 
@@ -10432,7 +10299,7 @@ function cfgRemotePage(){
   }).join('');
   var tasks=CFG_TASK.map(function(t){
     var tone=t.status==='成功'?'success':(t.status==='失败'?'critical':(t.status==='待下发'?'warn':'info'));
-    return '<tr><td class="mono">'+esc(t.id)+'</td><td>'+esc(t.sn)+'<div class="cfg-lock">'+(dcModelOf(t.model)||{}).name+'</div></td>'+
+    return '<tr><td class="mono">'+esc(t.id)+'</td><td>'+esc(t.sn)+'<div class="cfg-lock">'+esc((dcModelOf(t.model)||{}).name||t.model||'')+'</div></td>'+
       '<td>'+esc(t.action)+'</td><td>'+esc(t.by)+'</td><td>'+esc(t.at)+'</td>'+
       '<td>'+cfgTag(t.status,tone)+'</td><td class="num">'+esc(t.cost)+'</td><td class="muted">'+esc(t.result)+'</td></tr>';
   }).join('');
