@@ -1,0 +1,1191 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>设备配置九页 · 功能 PRD</title>
+<style>
+:root{
+  --brand:#2434c8;--brand-deep:#1b299e;--brand-weak:#edf0ff;--brand-line:#dce2ff;
+  --ink:#0b102f;--text-2:#5d6480;--text-3:#8b92a8;
+  --bg:#eef0f6;--surface:#fff;--surface-2:#f5f6fa;--line:#e4e7ef;
+  --ok:#008f63;--ok-bg:#e8f7f1;--warn:#9a5e2a;--warn-bg:#fff4e8;
+  --danger:#d92d20;--danger-bg:#fff0ef;--r:16px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","PingFang SC","Microsoft YaHei",sans-serif;
+  background:var(--bg);color:var(--ink);font-size:14.5px;line-height:1.62;-webkit-font-smoothing:antialiased}
+b,strong{font-weight:700}
+code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px;background:#f1f3fa;padding:1px 5px;border-radius:5px;color:#2b3a8f}
+.shell{max-width:1180px;margin:0 auto;padding:0 22px 90px}
+
+.doc-head{padding:46px 0 26px;border-bottom:1px solid #dfe3ee}
+.kicker{display:flex;align-items:center;gap:8px;font-size:12px;font-weight:700;letter-spacing:.8px;color:var(--brand);text-transform:uppercase}
+.kicker i{width:18px;height:2px;background:var(--brand);border-radius:2px;display:block}
+.doc-head h1{margin-top:12px;font-size:32px;line-height:1.28;letter-spacing:-.8px;font-weight:800}
+.doc-head .sub{margin-top:10px;max-width:900px;font-size:15px;color:var(--text-2)}
+.meta{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px}
+.meta span{display:inline-flex;align-items:center;gap:6px;height:26px;padding:0 10px;border-radius:999px;background:#fff;border:1px solid var(--line);font-size:12px;font-weight:600;color:var(--text-2)}
+.meta b{color:var(--ink);font-weight:700}
+
+.toc{display:grid;grid-template-columns:repeat(auto-fit,minmax(224px,1fr));gap:10px;margin:26px 0 8px}
+.toc a{display:flex;align-items:center;gap:10px;padding:11px 13px;border-radius:12px;background:#fff;border:1px solid var(--line);color:var(--ink);text-decoration:none;font-size:13px;font-weight:600}
+.toc a:hover{border-color:#c9d1f2;box-shadow:0 4px 14px rgba(36,52,200,.06)}
+.toc a em{flex:0 0 auto;width:22px;height:22px;border-radius:7px;background:var(--brand-weak);color:var(--brand);font-style:normal;font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center}
+
+section{margin-top:46px;scroll-margin-top:20px}
+.sec-head{display:flex;align-items:baseline;gap:12px;padding-bottom:10px;border-bottom:1px solid #dfe3ee}
+.sec-num{font-size:13px;font-weight:800;color:var(--brand);letter-spacing:.4px}
+.sec-head h2{font-size:22px;line-height:1.3;letter-spacing:-.4px;font-weight:800}
+.sec-head .hint{margin-left:auto;font-size:12px;color:var(--text-3)}
+h3{margin-top:28px;font-size:16px;font-weight:800;letter-spacing:-.2px}
+h4{margin-top:18px;font-size:13.5px;font-weight:800;color:#2a3150}
+p{margin-top:10px;color:#2e3450}
+.lead{font-size:15.5px;color:#353c5c}
+ul,ol{margin:10px 0 0 20px}
+li{margin-top:6px;color:#2e3450}
+li::marker{color:#9aa4c8}
+.small{font-size:12.5px;color:var(--text-2)}
+.tiny{font-size:11.5px;color:var(--text-3)}
+
+.verdict{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:18px}
+.vcard{background:#fff;border:1px solid var(--line);border-radius:14px;padding:15px 16px}
+.vcard .n{font-size:11px;font-weight:800;letter-spacing:.6px;color:var(--brand)}
+.vcard h4{margin-top:5px;font-size:15px}
+.vcard p{margin-top:6px;font-size:12.5px;line-height:1.55;color:var(--text-2)}
+@media(max-width:760px){.verdict{grid-template-columns:1fr}}
+
+.tbl-wrap{margin-top:14px;border:1px solid var(--line);border-radius:14px;background:#fff;overflow:auto}
+table{border-collapse:collapse;width:100%;font-size:12.8px;min-width:640px}
+thead th{position:sticky;top:0;z-index:1;background:#f7f8fc;text-align:left;font-weight:700;color:#3a4166;padding:10px 12px;border-bottom:1px solid var(--line);white-space:nowrap;font-size:12px}
+tbody td{padding:10px 12px;border-bottom:1px solid #eef0f7;vertical-align:top;color:#2e3450}
+tbody tr:last-child td{border-bottom:0}
+tbody tr:hover{background:#fbfcff}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+td.nowrap,th.nowrap{white-space:nowrap}
+td.mono{font-family:ui-monospace,Menlo,monospace;font-size:11.5px;color:#3d4780}
+
+.tag{display:inline-flex;align-items:center;height:20px;padding:0 7px;border-radius:6px;font-size:10.5px;font-weight:800;letter-spacing:.2px;white-space:nowrap}
+.tag.p0{background:var(--brand-weak);color:var(--brand)}
+.tag.p1{background:#fff4e8;color:#a05a12}
+.tag.p2{background:#f1f3f8;color:#6b7390}
+.tag.ok{background:var(--ok-bg);color:var(--ok)}
+.tag.no{background:#f1f3f8;color:#7a819c}
+.tag.out{background:#fdeef2;color:#a3243d}
+
+.note{display:flex;gap:10px;margin-top:14px;padding:12px 14px;border-radius:12px;border:1px solid #dbe2ff;background:#f6f8ff}
+.note.warn{border-color:#f3dfc6;background:#fffaf3}
+.note.danger{border-color:#f6d5d2;background:#fff7f6}
+.note .ic{flex:0 0 auto;width:20px;height:20px;border-radius:6px;background:var(--brand);color:#fff;font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center;margin-top:1px}
+.note.warn .ic{background:#b4560c}
+.note.danger .ic{background:var(--danger)}
+.note p{margin:0;font-size:12.8px;line-height:1.6;color:#39406a}
+.note.warn p{color:#7d4a13}
+.note.danger p{color:#8c2a24}
+
+pre{margin-top:12px;padding:14px 16px;border-radius:12px;background:#151a33;color:#dfe4ff;overflow:auto;font-size:11.5px;line-height:1.75}
+pre code{background:none;padding:0;color:inherit;font-size:inherit}
+pre .k{color:#9fb0ff}
+pre .s{color:#9be3b8}
+pre .c{color:#7b84a8}
+
+.spec{margin-top:12px;border:1px solid var(--line);border-radius:12px;overflow:hidden;background:#fff}
+.spec .row{display:grid;grid-template-columns:150px 1fr;border-bottom:1px solid #eef0f7}
+.spec .row:last-child{border-bottom:0}
+.spec .k{padding:10px 12px;background:#fafbff;font-size:12px;font-weight:700;color:#4a5180}
+.spec .v{padding:10px 12px;font-size:12.5px;color:#2e3450}
+@media(max-width:560px){.spec .row{grid-template-columns:1fr}.spec .k{padding-bottom:2px;background:#fff}}
+
+.flow{display:flex;align-items:stretch;gap:10px;margin-top:16px;flex-wrap:wrap}
+.fbox{flex:1;min-width:170px;background:#fff;border:1px solid var(--line);border-radius:12px;padding:12px 13px}
+.fbox .t{font-size:11px;font-weight:800;letter-spacing:.5px;color:var(--brand)}
+.fbox .m{margin-top:3px;font-size:13px;font-weight:700}
+.fbox .d{margin-top:4px;font-size:11.5px;color:var(--text-2);line-height:1.5}
+.fbox .c{margin-top:8px;font-size:11px;color:var(--text-3)}
+.farrow{display:flex;align-items:center;justify-content:center;color:#b9c0d8;font-size:16px;font-weight:800;flex:0 0 auto}
+@media(max-width:760px){.farrow{transform:rotate(90deg);width:100%}}
+
+.ia{display:flex;align-items:flex-start;gap:16px;margin-top:18px;flex-wrap:wrap}
+.ia-col{flex:1;min-width:240px;background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px}
+.ia-col h4{margin:0 0 8px;font-size:11.5px;letter-spacing:.6px;color:var(--text-3);text-transform:uppercase}
+.ia-node{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:9px;background:var(--surface-2);font-size:12.5px;font-weight:600}
+.ia-node+.ia-node{margin-top:6px}
+.ia-node em{font-style:normal;color:var(--text-3);font-weight:600;font-size:11px;margin-left:auto}
+.ia-node.on{background:var(--brand-weak);color:var(--brand-deep)}
+.ia-node.sub{padding-left:22px;font-weight:500;font-size:12px;background:#fafbff;color:#4a5180}
+
+.wf{max-width:1040px;margin:18px auto 0;border-radius:14px;overflow:hidden;border:1px solid #d8dce8;background:#fff;box-shadow:0 14px 34px rgba(20,28,70,.10)}
+.wf-bar{height:32px;display:flex;align-items:center;gap:10px;padding:0 12px;background:#f2f4f9;border-bottom:1px solid #e2e6f0}
+.wf-dots{display:flex;gap:4px}
+.wf-dots i{width:8px;height:8px;border-radius:50%;background:#cfd5e4;display:block}
+.wf-url{flex:1;height:19px;border-radius:6px;background:#fff;border:1px solid #e2e6f0;font-size:9.5px;color:#8a91a8;display:flex;align-items:center;padding:0 8px;overflow:hidden;white-space:nowrap}
+.wf-body{display:grid;grid-template-columns:138px minmax(0,1fr);min-height:360px}
+.wf-side{background:#101733;color:#c9d0e8;padding:11px 8px;font-size:10.5px}
+.wf-brand{display:flex;align-items:center;gap:6px;padding:2px 6px 12px;font-size:11.5px;font-weight:800;color:#fff}
+.wf-brand i{width:15px;height:15px;border-radius:5px;background:linear-gradient(150deg,#2434c8,#6c7bf0);display:block;flex:0 0 auto}
+.wf-side .grp{margin:9px 6px 4px;font-size:8.8px;letter-spacing:.8px;color:#69739b;font-weight:700}
+.wf-side .it{display:flex;align-items:center;gap:6px;height:22px;padding:0 7px;border-radius:6px;color:#b9c1dc;white-space:nowrap;overflow:hidden}
+.wf-side .it.on{background:#2434c8;color:#fff;font-weight:700}
+.wf-side .it.sub{padding-left:16px;color:#96a0c2;font-size:10px}
+.wf-side .it.sub.on{background:#1c2a7a;color:#dfe4ff}
+.wf-main{padding:12px 14px 16px;background:#f7f8fc;min-width:0}
+.wf-hd{display:flex;align-items:flex-start;gap:10px}
+.wf-hd h5{font-size:13px;font-weight:800;letter-spacing:-.2px}
+.wf-hd p{font-size:9.8px;color:#7b83a0;margin-top:2px}
+.wf-btn{height:23px;padding:0 9px;border-radius:7px;background:var(--brand);color:#fff;font-size:9.5px;font-weight:700;display:inline-flex;align-items:center;white-space:nowrap}
+.wf-btn.ghost{background:#fff;color:#4a5180;border:1px solid #dfe3ef}
+.wf-hd .rt{margin-left:auto;display:flex;gap:6px;align-items:center}
+.wf-tabs{display:flex;gap:15px;border-bottom:1px solid #e2e6f0;margin-top:9px;font-size:10.2px;overflow:hidden}
+.wf-tabs span{padding:6px 1px 5px;color:#7b83a0;white-space:nowrap}
+.wf-tabs span.on{color:var(--brand);font-weight:800;border-bottom:2px solid var(--brand)}
+.wf-tool{display:flex;gap:6px;align-items:center;margin-top:9px;flex-wrap:wrap}
+.wf-inp{height:22px;border:1px solid #dfe3ef;border-radius:6px;background:#fff;font-size:9.5px;color:#8a91a8;display:flex;align-items:center;padding:0 8px;white-space:nowrap}
+.wf-inp.on{color:#1b2244;border-color:#b9c4ee}
+.wf-tbl-wrap{margin-top:8px;border:1px solid #e6e9f2;border-radius:9px;background:#fff;overflow:hidden}
+.wf-tbl{width:100%;border-collapse:collapse;font-size:9.5px;min-width:0}
+.wf-tbl th{background:#f4f6fb;color:#5d6480;font-weight:700;text-align:left;padding:6px 7px;border-bottom:1px solid #e6e9f2;white-space:nowrap;font-size:9.2px}
+.wf-tbl td{padding:6px 7px;border-bottom:1px solid #f1f3f9;color:#39406a;white-space:nowrap}
+.wf-tbl tr:last-child td{border-bottom:0}
+.wf-tbl td.mut{color:#9aa1b7}
+.wf-tbl td.r{text-align:right;font-variant-numeric:tabular-nums}
+.wf-tbl .nm{font-weight:700;color:#1b2244}
+.wf-badge{display:inline-flex;align-items:center;height:15px;padding:0 5px;border-radius:4px;font-size:8.5px;font-weight:800;white-space:nowrap}
+.wf-badge.ok{background:var(--ok-bg);color:var(--ok)}
+.wf-badge.warn{background:var(--warn-bg);color:#a05a12}
+.wf-badge.mut{background:#f1f3f8;color:#7a819c}
+.wf-badge.brand{background:var(--brand-weak);color:var(--brand)}
+.wf-badge.dgr{background:var(--danger-bg);color:var(--danger)}
+.wf-split{display:grid;grid-template-columns:minmax(0,1fr) 268px;gap:10px;margin-top:8px}
+.wf-drawer{background:#fff;border:1px solid #e6e9f2;border-radius:9px;padding:9px 10px}
+.wf-drawer h6{font-size:10px;font-weight:800;color:#1b2244;display:flex;align-items:center;gap:5px;margin-bottom:6px}
+.wf-drawer h6 span{margin-left:auto;color:#9aa1b7;font-weight:600;font-size:9px}
+.wf-note{font-size:9px;color:#8a91a8;margin-top:8px;line-height:1.5}
+.wf-step{display:flex;gap:6px;margin-top:8px}
+.wf-step div{flex:1;background:#fff;border:1px solid #e6e9f2;border-radius:8px;padding:6px 7px;font-size:9px;color:#5d6480;line-height:1.45}
+.wf-step div b{display:block;font-size:9.2px;color:#1b2244;margin-bottom:2px}
+.wf-step div.on{border-color:#b9c4ee;background:#f6f8ff}
+.wf-cap{margin-top:10px;text-align:center;font-size:11.5px;color:var(--text-3)}
+@media(max-width:820px){.wf-body{grid-template-columns:1fr}.wf-side{display:none}.wf-split{grid-template-columns:1fr}}
+
+.checks{margin-top:14px;display:grid;gap:8px}
+.check{display:flex;gap:10px;align-items:flex-start;background:#fff;border:1px solid var(--line);border-radius:11px;padding:10px 12px}
+.check i{flex:0 0 auto;width:18px;height:18px;border-radius:5px;border:1.5px solid #c4cbe3;margin-top:2px;display:block;background:#fff}
+.check .c-t{font-size:13px;font-weight:700}
+.check .c-d{font-size:12px;color:var(--text-2);margin-top:2px}
+
+@media print{body{background:#fff}.toc{display:none}section{break-inside:avoid}.wf{box-shadow:none}}
+</style>
+</head>
+<body>
+<div class="shell">
+
+<header class="doc-head">
+  <div class="kicker"><i></i>VendSolution · Web 后台 · 设备配置</div>
+  <h1>设备配置九页 · 功能 PRD</h1>
+  <p class="sub">本文定义 <code>#/devicecfg/*</code> 下的 <b>9 个平级页签</b>：品牌、型号、组件、制作、料仓、清洗、校准、基本信息、远程功能。核心变化是把「组件」从类型升级为<b>实例</b>，把「配方」从平铺参数表改成<b>步骤式制作流程</b>，并补上会议里客户反复强调的<b>多档位重量校准</b>。本文以 2026-11-27 客户研讨会的结论为依据。</p>
+  <div class="meta">
+    <span>版本 <b>v0.1 评审稿</b></span>
+    <span>日期 <b>2026-11-27</b></span>
+    <span>依据 <b>11-27 多机型组件抽象研讨会</b></span>
+    <span>页签 <b>8 + 1（校准）</b></span>
+    <span>状态 <b>待客户确认</b></span>
+  </div>
+</header>
+
+<nav class="toc" aria-label="目录">
+  <a href="#s1"><em>1</em>定位与边界</a>
+  <a href="#s2"><em>2</em>概念与数据模型</a>
+  <a href="#s3"><em>3</em>九页签信息架构</a>
+  <a href="#s4"><em>4</em>逐页规格（1–5）</a>
+  <a href="#s5"><em>5</em>逐页规格（6–9）</a>
+  <a href="#s6"><em>6</em>跨页规则</a>
+  <a href="#s7"><em>7</em>校验与异常</a>
+  <a href="#s8"><em>8</em>权限、审计与验收</a>
+  <a href="#s9"><em>9</em>待确认</a>
+</nav>
+
+<section id="s1">
+  <div class="sec-head"><span class="sec-num">01</span><h2>定位与边界</h2><span class="hint">先看这一节</span></div>
+
+  <p class="lead">这一层解决的问题只有一句话：<b>把一台机器拆成可复用的零件和配方，让 1008 系列到 6008 共用一套配置方式。</b>拆错了，后面每加一个机型都要改一次代码。</p>
+
+  <h3>1.1 三条判断标准</h3>
+  <div class="verdict">
+    <div class="vcard">
+      <div class="n">标准一</div>
+      <h4>组件是「类型」，装机是「实例」</h4>
+      <p>6008 装 3 个蠕动泵、1008 与 1008I 都可能有落杯和落盖。同一个组件定义，在一个型号上可以出现多次，各自有工位、料仓和指令代码。</p>
+    </div>
+    <div class="vcard">
+      <div class="n">标准二</div>
+      <h4>配方认「原料」，不认「组件」</h4>
+      <p>运营只选原料和水量，系统顺着 <b>原料 → 料仓 → 组件实例 → 参数模板</b> 自动带出可调项。让运营选组件，等于把工厂的活推给门店。</p>
+    </div>
+    <div class="vcard">
+      <div class="n">标准三</div>
+      <h4>克数说了算，秒数算出来</h4>
+      <p>配方里写「粉 9.5 g」，出料时长由校准表换算。固定时间校准被废止，换粉料品牌必须重校，否则每杯都会偏。</p>
+    </div>
+  </div>
+
+  <h3>1.2 做什么 / 不做什么</h3>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th style="width:120px">范围</th><th>包含</th><th style="width:220px">不包含（去哪看）</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><b>做</b></td>
+          <td>机型主数据（品牌 / 型号 / 变体）、全局组件库与装机实例、料仓与原料绑定、商品级制作配方、清洗策略、多档位校准、机型档案、型号级远程能力与设备级远程任务</td>
+          <td>——</td>
+        </tr>
+        <tr>
+          <td><b>不做</b></td>
+          <td>设备实时状态、订单与支付、库存补货、点位管理、报表分析</td>
+          <td>设备监控 / 运营分析 / 商品中心，本文不定义</td>
+        </tr>
+        <tr>
+          <td><b>不做但要点名</b></td>
+          <td>原料主数据的完整档案（只定义本模块用到的 6 个字段）</td>
+          <td>供应链 / 原料管理，本期以引用方式存在</td>
+        </tr>
+        <tr>
+          <td><b>明确不做</b></td>
+          <td>把副柜、灯箱、外观尺寸当组件管理</td>
+          <td>这些是<b>结构规格</b>，进「基本信息」，不进组件库</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="note">
+    <div class="ic">i</div>
+    <p><b>为什么结构件不能进组件库：</b>组件库的每一个条目都要能被「勾选 → 带出参数 → 下发」。副柜、灯箱没有可下发参数，一旦混进去，装机清单里就会出现一堆勾了没反应的条目，运营会以为系统坏了。结构差异属于型号档案。</p>
+  </div>
+
+  <h3>1.3 与现有文档的关系</h3>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th style="width:260px">文档</th><th>关系</th><th style="width:150px">处置</th></tr></thead>
+      <tbody>
+        <tr><td><code>DEVICECFG-WEB-PRD.html</code> v1.0</td><td>只覆盖品牌 / 型号 / 组件 / 适配浏览四页，配方与清洗标注「见另一份文档」但那份并不存在</td><td><span class="tag p2">本文取代</span></td></tr>
+        <tr><td>原型 <code>#/params/formula</code>、<code>#/params/clean</code></td><td>上一轮按「选组件 → 选参数」做的，与会议结论冲突</td><td><span class="tag p1">需重做</span></td></tr>
+        <tr><td>《配方与工艺》118 项参数</td><td>那是设备固件的工艺参数字典，与商品配方不是一回事</td><td><span class="tag no">保持独立</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="small">本文只描述「配置」，不描述「运行」。所有页面都不展示实时数据，实时值在设备监控里看。</p>
+</section>
+<section id="s2">
+  <div class="sec-head"><span class="sec-num">02</span><h2>概念与数据模型</h2><span class="hint">开发看这节</span></div>
+
+  <p class="lead">九页签看着是九个页面，实际是<b>一条主链 + 四条支链</b>。先认清「谁是谁的实例」，页面才切得对。</p>
+
+  <h3>2.1 关系总览</h3>
+<pre><span class="c">// 主链：型号把零件、仓位、料串起来</span>
+Brand 1─N Model 1─N <span class="k">ModelComponent</span> N─1 Component 1─N <span class="k">ParamTemplate</span>
+                          │
+                          ├─1:1─ <span class="k">Silo</span> N─1 Material
+                          ├─1:N─ <span class="k">CleanProfile</span>
+                          └─1:N─ <span class="k">Calibration</span>  <span class="c">// + speedLevel + Material</span>
+
+<span class="c">// 选配支链：-P 不是新型号</span>
+Model 1─N <span class="k">ModelVariant</span>(modelId, optCodes[], sku, status)
+
+<span class="c">// 配方支链：商品 → 规格 → 步骤</span>
+Product 1─N Variant(冷/热 × 小/中/大, price) 1─N <span class="k">RecipeStep</span>(seq, materialId?, waterType?, waterMl, powderG, …)
+Variant 1─N <span class="k">ModelOverride</span>(variantId, modelId, paramCode, value, reason)
+
+<span class="c">// 档案与远程</span>
+Model 1─1 <span class="k">ModelProfile</span>(series, dims, cabinet, lightbox, options[])
+Model 1─N <span class="k">RemoteCap</span>(action, enabled, role, interlock)
+Device 1─N <span class="k">RemoteTask</span>(deviceSn, action, status, log)</pre>
+
+  <h3>2.2 十个概念，一句话分清</h3>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th style="width:130px">概念</th><th style="width:230px">是什么</th><th style="width:230px">容易混淆成</th><th>生存期</th></tr></thead>
+      <tbody>
+        <tr><td><b>品牌</b> Brand</td><td>设备制造商</td><td>经销商、客户公司</td><td>长期</td></tr>
+        <tr><td><b>型号</b> Model</td><td>一个可售机型，如 1008I</td><td>某一台设备</td><td>长期</td></tr>
+        <tr><td><b>型号变体</b> ModelVariant</td><td>基础型号 + 选配包，如 1008I-P</td><td>新型号。它不新增组件，只加选配</td><td>随型号</td></tr>
+        <tr><td><b>组件</b> Component</td><td>电气/控制硬件的<b>定义</b>，全局唯一</td><td>某个位置上的零件</td><td>长期</td></tr>
+        <tr><td><b>组件实例</b> ModelComponent</td><td>某型号上「第 n 个」该组件，带工位、数量、指令代码</td><td>组件本身。实例删了定义还在</td><td>随型号</td></tr>
+        <tr><td><b>料仓</b> Silo</td><td>型号上的物理仓位，装一种原料</td><td>组件。仓位通常挂在一个实例上，但两者不同</td><td>随型号</td></tr>
+        <tr><td><b>原料</b> Material</td><td>粉 / 豆 / 糖浆 / 茶叶 / 液体</td><td>商品。商品是卖的东西，原料是耗的东西</td><td>长期</td></tr>
+        <tr><td><b>制作配方</b> Recipe</td><td>商品规格的步骤式制作说明</td><td>设备参数。配方是「怎么做」，参数是「机器怎么动」</td><td>随商品</td></tr>
+        <tr><td><b>校准</b> Calibration</td><td>原料 × 组件实例 × 转速档 的「克数 ↔ 时长」换算表</td><td>配方。校准是尺子，配方是用尺子量出来的值</td><td>随机型/机器</td></tr>
+        <tr><td><b>远程能力</b> RemoteCap</td><td>型号允许哪些远程动作，及互锁条件</td><td>具体任务。能力是开关，任务是执行记录</td><td>随型号</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="note">
+    <div class="ic">i</div>
+    <p><b>最容易被合并错的两组：</b>① 组件 ≠ 组件实例。合并后 6008 的三个蠕动泵就表达不了。② 配方 ≠ 参数。合并后「换一个牌子的粉」要动整套设备参数，而实际只需要重做校准。</p>
+  </div>
+
+  <h3>2.3 唯一性与级联</h3>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th style="width:150px">对象</th><th style="width:230px">唯一性</th><th>级联规则</th></tr></thead>
+      <tbody>
+        <tr><td>品牌名称</td><td>全局唯一（忽略大小写与首尾空格）</td><td>有型号时禁止删除，提示先迁移</td></tr>
+        <tr><td>型号名称</td><td>同品牌内唯一</td><td>有设备或已下发配方时禁止删除，只允许停售</td></tr>
+        <tr><td>型号变体 SKU</td><td>全局唯一</td><td>随基础型号删除</td></tr>
+        <tr><td>组件名称</td><td>全局唯一</td><td>被任意型号引用时禁止删除；删除时给「先解除 n 处引用」</td></tr>
+        <tr><td>组件实例</td><td>（型号, 组件, 工位）唯一</td><td>删除前必须解绑料仓、清空清洗与校准记录</td></tr>
+        <tr><td>料仓号</td><td>同型号内唯一</td><td>有绑定原料且有余量记录时，只能停用不能删</td></tr>
+        <tr><td>配方步骤</td><td>（规格, seq）唯一</td><td>删除步骤后续 seq 自动重排</td></tr>
+        <tr><td>校准记录</td><td>（型号, 实例, 原料, 转速档, 版本）唯一</td><td>新增即新版本，旧版本保留可追溯，不物理删除</td></tr>
+        <tr><td>远程任务</td><td>（设备, 动作, 发起时间）唯一</td><td>不允许删除，只追加状态</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>2.4 从原型到新模型：7 处必改</h3>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th style="width:110px">项</th><th style="width:250px">原型现状</th><th>本文定义</th><th style="width:200px">不改的后果</th></tr></thead>
+      <tbody>
+        <tr><td><span class="tag p0">P0</span> 型号-组件</td><td>多对多，<code>(型号,组件)</code> 联合唯一</td><td>型号-组件实例，允许同组件多次，带工位与数量</td><td>6008 三个蠕动泵只能造假组件，污染全局池</td></tr>
+        <tr><td><span class="tag p0">P0</span> 选配</td><td>无，靠新建型号</td><td>基础型号 + 选配包，生成变体 SKU</td><td><code>-P</code> 组合爆炸，1008 一支变四个型号</td></tr>
+        <tr><td><span class="tag p0">P0</span> 料仓</td><td>不存在</td><td>独立实体，绑组件实例与原料</td><td>配方无法从原料反查参数，只能让人手点组件</td></tr>
+        <tr><td><span class="tag p0">P0</span> 配方</td><td>18 项平铺参数一次配完</td><td>步骤式，商品 × 规格，支持型号覆盖</td><td>做不出「第 3 步只加 40ml 热水」</td></tr>
+        <tr><td><span class="tag p0">P0</span> 校准</td><td>不存在，靠固定时间</td><td>多档位称重换算出料时长</td><td>换粉料品牌后每杯克数都偏，客户第一周就会投诉</td></tr>
+        <tr><td><span class="tag p1">P1</span> 清洗</td><td>人工勾选参与 + 时长/次数/用水</td><td>触发条件（定时 / 计数 / 单杯）+ 跟随使用</td><td>「省水」这个核心目的落不了地</td></tr>
+        <tr><td><span class="tag p1">P1</span> 远程</td><td>不存在</td><td>型号能力开关 + 设备级任务记录</td><td>现场故障只能派人，OTA 无法灰度</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+<section id="s3">
+  <div class="sec-head"><span class="sec-num">03</span><h2>九页签信息架构</h2><span class="hint">平级，不嵌套</span></div>
+
+  <p class="lead">九个页签<b>平级</b>，谁也不藏在谁下面。代价是每页要自己带上下文，收益是任何一个配置项都能一步直达，不用先点三层再找。</p>
+
+  <h3>3.1 导航结构</h3>
+  <div class="ia">
+    <div class="ia-col">
+      <h4>左侧导航 · 设备配置</h4>
+      <div class="ia-node on">品牌 <em>全局</em></div>
+      <div class="ia-node on">型号 <em>全局</em></div>
+      <div class="ia-node on">组件 <em>全局池 + 装机</em></div>
+      <div class="ia-node on">制作 <em>商品</em></div>
+      <div class="ia-node on">料仓 <em>按型号</em></div>
+      <div class="ia-node on">清洗 <em>按型号</em></div>
+      <div class="ia-node on">校准 <em>按型号 + 机器</em></div>
+      <div class="ia-node on">基本信息 <em>按型号</em></div>
+      <div class="ia-node on">远程功能 <em>按型号 + 设备</em></div>
+    </div>
+    <div class="ia-col">
+      <h4>为什么校准单独一页</h4>
+      <div class="ia-node">它不属于型号，也不属于料仓</div>
+      <div class="ia-node sub">同一个仓位，换一批粉就要重校</div>
+      <div class="ia-node sub">同一型号，不同机器现场校准值不同</div>
+      <div class="ia-node sub">它是一次「操作流程」，不是一个字段</div>
+      <div class="ia-node" style="margin-top:10px">所以：独立页签 + 向导式</div>
+      <div class="ia-node sub">入口也在料仓行内，可跳转</div>
+    </div>
+  </div>
+
+  <h3>3.2 页签职责矩阵</h3>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th style="width:88px">页签</th><th style="width:96px">作用域</th><th style="width:150px">主键对象</th><th style="width:150px">前置依赖</th><th>核心操作</th><th style="width:110px">主要使用者</th></tr></thead>
+      <tbody>
+        <tr><td><b>品牌</b></td><td>全局</td><td><code>Brand</code></td><td>—</td><td>新增 / 改名 / 换图 / 停用</td><td>产品</td></tr>
+        <tr><td><b>型号</b></td><td>全局</td><td><code>Model</code> · <code>ModelVariant</code></td><td>品牌</td><td>建模、加选配、生成变体、停售</td><td>产品</td></tr>
+        <tr><td><b>组件</b></td><td>全局池 + 型号装机</td><td><code>Component</code> · <code>ModelComponent</code></td><td>品牌、型号</td><td>建组件定义、勾装机、定工位与指令代码</td><td>工厂、产品</td></tr>
+        <tr><td><b>制作</b></td><td>商品</td><td><code>Variant</code> · <code>RecipeStep</code></td><td>商品、料仓、组件</td><td>编排步骤、填粉水、按型号覆盖</td><td>运营、品牌方</td></tr>
+        <tr><td><b>料仓</b></td><td>型号</td><td><code>Silo</code></td><td>型号、组件实例、原料</td><td>划仓位、绑原料、设容量与余量下限</td><td>工厂、运营</td></tr>
+        <tr><td><b>清洗</b></td><td>型号</td><td><code>CleanProfile</code></td><td>型号、组件实例</td><td>配触发方式、强度、用水、深度</td><td>运营</td></tr>
+        <tr><td><b>校准</b></td><td>型号 + 机器</td><td><code>Calibration</code></td><td>料仓、组件实例、原料</td><td>多档位称重、生成换算表、标记重校</td><td>工程师、客户现场</td></tr>
+        <tr><td><b>基本信息</b></td><td>型号</td><td><code>ModelProfile</code></td><td>型号</td><td>维护系列、尺寸、副柜、灯箱、选配包</td><td>产品</td></tr>
+        <tr><td><b>远程功能</b></td><td>型号 + 设备</td><td><code>RemoteCap</code> · <code>RemoteTask</code></td><td>型号、已售设备</td><td>开能力、设互锁、发起任务、看结果</td><td>运维、客服</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>3.3 上下文选择器：每页都要带，但不重复选</h3>
+  <p>平级页签最容易做坏的地方是「每进一页都要重选一遍型号」。规则定死三条：</p>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th style="width:150px">规则</th><th>具体做法</th></tr></thead>
+      <tbody>
+        <tr><td>会话内记忆</td><td>品牌 / 型号选择存在 URL 参数与本地状态里。在料仓选了 1008I，切到清洗、校准、基本信息，仍是 1008I。刷新页面也保持。</td></tr>
+        <tr><td>深链可直达</td><td><code>#/devicecfg/silo?model=MK-1008I</code> 打开即定位。无效型号回退到该品牌第一个，不白屏。</td></tr>
+        <tr><td>不适用就隐藏</td><td>品牌页不显示选择器；制作页换成「商品 + 规格 + 生效机型」；组件页显示型号但右侧装机面板才受它影响。</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="note warn">
+    <div class="ic">!</div>
+    <p><b>原型现存缺陷：</b>切换标签会清空筛选，在型号页筛了 WSD，去组件页再回来筛选就没了。新 PRD 要求按页签分别记忆，这条写进验收（H1）。</p>
+  </div>
+
+  <h3>3.4 配置顺序：谁必须在前</h3>
+  <p>九个页签不是随便点的，有一条硬顺序。页面上要用「未完成」状态提示，别让运营在没料仓的情况下编配方。</p>
+  <div class="flow">
+    <div class="fbox"><div class="t">STEP 1</div><div class="m">品牌</div><div class="d">先有制造商</div><div class="c">全局</div></div>
+    <div class="farrow">→</div>
+    <div class="fbox"><div class="t">STEP 2</div><div class="m">型号 + 基本信息</div><div class="d">建机型、定结构规格、声明选配</div><div class="c">依赖品牌</div></div>
+    <div class="farrow">→</div>
+    <div class="fbox"><div class="t">STEP 3</div><div class="m">组件</div><div class="d">建定义，再勾成本型号的装机清单</div><div class="c">依赖型号</div></div>
+    <div class="farrow">→</div>
+    <div class="fbox"><div class="t">STEP 4</div><div class="m">料仓</div><div class="d">划仓位、绑实例、绑原料</div><div class="c">依赖装机清单</div></div>
+  </div>
+  <div class="flow">
+    <div class="fbox"><div class="t">STEP 5</div><div class="m">校准</div><div class="d">有料仓有原料才能称重</div><div class="c">依赖料仓</div></div>
+    <div class="farrow">→</div>
+    <div class="fbox"><div class="t">STEP 6</div><div class="m">制作</div><div class="d">配方要引用已校准的料</div><div class="c">依赖校准</div></div>
+    <div class="farrow">→</div>
+    <div class="fbox"><div class="t">STEP 7</div><div class="m">清洗</div><div class="d">按实际用到的组件配清洗</div><div class="c">依赖制作</div></div>
+    <div class="farrow">→</div>
+    <div class="fbox"><div class="t">STEP 8</div><div class="m">远程功能</div><div class="d">最后开能力，避免误下发</div><div class="c">依赖以上全部</div></div>
+  </div>
+  <p class="small">这张顺序图直接对应「新建机型向导」的 8 步。向导可以跳过中间步骤存草稿，但发布机型（可售）时必须 1–6 全部完成。</p>
+</section>
+<section id="s4">
+  <div class="sec-head"><span class="sec-num">04</span><h2>逐页规格：品牌 → 料仓</h2><span class="hint">1–5 页</span></div>
+
+  <h3>4.1 品牌</h3>
+  <div class="spec">
+    <div class="row"><div class="k">用途</div><div class="v">维护设备制造商。品牌是型号的父级，<b>本身不承载任何业务参数</b>，不加配方、不加组件。</div></div>
+    <div class="row"><div class="k">列表列</div><div class="v">Logo · 品牌名称 · 型号数 · 在网设备 · 状态 · 更新时间 · 操作</div></div>
+    <div class="row"><div class="k">主操作</div><div class="v">「＋ 新增品牌」；行内「编辑」「停用」「删除」</div></div>
+    <div class="row"><div class="k">型号数</div><div class="v">可点击 → 跳型号页并自动带上该品牌筛选</div></div>
+  </div>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th style="width:130px">字段</th><th style="width:150px">约束</th><th>说明</th></tr></thead>
+      <tbody>
+        <tr><td>品牌名称</td><td>必填，全局唯一</td><td>去首尾空格 + 转小写比较；重名提示「品牌名称已存在」</td></tr>
+        <tr><td>英文名 / 代码</td><td>选填，唯一</td><td>用于 SKU 前缀，如 <code>WSD</code>；一旦有型号不可修改</td></tr>
+        <tr><td>Logo</td><td>选填，1:1，≤2MB</td><td>png / jpg / svg；列表与型号卡片共用</td></tr>
+        <tr><td>状态</td><td>启用 / 停用</td><td>停用后不出现在新建型号的品牌下拉里，已有型号不受影响</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="note danger">
+    <div class="ic">!</div>
+    <p><b>必须修的老问题：</b>现在无论品牌下有几个型号，删除一律弹「无法删除品牌」，0 个型号时显示「存在 0 个型号」仍然删不掉。规则改成：<b>0 个型号 → 二次确认后直接删；≥1 个 → 拦截并给出「先迁移这 n 个型号」的入口。</b></p>
+  </div>
+
+  <h3>4.2 型号与变体</h3>
+  <p>型号是整套配置的锚点。<b>变体不是新型号</b>，它只是在基础型号的装机清单上追加若干组件实例，再生成一个可售 SKU。</p>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th style="width:120px">字段</th><th style="width:170px">约束</th><th>说明</th></tr></thead>
+      <tbody>
+        <tr><td>型号名称</td><td>必填，同品牌内唯一</td><td>跨品牌允许同名（两个品牌都有「1008」）</td></tr>
+        <tr><td>所属品牌</td><td>必填</td><td>创建后不可改，需要改就新建</td></tr>
+        <tr><td>系列</td><td>必填</td><td>1008 系列 / 6008 系列；影响列表分组与默认组件包</td></tr>
+        <tr><td>结构代号</td><td>必填</td><td>C / 标准 / I，决定副柜与灯箱，详见「基本信息」</td></tr>
+        <tr><td>状态</td><td>在售 / 停售 / 草稿</td><td>草稿不进设备下拉；停售不影响已有设备</td></tr>
+        <tr><td>装机组件数</td><td>只读</td><td>来自组件页，点击跳转</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h4>变体生成规则</h4>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th style="width:120px">基础型号</th><th style="width:190px">选配包</th><th style="width:150px">生成 SKU</th><th>说明</th></tr></thead>
+      <tbody>
+        <tr><td>1008C</td><td>—</td><td><code>WSD-1008C</code></td><td>无副柜，灯箱缩小，系列最基础款</td></tr>
+        <tr><td>1008</td><td>—</td><td><code>WSD-1008</code></td><td>带储物副柜，仅用于放置落杯盖装置</td></tr>
+        <tr><td>1008I</td><td>—</td><td><code>WSD-1008I</code></td><td>副柜内置制冰机</td></tr>
+        <tr><td>1008C / 1008I</td><td><code>P</code> 自动压杯盖</td><td><code>WSD-1008CP</code> / <code>WSD-1008IP</code></td><td>后缀 <code>-P</code> 或直接拼 P，后缀风格要统一，见第 9 节第 2 条</td></tr>
+        <tr><td>6008</td><td>制冰 80kg</td><td><code>WSD-6008-ICE80</code></td><td>选配可以叠加，SKU 按选配码排序拼接</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="note">
+    <div class="ic">i</div>
+    <p><b>选配包里装的是什么：</b>一组<b>组件实例</b>。例如 <code>P</code> 包 = 加装「压杯盖机构」1 个实例 + 落盖工位 1 个。所以变体的差异最终落在组件页的装机清单上，而不是在型号表里加布尔字段。这样以后新增选配（例如加装第二组糖浆泵）不需要改表结构。</p>
+  </div>
+
+  <h3>4.3 组件：定义与装机</h3>
+  <p>一个页面两件事，左右分栏：<b>左边是全局组件池</b>（组件定义，跨型号复用），<b>右边是当前型号的装机清单</b>（实例，带工位和数量）。</p>
+
+  <div class="wf">
+    <div class="wf-bar"><div class="wf-dots"><i></i><i></i><i></i></div><div class="wf-url">admin.vend / #/devicecfg/component?model=MK-1008I</div></div>
+    <div class="wf-body">
+      <aside class="wf-side">
+        <div class="wf-brand"><i></i>VendSolution</div>
+        <div class="grp">设备配置</div>
+        <div class="it">品牌</div>
+        <div class="it">型号</div>
+        <div class="it on">组件</div>
+        <div class="it">制作</div>
+        <div class="it">料仓</div>
+        <div class="it">清洗</div>
+        <div class="it">校准</div>
+        <div class="it">基本信息</div>
+        <div class="it">远程功能</div>
+      </aside>
+      <div class="wf-main">
+        <div class="wf-hd">
+          <div><h5>组件</h5><p>WSD 1008I · 已装 9 个组件实例 · 全局组件库 14 项</p></div>
+          <div class="rt"><span class="wf-btn ghost">＋ 新建组件</span><span class="wf-btn">保存装机清单</span></div>
+        </div>
+        <div class="wf-tool">
+          <span class="wf-inp on">品牌 WSD ▾</span>
+          <span class="wf-inp on">型号 1008I ▾</span>
+          <span class="wf-inp">只看参与配方的</span>
+          <span class="wf-inp">分类：全部 ▾</span>
+        </div>
+        <div class="wf-split">
+          <div>
+            <div class="wf-tbl-wrap">
+              <table class="wf-tbl">
+                <thead><tr><th>工位</th><th>组件</th><th>数量</th><th>标准/选配</th><th>料仓</th><th>指令代码</th></tr></thead>
+                <tbody>
+                  <tr><td>01</td><td class="nm">磨豆器</td><td class="r">1</td><td><span class="wf-badge mut">标配</span></td><td>S-01</td><td>cmd_grind</td></tr>
+                  <tr><td>02</td><td class="nm">冲泡器</td><td class="r">1</td><td><span class="wf-badge mut">标配</span></td><td>—</td><td>cmd_brew</td></tr>
+                  <tr><td>03</td><td class="nm">搅拌器</td><td class="r">2</td><td><span class="wf-badge mut">标配</span></td><td>—</td><td>cmd_stir1 / 2</td></tr>
+                  <tr><td>04</td><td class="nm">料盒出料电机</td><td class="r">3</td><td><span class="wf-badge mut">标配</span></td><td>S-02~04</td><td>cmd_disp1~3</td></tr>
+                  <tr><td>05</td><td class="nm">蠕动泵</td><td class="r">3</td><td><span class="wf-badge mut">标配</span></td><td>S-05~07</td><td>cmd_pump1~3</td></tr>
+                  <tr><td>06</td><td class="nm">水路系统</td><td class="r">1</td><td><span class="wf-badge mut">标配</span></td><td>T-01</td><td>cmd_water</td></tr>
+                  <tr><td>07</td><td class="nm">落杯组件</td><td class="r">1</td><td><span class="wf-badge mut">标配</span></td><td>—</td><td>cmd_cup</td></tr>
+                  <tr><td>08</td><td class="nm">压杯盖机构</td><td class="r">1</td><td><span class="wf-badge brand">选配 P</span></td><td>—</td><td>cmd_lid</td></tr>
+                  <tr><td>09</td><td class="nm">制冰机 80kg</td><td class="r">1</td><td><span class="wf-badge warn">选配</span></td><td>—</td><td>cmd_ice</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="wf-note">数量 &gt; 1 时自动生成多个实例，工位号按 01-1 / 01-2 展开；工具行可切换按「工位」或「组件」视图。</div>
+          </div>
+          <div class="wf-drawer">
+            <h6>全局组件库 <span>14 项</span></h6>
+            <div class="wf-inp" style="width:100%;margin-bottom:6px">搜索组件名 / 代码</div>
+            <div class="wf-tbl-wrap">
+              <table class="wf-tbl">
+                <thead><tr><th>组件</th><th>参与配方</th></tr></thead>
+                <tbody>
+                  <tr><td class="nm">磨豆器</td><td><span class="wf-badge ok">是</span></td></tr>
+                  <tr><td class="nm">冲泡器</td><td><span class="wf-badge ok">是</span></td></tr>
+                  <tr><td class="nm">茶路冲泡器</td><td><span class="wf-badge ok">是</span></td></tr>
+                  <tr><td class="nm">蠕动泵</td><td><span class="wf-badge ok">是</span></td></tr>
+                  <tr><td class="nm">水路系统</td><td><span class="wf-badge ok">是</span></td></tr>
+                  <tr><td class="nm">升降机构</td><td><span class="wf-badge mut">否</span></td></tr>
+                  <tr><td class="nm">支付外设</td><td><span class="wf-badge mut">否</span></td></tr>
+                  <tr><td class="nm">门锁</td><td><span class="wf-badge mut">否</span></td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="wf-note">点条目 → 加入右侧装机清单；已被本型号引用的条目置灰。</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="wf-cap">图 1 · 组件页：左边全局池，右边本型号装机清单</div>
+
+  <h4>组件字段</h4>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th style="width:130px">字段</th><th style="width:150px">约束</th><th>说明</th></tr></thead>
+      <tbody>
+        <tr><td>组件名称</td><td>必填，全局唯一</td><td>如「料盒出料电机」「蠕动泵」</td></tr>
+        <tr><td>组件代码</td><td>必填，唯一</td><td><code>C-PUMP</code>；用于生成默认指令代码</td></tr>
+        <tr><td>分类</td><td>必填，二级</td><td>见下方分类表</td></tr>
+        <tr><td>是否参与配方</td><td>必填，默认否</td><td><b>决定它会不会出现在「制作」页</b>，见 4.4</td></tr>
+        <tr><td>是否需要料仓</td><td>必填，默认否</td><td>决定它会不会出现在「料仓」页的实例下拉</td></tr>
+        <tr><td>是否可多个</td><td>必填，默认否</td><td>关闭时该型号只能装 1 个；蠕动泵、搅拌器要打开</td></tr>
+        <tr><td>参数模板</td><td>≥0 项</td><td>配方可调参数的候选集，含 code / 名称 / 类型 / 单位 / 范围 / 默认值</td></tr>
+        <tr><td>数据点</td><td>≥0 项</td><td>物模型定义，与参数模板分开，不合并</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h4>装机实例字段</h4>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th style="width:120px">字段</th><th style="width:170px">约束</th><th>说明</th></tr></thead>
+      <tbody>
+        <tr><td>工位号</td><td>必填，同型号内唯一</td><td>01 / 02…；数量 &gt; 1 时展开为 01-1、01-2</td></tr>
+        <tr><td>数量</td><td>≥1</td><td>受「是否可多个」限制</td></tr>
+        <tr><td>标准 / 选配</td><td>必填</td><td>选配项必须挂在某个变体上，否则该型号不生效</td></tr>
+        <tr><td>料仓</td><td>可空</td><td>只有「需要料仓」的组件才显示；一个实例最多绑 2 个仓位</td></tr>
+        <tr><td>指令代码</td><td>必填</td><td>挂在实例上，不同工位可不同值；默认 <code>cmd_</code> + 代码小写</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h4>分类体系（必须在建组件前定死）</h4>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th style="width:130px">一级</th><th style="width:260px">二级</th><th>对应硬件</th><th style="width:120px">参与配方</th></tr></thead>
+      <tbody>
+        <tr><td rowspan="4">料道</td><td>豆仓</td><td>咖啡豆仓 + 磨豆器</td><td>是</td></tr>
+        <tr><td>粉仓</td><td>粉料盒 + 出料电机</td><td>是</td></tr>
+        <tr><td>糖浆</td><td>糖浆瓶 + 蠕动泵</td><td>是</td></tr>
+        <tr><td>茶仓</td><td>茶仓 + 茶路冲泡器</td><td>是</td></tr>
+        <tr><td>水路</td><td>进水 / 加热 / 流量计</td><td>水路系统、冲泡器（预浸润）</td><td>是</td></tr>
+        <tr><td>搅拌</td><td>搅拌器 / 搅拌仓</td><td>搅拌电机</td><td>是</td></tr>
+        <tr><td>出料</td><td>出料口 / 落杯 / 落盖 / 压盖</td><td>落杯组件、落盖组件、压杯盖机构</td><td>否</td></tr>
+        <tr><td>清洁</td><td>清洁系统控制</td><td>清洗泵、上下部清洗阀</td><td>否</td></tr>
+        <tr><td>冰</td><td>制冰机</td><td>80kg/24h 制冰机</td><td>否</td></tr>
+        <tr><td>支付外设</td><td>纸币 / 硬币 / 刷卡 / 小票</td><td>MDB 或 RS232 外设</td><td>否</td></tr>
+        <tr><td>通用</td><td>门锁 / 灯光 / 风扇 / 升降</td><td>不绑料仓的附件</td><td>否</td></tr>
+        <tr><td>传感</td><td>温度 / 液位 / 门磁</td><td>只上报不下发</td><td>否</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="note warn">
+    <div class="ic">!</div>
+    <p><b>支付外设和数值参数不是一类东西。</b>纸币器、刷卡器的配置是「协议 / 地址 / 波特率 / 币种」，没有 min-max 范围。这类组件在参数模板里要用 <code>enum</code> 与 <code>string</code> 类型，不要硬塞进数值型校验，否则保存时会被「必须有单位、必须有范围」的规则挡住。</p>
+  </div>
+
+  <h3>4.4 制作：商品级配方</h3>
+  <p>这是九个页面里唯一面向运营的。<b>运营只做两件事：选原料、填克数与水量。</b>组件和参数由系统顺着料仓带出来，页面上不出现「请选择组件」。</p>
+
+  <div class="wf">
+    <div class="wf-bar"><div class="wf-dots"><i></i><i></i><i></i></div><div class="wf-url">admin.vend / #/devicecfg/recipe?spu=CF-SYT&amp;variant=HOT-L</div></div>
+    <div class="wf-body">
+      <aside class="wf-side">
+        <div class="wf-brand"><i></i>VendSolution</div>
+        <div class="grp">设备配置</div>
+        <div class="it">品牌</div>
+        <div class="it">型号</div>
+        <div class="it">组件</div>
+        <div class="it on">制作</div>
+        <div class="it">料仓</div>
+        <div class="it">清洗</div>
+        <div class="it">校准</div>
+        <div class="it">基本信息</div>
+        <div class="it">远程功能</div>
+      </aside>
+      <div class="wf-main">
+        <div class="wf-hd">
+          <div><h5>制作</h5><p>生椰拿铁 · 热 · 大杯 · 生效机型 3 个</p></div>
+          <div class="rt"><span class="wf-btn ghost">预览时序</span><span class="wf-btn">保存并下发</span></div>
+        </div>
+        <div class="wf-tool">
+          <span class="wf-inp on">商品 生椰拿铁 CF-SYT ▾</span>
+          <span class="wf-inp on">规格 热 · 大杯 ▾</span>
+          <span class="wf-inp">生效机型 全部 3 个 ▾</span>
+        </div>
+        <div class="wf-split">
+          <div>
+            <div class="wf-tbl-wrap">
+              <table class="wf-tbl">
+                <thead><tr><th>步</th><th>主原料</th><th>水</th><th>水量</th><th>粉量</th><th>搅拌</th><th>出料</th><th>预浸润</th><th>出杯</th></tr></thead>
+                <tbody>
+                  <tr><td>1</td><td class="nm">咖啡豆</td><td>热水</td><td class="r">60 ml</td><td class="r">9.5 g</td><td class="r">6 档</td><td class="r">7 档</td><td>30ml / 3.5s</td><td class="r">—</td></tr>
+                  <tr><td>2</td><td class="nm">椰浆粉</td><td>热水</td><td class="r">120 ml</td><td class="r">18 g</td><td class="r">8 档</td><td class="r">6 档</td><td>—</td><td class="r">—</td></tr>
+                  <tr><td>3</td><td class="mut">无</td><td>热水</td><td class="r">40 ml</td><td class="r">—</td><td class="mut">—</td><td class="mut">—</td><td>—</td><td class="r">—</td></tr>
+                  <tr><td>4</td><td class="mut">无</td><td class="mut">无</td><td class="mut">—</td><td class="r">—</td><td class="mut">—</td><td class="r">9 档</td><td>—</td><td class="r">大杯</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="wf-note">第 3 步只出水不出粉（冲洗管路）；第 4 步只出杯不进水。两者都合法，只要不同时为空。</div>
+            <div class="wf-tbl-wrap" style="margin-top:8px">
+              <table class="wf-tbl">
+                <thead><tr><th>型号</th><th>覆盖项</th><th>差异</th><th>状态</th></tr></thead>
+                <tbody>
+                  <tr><td class="nm">1008I</td><td class="mut">—</td><td class="mut">继承</td><td><span class="wf-badge ok">已同步</span></td></tr>
+                  <tr><td class="nm">1008C</td><td>出料档</td><td>7 → 5（无副柜，出料距离短）</td><td><span class="wf-badge warn">待下发</span></td></tr>
+                  <tr><td class="nm">6008</td><td>糖浆泵</td><td>追加 20 ml 椰浆糖浆</td><td><span class="wf-badge brand">差异</span></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div class="wf-drawer">
+            <h6>第 1 步 · 参数来源 <span>自动</span></h6>
+            <div class="wf-inp" style="width:100%;margin-bottom:6px">咖啡豆 → 料仓 S-01</div>
+            <div class="wf-tbl-wrap">
+              <table class="wf-tbl">
+                <thead><tr><th>组件实例</th><th>参数</th></tr></thead>
+                <tbody>
+                  <tr><td class="nm">磨豆器 01</td><td>粉量 g</td></tr>
+                  <tr><td class="nm">磨豆器 01</td><td>研磨档</td></tr>
+                  <tr><td class="nm">冲泡器 01</td><td>预浸润</td></tr>
+                  <tr><td class="nm">水路 01</td><td>水温 / 水量</td></tr>
+                  <tr><td class="nm">搅拌器 01</td><td>搅拌档</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="wf-note">9.5 g ≈ 8.4 s（按校准表 v3 换算）。更改粉量会自动重算时长，运营看不到秒数输入框。</div>
+            <div class="wf-note" style="color:#a05a12">水粉比提醒：建议水量 ≥ 142 ml（原料标注 1:15），当前 60 ml 偏低，可能堵搅拌器。</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="wf-cap">图 2 · 制作页：左侧步骤表，右侧参数来源与校准换算</div>
+
+  <h4>步骤字段</h4>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th style="width:120px">字段</th><th style="width:190px">约束</th><th>说明</th></tr></thead>
+      <tbody>
+        <tr><td>步骤序号 <code>seq</code></td><td>自动，可拖拽排序</td><td>删除后自动重排</td></tr>
+        <tr><td>主原料</td><td>可空</td><td>只能选该机型料仓里已绑定的原料；与「水」不能同时为空</td></tr>
+        <tr><td>水类型</td><td>可空 / 冷水 / 常温水 / 热水</td><td>受机型是否支持该水温限制；不支持时置灰并说明</td></tr>
+        <tr><td>水量</td><td>0–400 ml</td><td>水类型为空时禁用</td></tr>
+        <tr><td>粉量</td><td>0–36 g，0.1 步长</td><td>主原料为空时禁用；<b>只填克数，不填秒数</b></td></tr>
+        <tr><td>搅拌档</td><td>1–10</td><td>该步无搅拌组件时禁用</td></tr>
+        <tr><td>出料档</td><td>1–10</td><td>该步无出料组件时禁用</td></tr>
+        <tr><td>预浸润</td><td>0–200 ml / 0–25.5 s</td><td>成对填写，只填一个时提示</td></tr>
+        <tr><td>出杯量</td><td>0–500 g/ml</td><td>只在最后一步出现，对应小 / 中 / 大杯</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h4>六条硬规则</h4>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th style="width:40px">#</th><th style="width:200px">规则</th><th>做法</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td>原料与水不能同时为空</td><td>保存时整表校验，第 n 步全空则定位到该行并标红</td></tr>
+        <tr><td>2</td><td>冷 / 热是两套配方</td><td>不同规格即不同 <code>Variant</code>，各自独立配方与价格；不是配方里的一个温度枚举</td></tr>
+        <tr><td>3</td><td>粉量 → 时长由校准换算</td><td>界面只显示「9.5 g ≈ 8.4 s」，秒数为只读；未校准时该行标「未校准」，不允许保存发布</td></tr>
+        <tr><td>4</td><td>水粉比只提醒不拦截</td><td>水量 &lt; 粉量 × 水粉比时出现黄条，可「仍然保存」，写入审计</td></tr>
+        <tr><td>5</td><td>型号覆盖默认继承</td><td>一套配方下发所有机型；覆盖必须填原因，恢复继承即删除覆盖</td></tr>
+        <tr><td>6</td><td>未装机组件不出现</td><td>例如 1008 没有茶路，配方里就不会有茶类原料可选，不做「选了再报错」</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>4.5 料仓</h3>
+  <p>料仓是 <b>原料和组件实例之间唯一的桥</b>。配方能自动带出参数，全靠这一页把「哪个仓位装什么料、由哪个组件下料」定死。</p>
+  <div class="wf">
+    <div class="wf-bar"><div class="wf-dots"><i></i><i></i><i></i></div><div class="wf-url">admin.vend / #/devicecfg/silo?model=MK-1008I</div></div>
+    <div class="wf-body">
+      <aside class="wf-side">
+        <div class="wf-brand"><i></i>VendSolution</div>
+        <div class="grp">设备配置</div>
+        <div class="it">品牌</div>
+        <div class="it">型号</div>
+        <div class="it">组件</div>
+        <div class="it">制作</div>
+        <div class="it on">料仓</div>
+        <div class="it">清洗</div>
+        <div class="it">校准</div>
+        <div class="it">基本信息</div>
+        <div class="it">远程功能</div>
+      </aside>
+      <div class="wf-main">
+        <div class="wf-hd">
+          <div><h5>料仓</h5><p>WSD 1008I · 7 个仓位 · 2 个未绑料 · 1 个待校准</p></div>
+          <div class="rt"><span class="wf-btn ghost">＋ 新增仓位</span><span class="wf-btn">保存</span></div>
+        </div>
+        <div class="wf-tool">
+          <span class="wf-inp on">品牌 WSD ▾</span>
+          <span class="wf-inp on">型号 1008I ▾</span>
+          <span class="wf-inp">只看未绑定</span>
+        </div>
+        <div class="wf-tbl-wrap" style="margin-top:8px">
+          <table class="wf-tbl">
+            <thead><tr><th>仓位</th><th>类型</th><th>组件实例</th><th>装载原料</th><th>容量</th><th>余量下限</th><th>校准</th><th>状态</th></tr></thead>
+            <tbody>
+              <tr><td class="nm">S-01</td><td>豆仓</td><td>磨豆器 01</td><td class="nm">阿拉比卡 A</td><td class="r">1200 g</td><td class="r">200 g</td><td><span class="wf-badge ok">v3</span></td><td><span class="wf-badge ok">正常</span></td></tr>
+              <tr><td class="nm">S-02</td><td>粉仓</td><td>出料电机 01</td><td class="nm">椰浆粉</td><td class="r">800 g</td><td class="r">150 g</td><td><span class="wf-badge ok">v2</span></td><td><span class="wf-badge ok">正常</span></td></tr>
+              <tr><td class="nm">S-03</td><td>粉仓</td><td>出料电机 02</td><td class="nm">可可粉</td><td class="r">800 g</td><td class="r">150 g</td><td><span class="wf-badge warn">待校准</span></td><td><span class="wf-badge warn">注意</span></td></tr>
+              <tr><td class="nm">S-04</td><td>粉仓</td><td>出料电机 03</td><td class="mut">未绑定</td><td class="r">800 g</td><td class="r">150 g</td><td class="mut">—</td><td><span class="wf-badge mut">空置</span></td></tr>
+              <tr><td class="nm">S-05</td><td>糖浆</td><td>蠕动泵 01</td><td class="nm">香草糖浆</td><td class="r">1000 ml</td><td class="r">100 ml</td><td><span class="wf-badge ok">v1</span></td><td><span class="wf-badge ok">正常</span></td></tr>
+              <tr><td class="nm">S-06</td><td>糖浆</td><td>蠕动泵 02</td><td class="nm">焦糖糖浆</td><td class="r">1000 ml</td><td class="r">100 ml</td><td><span class="wf-badge ok">v1</span></td><td><span class="wf-badge ok">正常</span></td></tr>
+              <tr><td class="nm">S-07</td><td>糖浆</td><td>蠕动泵 03</td><td class="mut">未绑定</td><td class="r">1000 ml</td><td class="r">100 ml</td><td class="mut">—</td><td><span class="wf-badge mut">空置</span></td></tr>
+              <tr><td class="nm">T-01</td><td>水箱</td><td>水路系统 01</td><td class="nm">市政供水</td><td class="r">18 L</td><td class="r">3 L</td><td class="mut">不适用</td><td><span class="wf-badge ok">正常</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="wf-note">「余量下限」用于补货提醒；「校准」列显示最近一次校准版本，点进去跳到校准页并带上该仓位。</div>
+      </div>
+    </div>
+  </div>
+  <div class="wf-cap">图 3 · 料仓页：仓位、组件实例、原料三者绑定</div>
+
+  <h4>字段与规则</h4>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th style="width:120px">字段</th><th style="width:180px">约束</th><th>说明</th></tr></thead>
+      <tbody>
+        <tr><td>仓位号</td><td>必填，同型号唯一</td><td>S-01 / T-01；S 表示固体料，T 表示水箱</td></tr>
+        <tr><td>仓位类型</td><td>必填</td><td>豆仓 / 粉仓 / 糖浆 / 茶仓 / 水箱 / 废水桶</td></tr>
+        <tr><td>组件实例</td><td>可空</td><td>只列出「需要料仓」的实例；已被占用时置灰</td></tr>
+        <tr><td>装载原料</td><td>可空</td><td>下拉只显示与仓位类型匹配的原料；换料需重新校准</td></tr>
+        <tr><td>容量 / 单位</td><td>必填</td><td>g / ml / L；粉料按 g，液体按 ml</td></tr>
+        <tr><td>余量下限</td><td>必填，&lt; 容量</td><td>低于此值推补货提醒</td></tr>
+        <tr><td>校准版本</td><td>只读</td><td>取最近一次校准记录；换料后自动标「待校准」</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="note warn">
+    <div class="ic">!</div>
+    <p><b>换料必须重校。</b>客户换一个牌子的粉，同一档位、同一时长出来的克数可能差 15%。所以「装载原料」一改，该仓位的校准状态立即回退为「待校准」，配方里引用该原料的步骤同步标黄，但不阻断历史订单。</p>
+  </div>
+</section>
+<section id="s5">
+  <div class="sec-head"><span class="sec-num">05</span><h2>逐页规格：清洗 → 远程功能</h2><span class="hint">6–9 页</span></div>
+
+  <h3>5.1 清洗</h3>
+  <p>会议给这个功能定的目标只有两个字：<b>省水</b>。所以页面主体不是「配多少水」，而是<b>「什么时候洗、洗哪些」</b>。清洗强度是次要的。</p>
+
+  <h4>三种触发方式（本次新增）</h4>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th style="width:130px">触发方式</th><th style="width:200px">参数</th><th>行为</th><th style="width:130px">谁设置</th></tr></thead>
+      <tbody>
+        <tr><td><b>定时</b></td><td>间隔（小时）/ 固定时刻</td><td>到达时间点整机执行一次；沿用现有整机清洁参数</td><td>运营</td></tr>
+        <tr><td><b>计数</b></td><td>每 N 杯（按单组件累计）</td><td>某个搅拌器累计制作 N 杯后<b>只洗它自己</b>，不联动其他组件</td><td>运营</td></tr>
+        <tr><td><b>单杯</b></td><td>开 / 关</td><td>每完成一杯立即清洗本次用到的组件；设备本地开关优先</td><td>设备本地</td></tr>
+        <tr><td><b>跟随使用</b></td><td>开 / 关（默认开）</td><td>只有本轮真正出过料的组件才进入清洗，没用过的跳过</td><td>运营</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th style="width:150px">列</th><th style="width:140px">约束</th><th>说明</th></tr></thead>
+      <tbody>
+        <tr><td>组件 / 实例</td><td>只读</td><td>只列出「参与清洗」的装机实例，按工位排序</td></tr>
+        <tr><td>参与</td><td>可勾选</td><td>默认按组件分类（清洁 / 搅拌 / 水路 / 出料）自动预勾；未勾选整行禁用</td></tr>
+        <tr><td>触发方式</td><td>定时 / 计数 / 单杯</td><td>多选；同一组件可同时「每 50 杯」+「每天 22:00」</td></tr>
+        <tr><td>每 N 杯</td><td>1–999</td><td>仅计数方式可填；搅拌器建议 30–60</td></tr>
+        <tr><td>时长 / 次数</td><td>0–999 s / 0–9 次</td><td>单轮时长 = 时长 × 次数</td></tr>
+        <tr><td>单次用水</td><td>0–5000 ml</td><td>单轮用水 = 单次 × 次数</td></tr>
+        <tr><td>深度清洗</td><td>可勾选</td><td>参与定期深度清洗流程；未参与时置灰</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="note">
+    <div class="ic">i</div>
+    <p><b>「跟随使用」和「参与」是两件事。</b>「参与」是硬件能不能洗（没有水路的组件不能洗），「跟随使用」是这次要不要洗（没出过料就不洗）。把两者合并成一个勾选框，就会出现「为了让某个组件能洗，被迫每轮都洗」的浪费。</p>
+  </div>
+  <div class="note warn">
+    <div class="ic">!</div>
+    <p><b>待确认：</b>单杯清洗开关说在设备本地设置，那后台这一页是只读展示，还是允许远程改写本地开关？这决定要不要在下发链路里加一条「本地设置覆盖」的优先级规则，见第 9 节第 5 条。</p>
+  </div>
+
+  <h3>5.2 校准</h3>
+  <p>废止固定时间校准之后，<b>克数靠称、秒数靠算</b>。校准页要做的就是把「某个原料 + 某个组件实例 + 某个转速档位」下的出料速度测出来，形成一张换算表。</p>
+
+  <div class="flow">
+    <div class="fbox"><div class="t">STEP 1</div><div class="m">选范围</div><div class="d">机型 → 机器 SN → 料仓（自动带出组件实例与原料）</div><div class="c">4 个字段</div></div>
+    <div class="farrow">→</div>
+    <div class="fbox"><div class="t">STEP 2</div><div class="m">选转速档</div><div class="d">1–10 档，建议至少测 3 档（低 / 中 / 高）</div><div class="c">可批量勾选</div></div>
+    <div class="farrow">→</div>
+    <div class="fbox"><div class="t">STEP 3</div><div class="m">称重录入</div><div class="d">每档连续出料 3 次，称重后填克数；系统取均值</div><div class="c">支持电子秤直连</div></div>
+    <div class="farrow">→</div>
+    <div class="fbox"><div class="t">STEP 4</div><div class="m">生成换算表</div><div class="d">档位 → 每秒克数 → 目标克数对应时长</div><div class="c">版本化保存</div></div>
+  </div>
+
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th style="width:90px">档位</th><th style="width:110px">出料时长</th><th style="width:110px">实测重量</th><th style="width:120px">换算速度</th><th style="width:110px">每 100ms</th><th>说明</th></tr></thead>
+      <tbody>
+        <tr><td>1 档</td><td class="num">2.0 s</td><td class="num">3.2 g</td><td class="num">1.60 g/s</td><td class="num">0.16 g</td><td>少量粉料，精度优先</td></tr>
+        <tr><td>5 档</td><td class="num">2.0 s</td><td class="num">8.4 g</td><td class="num">4.20 g/s</td><td class="num">0.42 g</td><td>常规档，默认使用</td></tr>
+        <tr><td>10 档</td><td class="num">2.0 s</td><td class="num">15.1 g</td><td class="num">7.55 g/s</td><td class="num">0.76 g</td><td>大批量，误差最大</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="small">中间档位若未实测，按相邻两档线性插值，并在表里标「插值」而不是「实测」，避免误以为是现场测出来的。</p>
+
+  <h4>校准记录字段</h4>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th style="width:140px">字段</th><th style="width:170px">必填</th><th>说明</th></tr></thead>
+      <tbody>
+        <tr><td>机型 / 机器 SN</td><td>必填</td><td>机型级校准对所有机器生效；机器级校准只覆盖本机</td></tr>
+        <tr><td>组件实例 / 料仓</td><td>必填</td><td>自动带出，不可跨仓位混用</td></tr>
+        <tr><td>原料 + 批次</td><td>原料必填，批次选填</td><td>换料自动触发「待重校」</td></tr>
+        <tr><td>转速档</td><td>必填</td><td>1–10；一次可提交多档</td></tr>
+        <tr><td>实测重量 × 样本数</td><td>必填，≥3 次</td><td>少于 3 次允许保存但不建议，标「样本不足」</td></tr>
+        <tr><td>校准人 / 时间 / 地点</td><td>自动</td><td>客户现场签核可上传照片</td></tr>
+        <tr><td>版本</td><td>自动递增</td><td>旧版本永久保留，配方引用哪个版本要可追溯</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="note">
+    <div class="ic">i</div>
+    <p><b>校准是「尺子」，配方是「读数」。</b>所以校准记录不写在配方里，配方只引用「校准版本号」。这样重校之后，所有引用该仓位的配方自动切换到新版本，不需要逐个商品改——但要给出「N 个配方受影响」的确认弹窗。</p>
+  </div>
+
+  <h3>5.3 基本信息</h3>
+  <p>这一页收的是<b>结构规格</b>——那些会影响报价、场地和外观，但没有可下发参数的差异。副柜、灯箱、尺寸都在这里，不进组件库。</p>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th style="width:130px">分组</th><th style="width:170px">字段</th><th>说明</th></tr></thead>
+      <tbody>
+        <tr><td rowspan="4">标识</td><td>型号名称 / 系列 / 结构代号</td><td>与型号页同源，这里只读</td></tr>
+        <tr><td>上市状态</td><td>在售 / 停售 / 未上市</td></tr>
+        <tr><td>上市日期</td><td>用于区分批次</td></tr>
+        <tr><td>外观图</td><td>正 / 侧 / 45°，1:1 与 16:9 各一张</td></tr>
+        <tr><td rowspan="4">结构</td><td>尺寸 W×D×H</td><td>mm；1008 系列外观尺寸大于 1008I</td></tr>
+        <tr><td>净重 / 毛重</td><td>kg</td></tr>
+        <tr><td>副柜</td><td>无 / 储物柜 / 制冰柜；1008C 无，1008 储物，1008I 内置制冰机</td></tr>
+        <tr><td>灯箱</td><td>标准 / 缩小；1008C 为缩小</td></tr>
+        <tr><td rowspan="3">选配</td><td>选配包</td><td><code>P</code> 自动压杯盖、<code>ICE80</code> 制冰 80kg…；每个包对应一组组件实例</td></tr>
+        <tr><td>杯型支持</td><td>小 / 中 / 大；决定制作页出现几种出杯量</td></tr>
+        <tr><td>默认商品集</td><td>新机上线时预置的商品组合</td></tr>
+        <tr><td>环境</td><td>功率 / 电压 / 进水要求 / 排水方式</td><td>制冰机化水直接排入废水桶，需标注</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="note warn">
+    <div class="ic">!</div>
+    <p><b>边界：</b>如果某天「副柜」也需要被远程监控（例如柜门未关），那它就该被升级成一个组件（门磁 + 门锁），而不是继续留在基本信息里。判断标准是<b>「有没有可下发 / 可上报的参数」</b>，不是「是不是硬件」。</p>
+  </div>
+
+  <h3>5.4 远程功能</h3>
+  <p>一个页面上下两块：<b>上半是型号级的能力开关</b>（允许做什么、谁能做、什么条件下能做），<b>下半是设备级的任务记录</b>（谁在什么时候对哪台机器做了什么、结果如何）。</p>
+
+  <h4>能力开关</h4>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th style="width:150px">能力</th><th style="width:110px">默认</th><th style="width:170px">互锁条件</th><th style="width:130px">最低角色</th><th>说明</th></tr></thead>
+      <tbody>
+        <tr><td>远程开关机</td><td>开</td><td>无制作任务、无人在场</td><td>运维</td><td>关机后本地可强制开机</td></tr>
+        <tr><td>远程重启</td><td>开</td><td>无制作任务</td><td>运维</td><td>只重启控制板，不重启制冷</td></tr>
+        <tr><td>远程清洗</td><td>开</td><td>设备空闲、舱门关闭、水箱水位达标</td><td>运营</td><td>执行整机清洁流程，不计入单杯清洗</td></tr>
+        <tr><td>参数下发</td><td>开</td><td>设备在线、固件版本匹配</td><td>工程师</td><td>逐项写入 + 回读校验</td></tr>
+        <tr><td>OTA 升级</td><td>关</td><td>设备空闲、电量/水位达标、非营业时段</td><td>管理员</td><td>默认关闭，需按批次灰度开启</td></tr>
+        <tr><td>日志拉取</td><td>开</td><td>无</td><td>客服</td><td>只读，不改变设备状态</td></tr>
+        <tr><td>远程锁机</td><td>关</td><td>需二次授权</td><td>管理员</td><td>欠费/风控场景；必须留申诉入口</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h4>任务记录</h4>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th style="width:130px">列</th><th style="width:120px">说明</th><th>取值</th></tr></thead>
+      <tbody>
+        <tr><td>任务号</td><td>可点开详情</td><td><code>RT-20261127-0031</code></td></tr>
+        <tr><td>设备</td><td>SN + 点位</td><td>点击跳设备详情</td></tr>
+        <tr><td>动作</td><td>七种能力之一</td><td>开关机 / 重启 / 清洗 / 下发 / OTA / 日志 / 锁机</td></tr>
+        <tr><td>发起人</td><td>账号 + 角色</td><td>记录 IP 与来源（后台 / App）</td></tr>
+        <tr><td>状态</td><td>六态</td><td>待下发 / 已下发 / 执行中 / 成功 / 失败 / 超时</td></tr>
+        <tr><td>耗时</td><td>秒</td><td>从下发到回执</td></tr>
+        <tr><td>结果</td><td>失败原因</td><td>超时无应答 / 参数越界 / 互锁不满足 / 固件不支持</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="note danger">
+    <div class="ic">!</div>
+    <p><b>危险动作的确认方式：</b>重启、OTA、锁机三项，必须要求操作人输入<b>设备 SN 后四位</b>才能提交。单靠「我确认」的勾选框挡不住误操作——这跟删除生产库要输入库名是同一个道理。</p>
+  </div>
+  <div class="note warn">
+    <div class="ic">!</div>
+    <p><b>离线设备不要伪装成成功。</b>设备离线时任务状态必须是「待下发」并显示「上线后自动补偿」，不能直接标成功。原型里的参数下发弹窗已经有这个逻辑（离线待补偿），远程任务沿用同一套。</p>
+  </div>
+</section>
+<section id="s6">
+  <div class="sec-head"><span class="sec-num">06</span><h2>跨页规则</h2><span class="hint">九页之间怎么串</span></div>
+
+  <p class="lead">页面切开了，但数据是一条链。这一节处理三件最容易在开发时各做各的事：<b>谁覆盖谁、什么时候下发、保存算不算数。</b></p>
+
+  <h3>6.1 五层继承：从模板到一杯咖啡</h3>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th style="width:50px">层</th><th style="width:150px">在哪定义</th><th style="width:200px">举例（搅拌档）</th><th style="width:110px">可被覆盖</th><th>优先级</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td>组件参数模板</td><td>搅拌器 转速 1–10，默认 6</td><td>否，这是定义</td><td>最低</td></tr>
+        <tr><td>2</td><td>型号装机实例</td><td>1008I 的搅拌器 01 默认 7</td><td>是</td><td>↓</td></tr>
+        <tr><td>3</td><td>单台机器</td><td>SN0010150 因硬件老化调到 8</td><td>是</td><td>↓</td></tr>
+        <tr><td>4</td><td>商品配方步骤</td><td>生椰拿铁第 1 步用 6 档</td><td>是，覆盖 2 与 3</td><td>↓</td></tr>
+        <tr><td>5</td><td>运行时手动调整</td><td>现场临时改，不落库</td><td>不持久</td><td>最高，仅本次</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="small">界面上任何一处显示「生效值」，都必须能点开看到它<b>来自哪一层</b>。否则现场出问题，没人说得清是谁改的。</p>
+
+  <h3>6.2 下发链路</h3>
+  <div class="flow">
+    <div class="fbox"><div class="t">1</div><div class="m">配方保存</div><div class="d">生成配方版本，记录引用到的校准版本</div></div>
+    <div class="farrow">→</div>
+    <div class="fbox"><div class="t">2</div><div class="m">编译</div><div class="d">展开为「实例 × 参数 × 值」的扁平指令集</div></div>
+    <div class="farrow">→</div>
+    <div class="fbox"><div class="t">3</div><div class="m">分组</div><div class="d">按型号筛在线设备，离线进补偿队列</div></div>
+    <div class="farrow">→</div>
+    <div class="fbox"><div class="t">4</div><div class="m">下发 + 回读</div><div class="d">逐项写入，回读生效值，不一致保留旧配置</div></div>
+    <div class="farrow">→</div>
+    <div class="fbox"><div class="t">5</div><div class="m">落任务</div><div class="d">成功 / 失败 / 超时，可按设备重试</div></div>
+  </div>
+  <div class="note">
+    <div class="ic">i</div>
+    <p><b>幂等：</b>同一参数重复下发只覆盖值，不重复执行动作。升降、清洗这类「有动作」的指令必须带幂等键，否则重试会导致机器连续升降两次。</p>
+  </div>
+
+  <h3>6.3 保存语义：四个页面四种行为，必须写清</h3>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th style="width:170px">页面</th><th style="width:170px">保存行为</th><th style="width:140px">是否下发</th><th>说明</th></tr></thead>
+      <tbody>
+        <tr><td>品牌 / 型号 / 组件 / 基本信息</td><td>表单保存即落库</td><td>否</td><td>需要显式「发布机型」才对外可见</td></tr>
+        <tr><td>料仓</td><td>保存即生效</td><td>否</td><td>仓位结构变化下次制作任务读取时生效</td></tr>
+        <tr><td>制作</td><td>两个按钮：保存草稿 / 保存并下发</td><td>选后者才下发</td><td>草稿不影响线上；下发需二次确认影响设备数</td></tr>
+        <tr><td>清洗</td><td>保存即生效</td><td>是</td><td>下一个清洗触发点生效，不打断进行中的任务</td></tr>
+        <tr><td>校准</td><td>生成新版本即生效</td><td>是</td><td>配方自动切换到新版本，需确认「N 个配方受影响」</td></tr>
+        <tr><td>远程功能 · 能力开关</td><td>即时生效</td><td>是</td><td>关闭的能力立即不可用，进行中的任务继续走完</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="note danger">
+    <div class="ic">!</div>
+    <p><b>原型现存缺陷：</b>同一个系统里并存「弹窗里改完点保存才算」和「抽屉里改完立即生效」两套语义，用户无法预测。本文统一为：<b>表单类页面一律「保存才生效」，操作类动作一律「点击即执行 + 可撤销 5 秒」。</b></p>
+  </div>
+
+  <h3>6.4 删除与停用</h3>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th style="width:130px">对象</th><th style="width:190px">优先动作</th><th>禁止删除的条件</th></tr></thead>
+      <tbody>
+        <tr><td>品牌</td><td>停用</td><td>有型号</td></tr>
+        <tr><td>型号</td><td>停售</td><td>有在网设备 / 已下发配方 / 有校准记录</td></tr>
+        <tr><td>组件</td><td>停用</td><td>被任意型号引用</td></tr>
+        <tr><td>装机实例</td><td>移除</td><td>已绑料仓 / 有校准记录 / 被配方引用</td></tr>
+        <tr><td>料仓</td><td>停用</td><td>有余量记录或校准记录</td></tr>
+        <tr><td>配方版本</td><td>归档</td><td>已下发过设备（永远保留，只归档）</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section id="s7">
+  <div class="sec-head"><span class="sec-num">07</span><h2>校验与异常</h2><span class="hint">别在开发时猜</span></div>
+
+  <h3>7.1 校验规则汇总</h3>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th style="width:100px">所在页</th><th style="width:230px">规则</th><th style="width:100px">级别</th><th>提示文案</th></tr></thead>
+      <tbody>
+        <tr><td>品牌</td><td>名称重复（忽略大小写与空格）</td><td>阻断</td><td>品牌名称已存在</td></tr>
+        <tr><td>型号</td><td>同品牌下型号名重复</td><td>阻断</td><td>该品牌下已存在同名型号</td></tr>
+        <tr><td>型号</td><td>选配组合生成重复 SKU</td><td>阻断</td><td>该选配组合已存在（1008I-P）</td></tr>
+        <tr><td>组件</td><td>（型号, 组件, 工位）重复</td><td>阻断</td><td>工位 03 已被「出料电机」占用</td></tr>
+        <tr><td>组件</td><td>组件不可多个，却填了数量 &gt; 1</td><td>阻断</td><td>该组件不支持多实例，请先在组件定义里开启</td></tr>
+        <tr><td>组件</td><td>数值型参数缺单位或范围</td><td>阻断</td><td>数值型参数必须填写单位与范围</td></tr>
+        <tr><td>料仓</td><td>余量下限 ≥ 容量</td><td>阻断</td><td>余量下限必须小于容量</td></tr>
+        <tr><td>料仓</td><td>原料类型与仓位类型不匹配</td><td>阻断</td><td>糖浆不能装进粉仓</td></tr>
+        <tr><td>料仓</td><td>仓位已绑原料，却更换原料</td><td>警告</td><td>换料后该仓位校准失效，需要重新校准</td></tr>
+        <tr><td>制作</td><td>某步原料与水同时为空</td><td>阻断</td><td>第 3 步至少要选主原料或水</td></tr>
+        <tr><td>制作</td><td>粉量超出该原料的允许范围</td><td>阻断</td><td>粉量需在 0–36 g 之间</td></tr>
+        <tr><td>制作</td><td>水量低于水粉比建议值</td><td>警告</td><td>建议水量 ≥ 142 ml，当前偏低，可能堵塞搅拌器</td></tr>
+        <tr><td>制作</td><td>引用未校准的料仓</td><td>警告</td><td>料仓 S-03 尚未校准，无法换算时长</td></tr>
+        <tr><td>制作</td><td>预浸润只填了水量或只填了时间</td><td>阻断</td><td>预浸润水量与时间需要成对填写</td></tr>
+        <tr><td>清洗</td><td>计数触发未填 N</td><td>阻断</td><td>选择「按杯数」时必须填写间隔杯数</td></tr>
+        <tr><td>校准</td><td>同档位样本 &lt; 3</td><td>警告</td><td>样本少于 3 次，建议补测</td></tr>
+        <tr><td>校准</td><td>相邻档位速度倒挂（高档反而更慢）</td><td>阻断</td><td>10 档速度低于 5 档，请检查称重记录</td></tr>
+        <tr><td>远程</td><td>互锁条件不满足</td><td>阻断</td><td>设备正在制作中，无法远程重启</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>7.2 空状态与异常</h3>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th style="width:230px">场景</th><th>处理</th></tr></thead>
+      <tbody>
+        <tr><td>新型号还没装组件</td><td>料仓 / 清洗 / 制作三页统一显示「该型号还没有装机组件」，给「去装组件」按钮，不显示空表格</td></tr>
+        <tr><td>有组件但没料仓</td><td>制作页原料下拉为空，提示「先到料仓绑定原料」</td></tr>
+        <tr><td>有料仓但没校准</td><td>制作页该原料相关行标黄，仍可编辑草稿，<b>不可下发</b></td></tr>
+        <tr><td>设备离线</td><td>任务进补偿队列，状态「待下发」，禁止显示成功</td></tr>
+        <tr><td>并发编辑</td><td>带版本号提交，冲突时提示「该配方已被 张伟 于 10:32 修改」，提供对比合并</td></tr>
+        <tr><td>无效深链</td><td>回退到该品牌第一个型号，toast 说明，不白屏</td></tr>
+        <tr><td>权限不足</td><td>按钮置灰并显示 tooltip「需要工程师权限」，不隐藏（隐藏会让人以为功能不存在）</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section id="s8">
+  <div class="sec-head"><span class="sec-num">08</span><h2>权限、审计与验收</h2><span class="hint">能逐条点</span></div>
+
+  <h3>8.1 角色矩阵</h3>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th style="width:130px">页签</th><th>产品</th><th>工厂工程师</th><th>运营</th><th>客服</th><th>管理员</th></tr></thead>
+      <tbody>
+        <tr><td>品牌</td><td>编辑</td><td>只读</td><td>只读</td><td>—</td><td>编辑</td></tr>
+        <tr><td>型号</td><td>编辑</td><td>只读</td><td>只读</td><td>—</td><td>编辑</td></tr>
+        <tr><td>组件</td><td>编辑</td><td>编辑</td><td>只读</td><td>—</td><td>编辑</td></tr>
+        <tr><td>制作</td><td>只读</td><td>只读</td><td><b>编辑</b></td><td>只读</td><td>编辑</td></tr>
+        <tr><td>料仓</td><td>只读</td><td><b>编辑</b></td><td>编辑</td><td>只读</td><td>编辑</td></tr>
+        <tr><td>清洗</td><td>只读</td><td>只读</td><td><b>编辑</b></td><td>只读</td><td>编辑</td></tr>
+        <tr><td>校准</td><td>只读</td><td><b>编辑</b></td><td>只读</td><td>—</td><td>编辑</td></tr>
+        <tr><td>基本信息</td><td><b>编辑</b></td><td>只读</td><td>只读</td><td>—</td><td>编辑</td></tr>
+        <tr><td>远程功能</td><td>只读</td><td>只读</td><td>执行（清洗）</td><td>执行（日志）</td><td><b>编辑</b></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>8.2 审计字段</h3>
+  <p>所有写操作统一记录：<code>操作人</code> · <code>角色</code> · <code>对象类型</code> · <code>对象ID</code> · <code>动作</code> · <code>变更前/后</code> · <code>来源</code>（Web / App / 设备端）· <code>IP</code> · <code>时间</code>。校准、下发、锁机三类额外记录<b>原因与照片/签字</b>。</p>
+
+  <h3>8.3 验收标准</h3>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th style="width:60px">编号</th><th style="width:250px">场景</th><th>期望结果</th></tr></thead>
+      <tbody>
+        <tr><td>A1</td><td>1008C 变更后删品牌</td><td>拦截，提示「存在 1 个型号，先迁移或删除」</td></tr>
+        <tr><td>A2</td><td>删除 0 型号的品牌</td><td>二次确认后删除成功（修复原型只能拦不能删）</td></tr>
+        <tr><td>B1</td><td>1008I + 选配 P</td><td>生成变体 <code>WSD-1008IP</code>，装机清单自动多出「压杯盖机构」实例</td></tr>
+        <tr><td>B2</td><td>同一选配组合再建一次</td><td>提示「该选配组合已存在」</td></tr>
+        <tr><td>B3</td><td>删除有在网设备的型号</td><td>拦截，并显示设备数</td></tr>
+        <tr><td>C1</td><td>给 6008 装 3 个蠕动泵</td><td>生成 3 个实例，工位 05-1/05-2/05-3，指令代码可各自不同</td></tr>
+        <tr><td>C2</td><td>给「不可多个」的组件填数量 2</td><td>被拦截并指向组件定义开关</td></tr>
+        <tr><td>C3</td><td>删除被 4 个型号引用的组件</td><td>拦截，提示引用数，提供「查看引用」入口</td></tr>
+        <tr><td>D1</td><td>料仓绑糖浆到粉仓</td><td>拦截，提示类型不匹配</td></tr>
+        <tr><td>D2</td><td>料仓余量下限 ≥ 容量</td><td>拦截并定位字段</td></tr>
+        <tr><td>D3</td><td>把已校准仓位的原料换掉</td><td>校准状态变「待校准」，引用该原料的配方步骤标黄</td></tr>
+        <tr><td>E1</td><td>配方某步原料与水都为空</td><td>保存被拦截，定位到该步</td></tr>
+        <tr><td>E2</td><td>第 3 步只填水、不填原料</td><td>保存成功（合法：冲洗管路）</td></tr>
+        <tr><td>E3</td><td>粉量 9.5 g</td><td>界面显示「≈ 8.4 s」，秒数不可编辑</td></tr>
+        <tr><td>E4</td><td>水量低于水粉比建议</td><td>黄条提醒，可继续保存，审计记录「忽略提醒」</td></tr>
+        <tr><td>E5</td><td>1008 编配方时选茶类原料</td><td>下拉中不出现（未装茶路），不是选完再报错</td></tr>
+        <tr><td>E6</td><td>给 1008C 覆盖出料档</td><td>保存覆盖并显示差异，1008I 不受影响</td></tr>
+        <tr><td>F1</td><td>清洗只勾选计数触发，每 50 杯</td><td>未填 50 时被拦截；填后该搅拌器独立计数</td></tr>
+        <tr><td>F2</td><td>关闭「跟随使用」</td><td>所有勾选组件每轮都洗，用水量合计同步变化</td></tr>
+        <tr><td>G1</td><td>校准只录 2 次称重</td><td>可保存但标「样本不足」，不允许下发到生产</td></tr>
+        <tr><td>G2</td><td>10 档换算速度低于 5 档</td><td>被拦截，提示检查称重记录</td></tr>
+        <tr><td>G3</td><td>重新校准某仓位</td><td>生成 v4，弹窗提示「3 个配方受影响」，确认后自动切换</td></tr>
+        <tr><td>H1</td><td>料仓页选 1008I 后切到清洗再回来</td><td>仍是 1008I（修复原型切标签清空筛选）</td></tr>
+        <tr><td>H2</td><td>远程重启时设备正在制作</td><td>被互锁拦截，提示「设备正在制作中」</td></tr>
+        <tr><td>H3</td><td>对离线设备发起 OTA</td><td>状态「待下发」，显示「上线后自动补偿」，不显示成功</td></tr>
+        <tr><td>H4</td><td>输入错误的 SN 后四位执行锁机</td><td>提交被拒绝，任务不创建</td></tr>
+        <tr><td>H5</td><td>运营账号打开校准页</td><td>只读，编辑按钮置灰并提示需要工程师权限</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section id="s9">
+  <div class="sec-head"><span class="sec-num">09</span><h2>待确认</h2><span class="hint">需要你拍板</span></div>
+
+  <p class="lead">下面 10 条会改变数据模型或页面结构，建议在开发启动前逐条确认。带「建议」的是我的倾向，可以直接采纳或否掉。</p>
+
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th style="width:40px">#</th><th style="width:210px">问题</th><th style="width:250px">为什么卡住</th><th>建议</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td>1008EG 与 1008 / 1008C / 1008I 是什么关系？</td><td>原型用的是 MK-1008EG，会议里是 1008C / 1008 / 1008I。命名映射不清，型号主数据无法落地</td><td>确认 1008EG 是否就是 1008I 的客户叫法；PRD 统一改用会议命名</td></tr>
+        <tr><td>2</td><td><code>-P</code> 是后缀还是拼在型号里？</td><td><code>1008C-P</code> 和 <code>1008CP</code> 两种写法都出现过，影响 SKU 规则与打印</td><td>统一 <code>基础型号-P</code>，如 <code>1008C-P</code></td></tr>
+        <tr><td>3</td><td>3 个蠕动泵是「一个组件 3 实例」还是「3 个糖浆组件」？</td><td>决定组件库要不要拆，也决定校准是按泵还是按糖浆</td><td>一个「蠕动泵」组件 + 3 个实例，实例绑不同料仓</td></tr>
+        <tr><td>4</td><td>「出水间隔」到底存不存在？</td><td>会议说水路无出水速度调节、靠流量计控量，但上一轮需求里有「出水间隔 s」</td><td>先按配方步骤的「分段进水」处理，不作为设备参数</td></tr>
+        <tr><td>5</td><td>单杯清洗开关能否远程改写？</td><td>会议说在设备本地设置；后台若可改，会与本地设置冲突，需要定优先级</td><td>后台只读展示，本地优先；远程可「临时开启一次」</td></tr>
+        <tr><td>6</td><td>校准数据归属：机型级还是机器级？</td><td>机型级省事但忽略现场差异，机器级准确但要逐台做</td><td>机型出默认值，机器可覆盖，配方引用机器实际值</td></tr>
+        <tr><td>7</td><td>水粉比的口径是 <code>1:8</code> 还是 <code>ml:g</code>？</td><td>包装袋上写法不一，提醒阈值算错会误报或漏报</td><td>统一存「每 1 g 粉对应多少 ml 水」的数值，界面显示为 1:8</td></tr>
+        <tr><td>8</td><td>冷 / 热用两个 SPU 还是一个 SPU 两个规格？</td><td>会议说「由客户自行选择使用方式」，但系统必须选一种主模型</td><td>一个 SPU 多规格，规格带价格；需要拆成两个 SPU 的客户用「商品复制」实现</td></tr>
+        <tr><td>9</td><td>支付外设（纸币 / 硬币 / 刷卡 / 小票）进组件库吗？</td><td>它没有配方参数，但需要下发协议配置，形态与其他组件不同</td><td>进组件库，单独一级分类，参数用协议 / 地址 / 波特率</td></tr>
+        <tr><td>10</td><td>远程锁机要不要做？</td><td>涉及欠费风控与消费者权益，可能有合规风险</td><td>本期只做能力位与审计，不开放给非管理员；上线前需法务确认</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="note">
+    <div class="ic">i</div>
+    <p><b>下一步建议：</b>① 先把 1–3 定掉，它们决定数据表；② 按第 3.4 节的 8 步顺序做一个「新建机型」向导原型；③ 校准页单独做一次可用性走查，因为它是唯一需要现场操作的页面。</p>
+  </div>
+</section>
+
+</div>
+</body>
+</html>

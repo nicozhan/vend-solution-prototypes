@@ -1,0 +1,983 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>品牌型号与组件 · 功能 PRD</title>
+<style>
+:root{
+  --brand:#2434c8;--brand-deep:#1b299e;--brand-weak:#edf0ff;--brand-line:#dce2ff;
+  --ink:#0b102f;--text-2:#5d6480;--text-3:#8b92a8;
+  --bg:#eef0f6;--surface:#fff;--surface-2:#f5f6fa;--line:#e4e7ef;
+  --ok:#008f63;--ok-bg:#e8f7f1;--warn:#9a5e2a;--warn-bg:#fff4e8;
+  --danger:#d92d20;--danger-bg:#fff0ef;--r:16px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","PingFang SC","Microsoft YaHei",sans-serif;
+  background:var(--bg);color:var(--ink);font-size:14.5px;line-height:1.62;-webkit-font-smoothing:antialiased}
+b,strong{font-weight:700}
+code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px;background:#f1f3fa;padding:1px 5px;border-radius:5px;color:#2b3a8f}
+.shell{max-width:1180px;margin:0 auto;padding:0 22px 90px}
+
+.doc-head{padding:46px 0 26px;border-bottom:1px solid #dfe3ee}
+.kicker{display:flex;align-items:center;gap:8px;font-size:12px;font-weight:700;letter-spacing:.8px;color:var(--brand);text-transform:uppercase}
+.kicker i{width:18px;height:2px;background:var(--brand);border-radius:2px;display:block}
+.doc-head h1{margin-top:12px;font-size:32px;line-height:1.28;letter-spacing:-.8px;font-weight:800}
+.doc-head .sub{margin-top:10px;max-width:880px;font-size:15px;color:var(--text-2)}
+.meta{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px}
+.meta span{display:inline-flex;align-items:center;gap:6px;height:26px;padding:0 10px;border-radius:999px;background:#fff;border:1px solid var(--line);font-size:12px;font-weight:600;color:var(--text-2)}
+.meta b{color:var(--ink);font-weight:700}
+
+.toc{display:grid;grid-template-columns:repeat(auto-fit,minmax(224px,1fr));gap:10px;margin:26px 0 8px}
+.toc a{display:flex;align-items:center;gap:10px;padding:11px 13px;border-radius:12px;background:#fff;border:1px solid var(--line);color:var(--ink);text-decoration:none;font-size:13px;font-weight:600}
+.toc a:hover{border-color:#c9d1f2;box-shadow:0 4px 14px rgba(36,52,200,.06)}
+.toc a em{flex:0 0 auto;width:22px;height:22px;border-radius:7px;background:var(--brand-weak);color:var(--brand);font-style:normal;font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center}
+
+section{margin-top:46px;scroll-margin-top:20px}
+.sec-head{display:flex;align-items:baseline;gap:12px;padding-bottom:10px;border-bottom:1px solid #dfe3ee}
+.sec-num{font-size:13px;font-weight:800;color:var(--brand);letter-spacing:.4px}
+.sec-head h2{font-size:22px;line-height:1.3;letter-spacing:-.4px;font-weight:800}
+.sec-head .hint{margin-left:auto;font-size:12px;color:var(--text-3)}
+h3{margin-top:28px;font-size:16px;font-weight:800;letter-spacing:-.2px}
+h4{margin-top:18px;font-size:13.5px;font-weight:800;color:#2a3150}
+p{margin-top:10px;color:#2e3450}
+.lead{font-size:15.5px;color:#353c5c}
+ul,ol{margin:10px 0 0 20px}
+li{margin-top:6px;color:#2e3450}
+li::marker{color:#9aa4c8}
+.small{font-size:12.5px;color:var(--text-2)}
+.tiny{font-size:11.5px;color:var(--text-3)}
+
+.verdict{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:18px}
+.vcard{background:#fff;border:1px solid var(--line);border-radius:14px;padding:15px 16px}
+.vcard .n{font-size:11px;font-weight:800;letter-spacing:.6px;color:var(--brand)}
+.vcard h4{margin-top:5px;font-size:15px}
+.vcard p{margin-top:6px;font-size:12.5px;line-height:1.55;color:var(--text-2)}
+@media(max-width:760px){.verdict{grid-template-columns:1fr}}
+
+.tbl-wrap{margin-top:14px;border:1px solid var(--line);border-radius:14px;background:#fff;overflow:auto}
+table{border-collapse:collapse;width:100%;font-size:12.8px;min-width:640px}
+thead th{position:sticky;top:0;z-index:1;background:#f7f8fc;text-align:left;font-weight:700;color:#3a4166;padding:10px 12px;border-bottom:1px solid var(--line);white-space:nowrap;font-size:12px}
+tbody td{padding:10px 12px;border-bottom:1px solid #eef0f7;vertical-align:top;color:#2e3450}
+tbody tr:last-child td{border-bottom:0}
+tbody tr:hover{background:#fbfcff}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+td.nowrap,th.nowrap{white-space:nowrap}
+td.mono{font-family:ui-monospace,Menlo,monospace;font-size:11.5px;color:#3d4780}
+
+.tag{display:inline-flex;align-items:center;height:20px;padding:0 7px;border-radius:6px;font-size:10.5px;font-weight:800;letter-spacing:.2px;white-space:nowrap}
+.tag.p0{background:var(--brand-weak);color:var(--brand)}
+.tag.p1{background:#fff4e8;color:#a05a12}
+.tag.p2{background:#f1f3f8;color:#6b7390}
+.tag.ok{background:var(--ok-bg);color:var(--ok)}
+.tag.no{background:#f1f3f8;color:#7a819c}
+.tag.out{background:#fdeef2;color:#a3243d}
+
+.note{display:flex;gap:10px;margin-top:14px;padding:12px 14px;border-radius:12px;border:1px solid #dbe2ff;background:#f6f8ff}
+.note.warn{border-color:#f3dfc6;background:#fffaf3}
+.note.danger{border-color:#f6d5d2;background:#fff7f6}
+.note .ic{flex:0 0 auto;width:20px;height:20px;border-radius:6px;background:var(--brand);color:#fff;font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center;margin-top:1px}
+.note.warn .ic{background:#b4560c}
+.note.danger .ic{background:var(--danger)}
+.note p{margin:0;font-size:12.8px;line-height:1.6;color:#39406a}
+.note.warn p{color:#7d4a13}
+.note.danger p{color:#8c2a24}
+
+pre{margin-top:12px;padding:14px 16px;border-radius:12px;background:#151a33;color:#dfe4ff;overflow:auto;font-size:11.5px;line-height:1.75}
+pre code{background:none;padding:0;color:inherit;font-size:inherit}
+pre .k{color:#9fb0ff}
+pre .s{color:#9be3b8}
+pre .c{color:#7b84a8}
+
+.spec{margin-top:12px;border:1px solid var(--line);border-radius:12px;overflow:hidden;background:#fff}
+.spec .row{display:grid;grid-template-columns:150px 1fr;border-bottom:1px solid #eef0f7}
+.spec .row:last-child{border-bottom:0}
+.spec .k{padding:10px 12px;background:#fafbff;font-size:12px;font-weight:700;color:#4a5180}
+.spec .v{padding:10px 12px;font-size:12.5px;color:#2e3450}
+@media(max-width:560px){.spec .row{grid-template-columns:1fr}.spec .k{padding-bottom:2px;background:#fff}}
+
+/* 结构流 */
+.flow{display:flex;align-items:stretch;gap:10px;margin-top:16px;flex-wrap:wrap}
+.fbox{flex:1;min-width:180px;background:#fff;border:1px solid var(--line);border-radius:12px;padding:12px 13px}
+.fbox .t{font-size:11px;font-weight:800;letter-spacing:.5px;color:var(--brand)}
+.fbox .m{margin-top:3px;font-size:13px;font-weight:700}
+.fbox .d{margin-top:4px;font-size:11.5px;color:var(--text-2);line-height:1.5}
+.fbox .c{margin-top:8px;font-size:11px;color:var(--text-3)}
+.farrow{display:flex;align-items:center;justify-content:center;color:#b9c0d8;font-size:16px;font-weight:800;flex:0 0 auto}
+@media(max-width:760px){.farrow{transform:rotate(90deg);width:100%}}
+
+.ia{display:flex;align-items:flex-start;gap:16px;margin-top:18px;flex-wrap:wrap}
+.ia-col{flex:1;min-width:240px;background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px}
+.ia-col h4{margin:0 0 8px;font-size:11.5px;letter-spacing:.6px;color:var(--text-3);text-transform:uppercase}
+.ia-node{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:9px;background:var(--surface-2);font-size:12.5px;font-weight:600}
+.ia-node+.ia-node{margin-top:6px}
+.ia-node em{font-style:normal;color:var(--text-3);font-weight:600;font-size:11px;margin-left:auto}
+.ia-node.on{background:var(--brand-weak);color:var(--brand-deep)}
+.ia-node.sub{padding-left:22px;font-weight:500;font-size:12px;background:#fafbff;color:#4a5180}
+
+/* 线框 */
+.wf{max-width:1020px;margin:18px auto 0;border-radius:14px;overflow:hidden;border:1px solid #d8dce8;background:#fff;box-shadow:0 14px 34px rgba(20,28,70,.10)}
+.wf-bar{height:32px;display:flex;align-items:center;gap:10px;padding:0 12px;background:#f2f4f9;border-bottom:1px solid #e2e6f0}
+.wf-dots{display:flex;gap:4px}
+.wf-dots i{width:8px;height:8px;border-radius:50%;background:#cfd5e4;display:block}
+.wf-url{flex:1;height:19px;border-radius:6px;background:#fff;border:1px solid #e2e6f0;font-size:9.5px;color:#8a91a8;display:flex;align-items:center;padding:0 8px;overflow:hidden;white-space:nowrap}
+.wf-body{display:grid;grid-template-columns:150px minmax(0,1fr);min-height:360px}
+.wf-side{background:#101733;color:#c9d0e8;padding:11px 8px;font-size:10.5px}
+.wf-brand{display:flex;align-items:center;gap:6px;padding:2px 6px 12px;font-size:11.5px;font-weight:800;color:#fff}
+.wf-brand i{width:15px;height:15px;border-radius:5px;background:linear-gradient(150deg,#2434c8,#6c7bf0);display:block;flex:0 0 auto}
+.wf-side .grp{margin:9px 6px 4px;font-size:8.8px;letter-spacing:.8px;color:#69739b;font-weight:700}
+.wf-side .it{display:flex;align-items:center;gap:6px;height:22px;padding:0 7px;border-radius:6px;color:#b9c1dc;white-space:nowrap;overflow:hidden}
+.wf-side .it.on{background:#2434c8;color:#fff;font-weight:700}
+.wf-side .it.sub{padding-left:16px;color:#96a0c2;font-size:10px}
+.wf-side .it.sub.on{background:#1c2a7a;color:#dfe4ff}
+.wf-main{padding:12px 14px 16px;background:#f7f8fc;min-width:0}
+.wf-hd{display:flex;align-items:flex-start;gap:10px}
+.wf-hd h5{font-size:13px;font-weight:800;letter-spacing:-.2px}
+.wf-hd p{font-size:9.8px;color:#7b83a0;margin-top:2px}
+.wf-btn{height:23px;padding:0 9px;border-radius:7px;background:var(--brand);color:#fff;font-size:9.5px;font-weight:700;display:inline-flex;align-items:center;white-space:nowrap}
+.wf-btn.ghost{background:#fff;color:#4a5180;border:1px solid #dfe3ef}
+.wf-hd .rt{margin-left:auto;display:flex;gap:6px;align-items:center}
+.wf-tabs{display:flex;gap:15px;border-bottom:1px solid #e2e6f0;margin-top:9px;font-size:10.2px;overflow:hidden}
+.wf-tabs span{padding:6px 1px 5px;color:#7b83a0;white-space:nowrap}
+.wf-tabs span.on{color:var(--brand);font-weight:800;border-bottom:2px solid var(--brand)}
+.wf-tool{display:flex;gap:6px;align-items:center;margin-top:9px;flex-wrap:wrap}
+.wf-inp{height:22px;border:1px solid #dfe3ef;border-radius:6px;background:#fff;font-size:9.5px;color:#8a91a8;display:flex;align-items:center;padding:0 8px;white-space:nowrap}
+.wf-tbl-wrap{margin-top:8px;border:1px solid #e6e9f2;border-radius:9px;background:#fff;overflow:hidden}
+.wf-tbl{width:100%;border-collapse:collapse;font-size:9.5px;min-width:0}
+.wf-tbl th{background:#f4f6fb;color:#5d6480;font-weight:700;text-align:left;padding:6px 7px;border-bottom:1px solid #e6e9f2;white-space:nowrap;font-size:9.2px}
+.wf-tbl td{padding:6px 7px;border-bottom:1px solid #f1f3f9;color:#39406a;white-space:nowrap}
+.wf-tbl tr:last-child td{border-bottom:0}
+.wf-tbl td.mut{color:#9aa1b7}
+.wf-tbl td.r{text-align:right;font-variant-numeric:tabular-nums}
+.wf-tbl .nm{font-weight:700;color:#1b2244}
+.wf-badge{display:inline-flex;align-items:center;height:15px;padding:0 5px;border-radius:4px;font-size:8.5px;font-weight:800;white-space:nowrap}
+.wf-badge.ok{background:var(--ok-bg);color:var(--ok)}
+.wf-badge.warn{background:var(--warn-bg);color:#a05a12}
+.wf-badge.mut{background:#f1f3f8;color:#7a819c}
+.wf-badge.brand{background:var(--brand-weak);color:var(--brand)}
+.wf-badge.dgr{background:var(--danger-bg);color:var(--danger)}
+.wf-split{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:10px;margin-top:8px}
+.wf-drawer{background:#fff;border:1px solid #e6e9f2;border-radius:9px;padding:9px 10px}
+.wf-drawer h6{font-size:10px;font-weight:800;color:#1b2244;display:flex;align-items:center;gap:5px;margin-bottom:6px}
+.wf-drawer h6 span{margin-left:auto;color:#9aa1b7;font-weight:600;font-size:9px}
+.wf-note{font-size:9px;color:#8a91a8;margin-top:8px;line-height:1.5}
+.wf-cap{margin-top:10px;text-align:center;font-size:11.5px;color:var(--text-3)}
+@media(max-width:820px){.wf-body{grid-template-columns:1fr}.wf-side{display:none}.wf-split{grid-template-columns:1fr}}
+
+.checks{margin-top:14px;display:grid;gap:8px}
+.check{display:flex;gap:10px;align-items:flex-start;background:#fff;border:1px solid var(--line);border-radius:11px;padding:10px 12px}
+.check i{flex:0 0 auto;width:18px;height:18px;border-radius:5px;border:1.5px solid #c4cbe3;margin-top:2px;display:block;background:#fff}
+.check .c-t{font-size:13px;font-weight:700}
+.check .c-d{font-size:12px;color:var(--text-2);margin-top:2px}
+
+@media print{body{background:#fff}.toc{display:none}section{break-inside:avoid}.wf{box-shadow:none}}
+</style>
+</head>
+<body>
+<div class="shell">
+
+<header class="doc-head">
+  <div class="kicker"><i></i>VendSolution · Web 后台 · 主数据</div>
+  <h1>品牌型号与组件 · 功能 PRD</h1>
+  <p class="sub">本文只覆盖 <code>#/devicecfg/*</code> 这一层：<b>品牌、型号、组件、适配浏览</b> 四个标签页，以及它们背后的弹窗、抽屉、数据点与「型号 × 组件」适配关系。目标是把它从「能点通的原型」整理成能开发、能验收、能交接的主数据模块。</p>
+  <div class="meta">
+    <span>版本 <b>v1.0</b></span>
+    <span>日期 <b>2026-11-27</b></span>
+    <span>落点 <b><code>#/devicecfg/brand</code></b></span>
+    <span>现有数据 <b>4 品牌 · 6 型号 · 11 组件 · 31 条适配</b></span>
+    <span>状态 <b>功能已实现，规则待补齐</b></span>
+  </div>
+</header>
+
+<nav class="toc" aria-label="目录">
+  <a href="#s1"><em>1</em>定位与边界</a>
+  <a href="#s2"><em>2</em>现状盘点</a>
+  <a href="#s3"><em>3</em>概念与数据模型</a>
+  <a href="#s4"><em>4</em>页面规格</a>
+  <a href="#s5"><em>5</em>交互规则</a>
+  <a href="#s6"><em>6</em>校验与异常</a>
+  <a href="#s7"><em>7</em>权限与审计</a>
+  <a href="#s8"><em>8</em>已知问题与差距</a>
+  <a href="#s9"><em>9</em>验收标准</a>
+  <a href="#s10"><em>10</em>待确认</a>
+</nav>
+
+<!-- ============================================================ -->
+<section id="s1">
+  <div class="sec-head"><span class="sec-num">01</span><h2>定位与边界</h2><span class="hint">先看这一节</span></div>
+
+  <p class="lead">这一层是<b>设备主数据</b>，不是设备资产。它回答三个问题：有哪些品牌、每个品牌下有哪些型号、每个型号装了哪些组件；以及反过来：一个组件被哪些品牌型号复用。它<b>不回答</b>「这个组件有哪些参数、值是多少、配方怎么配」——那是「组件与参数」（<code>#/params/*</code>）的职责。</p>
+
+  <div class="verdict">
+    <div class="vcard">
+      <div class="n">判断一</div>
+      <h4>品牌 / 型号是层级，组件是全局池</h4>
+      <p>品牌 1—N 型号；组件不属于任何品牌，独立维护一份资料，通过「型号 × 组件」多对多复用。删除型号不能带走组件，删除组件必须先解绑。</p>
+    </div>
+    <div class="vcard">
+      <div class="n">判断二</div>
+      <h4>指令代码挂在关系上，不挂在组件上</h4>
+      <p>同一个上水水泵，在 WSD 1008/2008 是 <code>power_A</code>，在 TCN 680 是 <code>pwr1</code>，在 FUJI F100 是 <code>fuji_pwr_1</code>。所以指令代码是适配关系的属性，不是组件的属性。</p>
+    </div>
+    <div class="vcard">
+      <div class="n">判断三</div>
+      <h4>数据点是「能力声明」，不是运行值</h4>
+      <p>组件下的数据点定义类型、单位、范围、默认值，对齐物模型；真实读数属于设备实例。这里只维护 schema，不存遥测。</p>
+    </div>
+  </div>
+
+  <h3>1.1 做什么 / 不做什么</h3>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th style="width:120px">范围</th><th>包含</th><th>不包含</th></tr></thead>
+      <tbody>
+        <tr>
+          <td class="nowrap"><span class="tag p0">本文</span> 品牌型号与组件</td>
+          <td>品牌 CRUD、型号 CRUD、组件 CRUD、组件分类、组件数据点 schema、型号与组件的增删关联、指令代码、双向适配浏览</td>
+          <td>设备实例、库存、下发、配方、参数取值</td>
+        </tr>
+        <tr>
+          <td class="nowrap"><span class="tag no">不在本文</span> 组件与参数</td>
+          <td><code>#/params/library</code> 组件库、型号参数覆盖、配方与工艺、商品配方、清洗</td>
+          <td>——（按你的要求忽略该模块）</td>
+        </tr>
+        <tr>
+          <td class="nowrap"><span class="tag no">不在本文</span> 机器</td>
+          <td>机器列表、机器模板、设备资产</td>
+          <td>——</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>1.2 信息架构</h3>
+  <div class="ia">
+    <div class="ia-col">
+      <h4>左侧导航</h4>
+      <div class="ia-node on">品牌型号与组件 <em>devicecfg</em></div>
+      <div class="ia-node sub">品牌 <em>brand</em></div>
+      <div class="ia-node sub">型号 <em>model</em></div>
+      <div class="ia-node sub">组件 <em>component</em></div>
+      <div class="ia-node sub">适配浏览 <em>browse</em></div>
+    </div>
+    <div class="ia-col">
+      <h4>页面内层级</h4>
+      <div class="ia-node">页面标题 + 说明</div>
+      <div class="ia-node">标签页（品牌 / 型号 / 组件 / 适配浏览）</div>
+      <div class="ia-node">筛选栏（搜索 / 品牌 / 分类）</div>
+      <div class="ia-node">列表面板（表头 + 计数 + 表格）</div>
+      <div class="ia-node">弹窗 / 抽屉（编辑、管理关联、选择器）</div>
+    </div>
+    <div class="ia-col">
+      <h4>深链</h4>
+      <div class="ia-node mono">#/devicecfg/brand</div>
+      <div class="ia-node mono">#/devicecfg/model</div>
+      <div class="ia-node mono">#/devicecfg/component</div>
+      <div class="ia-node mono">#/devicecfg/browse</div>
+      <div class="ia-node" style="font-weight:500">hash 与左侧子导航、面包屑同步</div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<section id="s2">
+  <div class="sec-head"><span class="sec-num">02</span><h2>现状盘点</h2><span class="hint">原型里已经有的东西</span></div>
+
+  <p>这一节是「按现状写」，不是「按理想写」。下面每个数字都是在页面上实测得到的，开发可以拿它当初始数据。</p>
+
+  <h3>2.1 实体规模</h3>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th style="width:150px">实体</th><th class="num" style="width:80px">数量</th><th>清单</th></tr></thead>
+      <tbody>
+        <tr><td>品牌</td><td class="num">4</td><td>WSD、TCN、FUJI、BMW</td></tr>
+        <tr><td>型号</td><td class="num">6</td><td>WSD 1008 / 2008；TCN 680；FUJI F100；BMW 3系 / 5系</td></tr>
+        <tr><td>组件</td><td class="num">11</td><td>上水水泵、左搅拌器、右搅拌器、磨豆电机、落杯电机、咖啡豆搅拌电机、饮料嘴电机、杯盖电机、档把、方向盘、后视镜</td></tr>
+        <tr><td>适配关系</td><td class="num">31</td><td>1008: 8 · 2008: 6 · 680: 6 · F100: 5 · 3系: 3 · 5系: 3</td></tr>
+        <tr><td>数据点</td><td class="num">15</td><td>分布在 5 个组件：磨豆电机 4、上水水泵 3、左搅拌器 3、咖啡豆搅拌电机 3、落杯电机 2；其余 6 个组件为 0</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>2.2 组件分类分布</h3>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th style="width:180px">一级</th><th style="width:180px">二级</th><th class="num" style="width:80px">数量</th><th>组件</th></tr></thead>
+      <tbody>
+        <tr><td rowspan="4">料道</td><td>水</td><td class="num">1</td><td>上水水泵</td></tr>
+        <tr><td>粉料</td><td class="num">2</td><td>左搅拌器、右搅拌器</td></tr>
+        <tr><td>豆仓</td><td class="num">2</td><td>磨豆电机、咖啡豆搅拌电机</td></tr>
+        <tr><td>液体</td><td class="num">1</td><td>饮料嘴电机</td></tr>
+        <tr><td>清洗</td><td class="muted">—</td><td class="num">0</td><td class="muted">本期无组件，分类已预留</td></tr>
+        <tr><td>非料道</td><td class="muted">—</td><td class="num">5</td><td>落杯电机、杯盖电机、档把、方向盘、后视镜</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="note warn">
+    <div class="ic">!</div>
+    <p><b>BMW 的三个组件是分类压力测试数据，不是真实业务。</b>「档把 / 方向盘 / 后视镜」用来验证「一个品牌可以完全不按料道分类」时，组件库、适配浏览和型号抽屉是否还能正常表达。上线前应清理，或明确标注为演示数据。</p>
+  </div>
+
+  <h3>2.3 现有字段</h3>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th style="width:130px">实体</th><th>字段</th><th>说明</th></tr></thead>
+      <tbody>
+        <tr><td rowspan="5">品牌</td><td><code>id</code> · <code>name</code></td><td>ID 形如 <code>B-WSD</code>；名称全局唯一</td></tr>
+        <tr><td><code>img</code></td><td>1:1 图片，列表 32px 缩略图</td></tr>
+        <tr><td><code>created</code> · <code>updated</code></td><td>日期字符串，只展示</td></tr>
+        <tr><td colspan="2" class="muted">没有：启用状态、排序、备注、外部编码</td></tr>
+        <tr><td colspan="2" class="muted">型号数量为实时计算，不是存储字段</td></tr>
+        <tr><td rowspan="4">型号</td><td><code>id</code> · <code>brandId</code> · <code>name</code></td><td>ID 形如 <code>M-WSD1008</code>；名称在同品牌内唯一</td></tr>
+        <tr><td><code>img</code></td><td>1:1 图片</td></tr>
+        <tr><td><code>created</code> · <code>updated</code></td><td>新增关联时也会刷新</td></tr>
+        <tr><td colspan="2" class="muted">没有：机型规格、产能、柜门数、是否在售、设备数量</td></tr>
+        <tr><td rowspan="4">组件</td><td><code>id</code> · <code>name</code></td><td>ID 形如 <code>C-GRIND</code>；名称全局唯一</td></tr>
+        <tr><td><code>cat</code></td><td>两级字符串，如 <code>料道/豆仓</code>；可为空（未分类）</td></tr>
+        <tr><td><code>points[]</code></td><td>数据点数组，见 3.5</td></tr>
+        <tr><td><code>created</code> · <code>updated</code></td><td>——</td></tr>
+        <tr><td rowspan="3">适配关系</td><td><code>modelId</code> · <code>componentId</code></td><td>联合唯一，不允许同型号重复关联同一组件</td></tr>
+        <tr><td><code>cmdCode</code></td><td>指令代码，非空，默认 <code>cmd_&lt;组件ID小写&gt;</code></td></tr>
+        <tr><td colspan="2" class="muted">没有：数量、位置/料道号、是否标配/选配、生效版本</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<section id="s3">
+  <div class="sec-head"><span class="sec-num">03</span><h2>概念与数据模型</h2><span class="hint">开发看这节</span></div>
+
+  <h3>3.1 关系总览</h3>
+  <pre><span class="c">品牌 1 ── N 型号 N ── N 组件 1 ── N 数据点</span>
+Brand(id,name,img)
+   └─ Model(id,brandId,name,img)
+         └─ <span class="k">ModelComponentLink(modelId,componentId,cmdCode)</span>   <span class="c">// 多对多 + 关系属性</span>
+               └─ Component(id,name,cat)
+                     └─ Point(pid,code,name,type,unit,min,max,step,scale,enumVals,def,required,enabled)</pre>
+
+  <p>关键点：<b>指令代码在第三张表上</b>。如果把它放进组件表，就无法表达「同一个水泵在不同型号上指令不同」；如果放进型号表，就无法表达「一个型号有多个组件、每个组件各有一条指令」。</p>
+
+  <h3>3.2 唯一性约束</h3>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th style="width:160px">对象</th><th style="width:200px">约束</th><th>实现口径</th><th style="width:190px">冲突提示</th></tr></thead>
+      <tbody>
+        <tr><td>品牌名称</td><td>全局唯一</td><td>去首尾空格 + 转小写后比较</td><td>品牌名称已存在</td></tr>
+        <tr><td>型号名称</td><td>同品牌内唯一</td><td>跨品牌允许同名（如两个品牌都有「1008」）</td><td>同品牌下已存在同名型号</td></tr>
+        <tr><td>组件名称</td><td>全局唯一</td><td>去空格 + 转小写比较</td><td>组件名称已存在</td></tr>
+        <tr><td>数据点标识</td><td>组件内唯一</td><td><code>code</code> 忽略大小写；不同组件可同名</td><td>标识 code 在组件内已存在</td></tr>
+        <tr><td>适配关系</td><td>（型号, 组件）联合唯一</td><td>选择器已排除已关联项，保存时再判重</td><td>没有新增适配关系（静默跳过）</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>3.3 级联与删除规则</h3>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th style="width:140px">操作</th><th style="width:220px">前置条件</th><th>结果</th><th style="width:150px">样式</th></tr></thead>
+      <tbody>
+        <tr><td>删除型号</td><td>二次确认</td><td>删除型号本体 + 该型号的全部适配关系；<b>组件与数据点保留</b>，其他型号不受影响</td><td><span class="tag out">不可恢复</span></td></tr>
+        <tr><td>删除品牌</td><td>品牌下型号数 = 0</td><td>有型号时<b>只弹提示、不执行删除</b>，要求先删除或转移型号</td><td><span class="tag no">当前一律拦截</span></td></tr>
+        <tr><td>删除组件</td><td>适配型号数 = 0</td><td>有引用时<b>只弹提示、不执行删除</b>，要求先解除全部适配</td><td><span class="tag no">当前一律拦截</span></td></tr>
+        <tr><td>移除适配</td><td>无</td><td>只删关系记录，组件资料、型号资料、数据点都不动；即时生效、无二次确认</td><td><span class="tag ok">可恢复</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="note danger">
+    <div class="ic">!</div>
+    <p><b>现状缺陷：品牌和组件的删除入口没有做「数量为 0 就放行」。</b>即使品牌下 0 个型号、组件 0 个引用，也只会弹「无法删除」并显示 0 个型号。开发时必须补上这个分支，否则主数据只能增不能删。详见 8.1。</p>
+  </div>
+
+  <h3>3.4 指令代码生成规则</h3>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th style="width:180px">场景</th><th>取值</th><th style="width:260px">示例</th></tr></thead>
+      <tbody>
+        <tr><td>默认值</td><td><code>cmd_</code> + 组件 ID 去掉 <code>C-</code> 前缀后转小写，非法字符保留原样</td><td><code>C-GRIND</code> → <code>cmd_grind</code></td></tr>
+        <tr><td>型号级覆盖</td><td>同一组件在不同型号下可写不同值，互不影响</td><td><code>C-PUMP</code> → <code>power_A</code> / <code>pwr1</code> / <code>fuji_pwr_1</code></td></tr>
+        <tr><td>添加时修改</td><td>选择器每行右侧的输入框，可逐条改</td><td>勾选「磨豆电机」，把 <code>cmd_grind</code> 改成 <code>grind_1</code></td></tr>
+        <tr><td>添加后修改</td><td>抽屉或适配浏览表格里点指令代码单元格，行内编辑；Enter 确认、Esc 取消</td><td>——</td></tr>
+        <tr><td>校验</td><td>非空；允许字母、数字、下划线、连字符；不做全局唯一</td><td>空值 → 指令代码不能为空</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>3.5 数据点（物模型定义）</h3>
+  <p>数据点只存在于组件上，用来声明「这个组件能读/能写什么」。类型决定字段集：</p>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th style="width:110px">类型</th><th style="width:80px">中文</th><th>专属字段</th><th style="width:210px">范围展示</th></tr></thead>
+      <tbody>
+        <tr><td><code>bool</code></td><td>开关</td><td>默认值（开 / 关）</td><td>—</td></tr>
+        <tr><td><code>value</code></td><td>数字</td><td>单位、最小值、最大值、步长、精度</td><td><code>0 ~ 99 s</code></td></tr>
+        <tr><td><code>enum</code></td><td>状态</td><td>枚举值列表（可增删）、默认值从列表选</td><td><code>低速 / 中速 / 高速</code></td></tr>
+        <tr><td><code>string</code></td><td>字符串</td><td>默认值；本期不设长度约束</td><td>—</td></tr>
+        <tr><td><code>raw</code></td><td>透传</td><td>Hex 透传；本期不设约束</td><td>—</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="small">公共字段：名称、标识 code、类型、必填、启用。表格列固定为：名称 / 标识 / 类型 / 单位 / 范围 / 默认值 / 必填 / 启用 / 操作。</p>
+
+  <div class="note">
+    <div class="ic">i</div>
+    <p><b>数据点与「组件与参数」里的参数不是一回事。</b>数据点描述通信能力（读什么、写什么、什么类型），参数描述设备行为（水量、搅拌速度）。同一个组件可以既有数据点，又在参数模块里挂参数，两者不要合并成一张表。</p>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<section id="s4">
+  <div class="sec-head"><span class="sec-num">04</span><h2>页面规格</h2><span class="hint">逐页拆</span></div>
+
+  <h3>4.1 品牌（<code>#/devicecfg/brand</code>）</h3>
+  <p class="small"><b>用途：</b>维护设备制造商。品牌是型号的父级，本身不承载业务参数。</p>
+
+  <div class="spec">
+    <div class="row"><div class="k">页面标题</div><div class="v">品牌型号与组件 / 品牌；副标题「管理设备制造商与品牌。」</div></div>
+    <div class="row"><div class="k">主操作</div><div class="v">右上角「＋ 新增品牌」，蓝色实心按钮</div></div>
+    <div class="row"><div class="k">筛选栏</div><div class="v">仅一个「搜索品牌」输入框，按名称即时过滤（不区分大小写）；无状态筛选、无分页</div></div>
+    <div class="row"><div class="k">表格列</div><div class="v">图片（32px 正方形）· 品牌名称 · 型号数量（数字，不可点）· 更新时间 · 操作（编辑 / 删除）</div></div>
+    <div class="row"><div class="k">计数</div><div class="v">表头右侧「共 N 项」，随筛选结果变化</div></div>
+    <div class="row"><div class="k">行内操作</div><div class="v">编辑 → 打开编辑弹窗；删除 → 打开拦截/确认弹窗</div></div>
+    <div class="row"><div class="k">空状态</div><div class="v">无数据：「暂无品牌，添加第一个品牌。」；搜索无结果：「未找到匹配结果。」</div></div>
+  </div>
+
+  <h4>新增 / 编辑品牌弹窗</h4>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th style="width:150px">字段</th><th style="width:90px">必填</th><th>规则</th></tr></thead>
+      <tbody>
+        <tr><td>品牌名称</td><td><span class="tag out">是</span></td><td>文本框，最多 50 字；去首尾空格；全局唯一</td></tr>
+        <tr><td>图片</td><td><span class="tag no">否</span></td><td>点击方框或「选择图片」上传；JPG / PNG；上传后居中裁切为 1:1，最长边压到 512px；可「移除图片」</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="small">弹窗宽度 620；标题「新增品牌 / 编辑品牌」，副标题「品牌型号与组件」；底部「取消 / 保存」。保存成功后关闭弹窗、列表刷新、右下角 toast「品牌创建成功 / 已更新」。</p>
+
+  <h3>4.2 型号（<code>#/devicecfg/model</code>）</h3>
+  <p class="small"><b>用途：</b>维护品牌下的具体机型，并管理机型装了哪些组件。</p>
+
+  <div class="spec">
+    <div class="row"><div class="k">主操作</div><div class="v">「＋ 新增型号」</div></div>
+    <div class="row"><div class="k">筛选栏</div><div class="v">品牌下拉（全部品牌 / 具体品牌）+ 搜索框（同时匹配型号名与品牌名）</div></div>
+    <div class="row"><div class="k">表格列</div><div class="v">图片 · 品牌 · 型号 · 组件数量（<b>可点</b>，开「管理组件」抽屉）· 更新时间 · 操作（管理组件 / 编辑 / 删除）</div></div>
+    <div class="row"><div class="k">排序</div><div class="v">按录入顺序，不排序、不分页</div></div>
+    <div class="row"><div class="k">空状态</div><div class="v">「暂无型号，添加一个型号。」；筛选无结果：「未找到匹配结果。」</div></div>
+  </div>
+
+  <h4>新增 / 编辑型号弹窗</h4>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th style="width:150px">字段</th><th style="width:90px">必填</th><th>规则</th></tr></thead>
+      <tbody>
+        <tr><td>品牌</td><td><span class="tag out">是</span></td><td>下拉，选项来自全部品牌；新增时默认取当前筛选的品牌，否则取第一个品牌</td></tr>
+        <tr><td>型号名称</td><td><span class="tag out">是</span></td><td>最多 50 字；同品牌内唯一</td></tr>
+        <tr><td>图片</td><td><span class="tag no">否</span></td><td>同上，1:1 裁切</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h4>删除型号确认</h4>
+  <p>弹窗标题「删除型号」，正文说明「将同时清理 N 条组件关联记录；全局组件资料不会被删除」，并以红色提示「此操作不可恢复」。按钮「取消 / 确认删除」（危险色）。</p>
+
+  <h3>4.3 组件（<code>#/devicecfg/component</code>）</h3>
+  <p class="small"><b>用途：</b>全局组件库。一个组件只维护一份资料，可被多个品牌型号复用；组件上带数据点定义。</p>
+
+  <div class="spec">
+    <div class="row"><div class="k">主操作</div><div class="v">「＋ 新增组件」</div></div>
+    <div class="row"><div class="k">筛选栏</div><div class="v">搜索组件（名称）+ 分类下拉（全部分类 / 料道 / 清洗 / 非料道）</div></div>
+    <div class="row"><div class="k">表格列</div><div class="v">组件名称 · 分类（两级徽标，如「料道 · 豆仓」）· 适配型号（最多显示 2 个「品牌 / 型号」，超出显示「+N 更多」）· 型号数量（可点）· 操作（管理适配 / 编辑 / 删除）</div></div>
+    <div class="row"><div class="k">分类徽标配色</div><div class="v">料道 → 蓝；清洗 → 绿；非料道 → 灰；未分类显示「—」</div></div>
+    <div class="row"><div class="k">空状态</div><div class="v">「暂无组件，添加第一个组件。」；筛选无结果：「未找到匹配结果。」</div></div>
+  </div>
+
+  <div class="note warn">
+    <div class="ic">!</div>
+    <p><b>分类筛选只按一级过滤。</b>选「料道」会带出料道下全部子类，但没法直接选「料道 / 豆仓」。数据里已经有两级，筛选器只做了一级——要么补二级联动，要么明确「列表只按一级筛、精确到子类靠搜索」。</p>
+  </div>
+
+  <h4>新增 / 编辑组件弹窗（宽 820）</h4>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th style="width:150px">区块</th><th>内容</th></tr></thead>
+      <tbody>
+        <tr><td>基本信息</td><td>组件名称（必填，≤50，全局唯一）+ 分类（下拉：未分类 / 料道·粉料 / 料道·BIB / 料道·豆仓 / 料道·水 / 料道·冰 / 料道·液体 / 清洗 / 非料道）</td></tr>
+        <tr><td>数据点区</td><td>标题「数据点 / 传感器（N）」；右上「从其他组件复制」「＋ 新增数据点」；下方 9 列表格，最大高度 300，内部滚动</td></tr>
+        <tr><td>数据点表格</td><td>名称 / 标识 / 类型 / 单位 / 范围 / 默认值 / 必填 / 启用（勾选框，即时改）/ 操作（编辑 / 删除）</td></tr>
+        <tr><td>空数据点</td><td>「暂无数据点，点击「新增数据点」或「从其他组件复制」。」</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="small"><b>注意：组件没有图片字段。</b>品牌和型号都有 1:1 图片，组件没有；列表首列直接是名称。如果后续要在选型、报表里出图，需要补。</p>
+
+  <h4>数据点弹窗（宽 620）</h4>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th style="width:150px">字段</th><th style="width:90px">必填</th><th>规则</th></tr></thead>
+      <tbody>
+        <tr><td>名称</td><td><span class="tag out">是</span></td><td>如「研磨时间」</td></tr>
+        <tr><td>标识 code</td><td><span class="tag out">是</span></td><td>以字母开头，仅字母 / 数字 / 下划线；组件内唯一（忽略大小写），如 <code>grind_time</code></td></tr>
+        <tr><td>类型</td><td><span class="tag out">是</span></td><td>开关 / 数字 / 状态 / 字符串 / 透传；切换类型时下方字段联动</td></tr>
+        <tr><td>单位 / min / max / step / scale</td><td><span class="tag no">否</span></td><td>仅数字型；min 不得大于 max；step、scale 为数字</td></tr>
+        <tr><td>枚举值</td><td><span class="tag out">至少 1 个</span></td><td>仅状态型；输入后「添加」，列表内可逐条删除</td></tr>
+        <tr><td>默认值</td><td><span class="tag no">否</span></td><td>开关型为开/关；状态型从枚举值中选；其他为文本框</td></tr>
+        <tr><td>必填 / 启用</td><td><span class="tag no">否</span></td><td>两个勾选框，默认「启用」勾选、「必填」不勾</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h4>从其他组件复制数据点（宽 620）</h4>
+  <ol>
+    <li>选择源组件（排除当前正在编辑的组件）。</li>
+    <li>列出源组件的全部数据点，逐条勾选；显示「名称 · 类型 · code」。</li>
+    <li>「复制所选」：深拷贝生成独立副本，编辑互不影响；<code>pid</code> 重新生成；若 code 与目标组件已有项冲突，自动加 <code>_1</code>、<code>_2</code> 后缀。</li>
+    <li>复制结果先进入编辑态列表，仍要在组件弹窗点「保存」才真正落库。</li>
+  </ol>
+
+  <h3>4.4 适配浏览（<code>#/devicecfg/browse</code>）</h3>
+  <p class="small"><b>用途：</b>不为了改数据，而是为了查关系。两个方向都能进，且能互相跳转，形成闭环。</p>
+
+  <div class="flow">
+    <div class="fbox">
+      <div class="t">按品牌看 · 第 1 层</div>
+      <div class="m">品牌卡片墙</div>
+      <div class="d">每张卡片：品牌图 + 名称 + 「N 个型号」</div>
+      <div class="c">点击 → 进入该品牌的型号墙</div>
+    </div>
+    <div class="farrow">›</div>
+    <div class="fbox">
+      <div class="t">第 2 层</div>
+      <div class="m">型号卡片墙</div>
+      <div class="d">每张卡片：型号图 + 名称 + 「N 个组件」</div>
+      <div class="c">点击 → 进入该型号的组件表</div>
+    </div>
+    <div class="farrow">›</div>
+    <div class="fbox">
+      <div class="t">第 3 层</div>
+      <div class="m">组件表</div>
+      <div class="d">组件名称 / 分类 / 指令代码 / 「查适配品牌」</div>
+      <div class="c">点「查适配品牌」→ 切到组件维度</div>
+    </div>
+  </div>
+
+  <div class="flow" style="margin-top:10px">
+    <div class="fbox">
+      <div class="t">按组件看 · 第 1 层</div>
+      <div class="m">全局组件表</div>
+      <div class="d">按适配型号数降序；列：名称 / 分类 / 适配品牌数 / 适配型号数</div>
+      <div class="c">点组件 → 进入该组件的适配清单</div>
+    </div>
+    <div class="farrow">›</div>
+    <div class="fbox">
+      <div class="t">第 2 层</div>
+      <div class="m">按品牌分组的型号表</div>
+      <div class="d">每组一个表：品牌名 + 「N 个型号」；列：型号 / 指令代码 / 「看该型号组件」</div>
+      <div class="c">点型号 → 切回品牌维度并定位到该型号</div>
+    </div>
+  </div>
+
+  <div class="spec">
+    <div class="row"><div class="k">维度切换</div><div class="v">顶部两个 tab「按品牌看 / 按组件看」，切换时清空另一个维度的层级</div></div>
+    <div class="row"><div class="k">面包屑</div><div class="v">品牌维度：全部品牌 / 品牌 / 型号；组件维度：全部组件 / 组件。上级可点，当前级为粗体不可点</div></div>
+    <div class="row"><div class="k">交叉跳转</div><div class="v">品牌→组件：组件表「查适配品牌」；组件→品牌：型号行「看该型号组件」；跳转后自动展开到对应层级</div></div>
+    <div class="row"><div class="k">辅助说明</div><div class="v">每层底部有一行灰字，说明「点哪里会发生什么」，例如「点击「查适配品牌」切换到组件维度，查看该组件被哪些品牌型号复用。」</div></div>
+    <div class="row"><div class="k">空状态</div><div class="v">「暂无品牌。」「该品牌下暂无型号。」「该型号暂无适配组件。」「暂无适配型号。」</div></div>
+  </div>
+
+  <h3>4.5 弹窗与抽屉清单</h3>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th style="width:180px">浮层</th><th style="width:120px">触发</th><th style="width:90px">宽度</th><th>内容要点</th><th style="width:150px">主操作</th></tr></thead>
+      <tbody>
+        <tr><td>品牌 / 型号编辑弹窗</td><td>新增、编辑</td><td>620</td><td>名称、品牌（型号）、图片</td><td>保存</td></tr>
+        <tr><td>组件编辑弹窗</td><td>新增、编辑</td><td>820</td><td>名称、分类、数据点表</td><td>保存</td></tr>
+        <tr><td>数据点弹窗</td><td>新增 / 编辑数据点</td><td>620</td><td>名称、code、类型、类型字段、默认值、必填/启用</td><td>保存</td></tr>
+        <tr><td>复制数据点弹窗</td><td>从其他组件复制</td><td>620</td><td>源组件下拉、数据点多选</td><td>复制所选</td></tr>
+        <tr><td>管理组件抽屉</td><td>型号行「管理组件」</td><td>右侧 55%</td><td>该型号的组件清单 + 指令代码 + 移除</td><td>＋ 添加组件</td></tr>
+        <tr><td>管理适配抽屉</td><td>组件行「管理适配」</td><td>右侧 55%</td><td>该组件的型号清单 + 指令代码 + 移除</td><td>＋ 添加型号</td></tr>
+        <tr><td>添加组件 / 型号选择器</td><td>抽屉内「＋ 添加」</td><td>620</td><td>搜索、品牌筛选（型号模式）、多选、每行指令代码、行内新建组件</td><td>添加所选</td></tr>
+        <tr><td>删除确认 / 拦截</td><td>行内「删除」</td><td>620</td><td>型号：级联说明 + 不可恢复；品牌/组件：拦截说明</td><td>确认删除 / 知道了</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>4.6 关键界面</h3>
+  <div class="wf">
+    <div class="wf-bar"><div class="wf-dots"><i></i><i></i><i></i></div><div class="wf-url">vend-solution-reports.html#/devicecfg/model</div></div>
+    <div class="wf-body">
+      <div class="wf-side">
+        <div class="wf-brand"><i></i>VendSolution</div>
+        <div class="grp">设备与商品</div>
+        <div class="it">机器</div>
+        <div class="it on">品牌型号与组件</div>
+        <div class="it sub on">品牌</div>
+        <div class="it sub">型号</div>
+        <div class="it sub">组件</div>
+        <div class="it sub">适配浏览</div>
+      </div>
+      <div class="wf-main">
+        <div class="wf-hd">
+          <div><h5>品牌型号与组件</h5><p>统一管理设备品牌、型号与全局可复用组件，支持型号与组件的双向适配查询。</p></div>
+          <div class="rt"><span class="wf-btn">＋ 新增型号</span></div>
+        </div>
+        <div class="wf-tabs"><span>品牌</span><span class="on">型号</span><span>组件</span><span>适配浏览</span></div>
+        <div class="wf-tool"><span class="wf-inp">全部品牌 ⌄</span><span class="wf-inp" style="min-width:150px">搜索型号或品牌</span></div>
+        <div class="wf-split">
+          <div class="wf-tbl-wrap">
+            <table class="wf-tbl">
+              <thead><tr><th>品牌</th><th>型号</th><th class="r">组件数量</th><th>操作</th></tr></thead>
+              <tbody>
+                <tr><td class="nm">WSD</td><td>1008</td><td class="r">8</td><td>管理组件 · 编辑 · 删除</td></tr>
+                <tr><td class="nm">WSD</td><td>2008</td><td class="r">6</td><td>管理组件 · 编辑 · 删除</td></tr>
+                <tr><td class="nm">TCN</td><td>680</td><td class="r">6</td><td>管理组件 · 编辑 · 删除</td></tr>
+                <tr><td class="nm">FUJI</td><td>F100</td><td class="r">5</td><td>管理组件 · 编辑 · 删除</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="wf-drawer">
+            <h6>管理组件<span>WSD / 1008</span></h6>
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+              <b style="font-size:9.5px">适配组件（8）</b><span class="wf-btn" style="height:19px;font-size:8.8px">＋ 添加组件</span>
+            </div>
+            <table class="wf-tbl">
+              <thead><tr><th>组件</th><th>分类</th><th>指令代码</th><th>操作</th></tr></thead>
+              <tbody>
+                <tr><td class="nm">左搅拌器</td><td><span class="wf-badge brand">料道 · 粉料</span></td><td>cmd_mixl</td><td style="color:#d92d20">移除</td></tr>
+                <tr><td class="nm">磨豆电机</td><td><span class="wf-badge brand">料道 · 豆仓</span></td><td>cmd_grind</td><td style="color:#d92d20">移除</td></tr>
+                <tr><td class="nm">落杯电机</td><td><span class="wf-badge mut">非料道</span></td><td>cmd_drop</td><td style="color:#d92d20">移除</td></tr>
+                <tr><td class="nm">上水水泵</td><td><span class="wf-badge brand">料道 · 水</span></td><td>power_A</td><td style="color:#d92d20">移除</td></tr>
+              </tbody>
+            </table>
+            <div class="wf-note">指令代码在关系上，可点击行内修改；移除只断关系，不删组件。</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="wf-cap">型号列表 + 管理组件抽屉：列表看「有哪些型号」，抽屉解决「这个型号装了哪些组件、各自指令代码是什么」</div>
+</section>
+
+<!-- ============================================================ -->
+<section id="s5">
+  <div class="sec-head"><span class="sec-num">05</span><h2>交互规则</h2><span class="hint">别在开发时猜</span></div>
+
+  <h3>5.1 列表与筛选</h3>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th style="width:170px">规则</th><th>说明</th></tr></thead>
+      <tbody>
+        <tr><td>搜索触发</td><td>输入即过滤，不需要点「搜索」；失焦后保留关键词</td></tr>
+        <tr><td>搜索范围</td><td>品牌：仅品牌名；型号：型号名 + 品牌名；组件：仅组件名</td></tr>
+        <tr><td>切换标签</td><td>清空搜索词、品牌筛选、分类筛选，回到该标签的完整列表</td></tr>
+        <tr><td>筛选组合</td><td>型号页：品牌 ∩ 关键词；组件页：分类 ∩ 关键词</td></tr>
+        <tr><td>计数</td><td>「共 N 项」= 过滤后的条数，不是总数</td></tr>
+        <tr><td>分页</td><td><b>本期无分页</b>，全量渲染；超过 100 条需要补分页或虚拟滚动</td></tr>
+        <tr><td>排序</td><td>品牌 / 型号 / 组件列表均按录入顺序；只有「适配浏览-按组件看」按型号数降序</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>5.2 关联组件（核心链路）</h3>
+  <ol>
+    <li>型号行点「管理组件」（或点组件数量）→ 右侧抽屉打开，标题「管理组件」，副标题「品牌 / 型号」。</li>
+    <li>抽屉列出已关联组件：名称、分类、指令代码、移除；底部「共 N 个组件」。</li>
+    <li>点「＋ 添加组件」→ 打开选择器。列表<b>自动排除已关联组件</b>，支持按名称搜索。</li>
+    <li>逐条勾选，每行右侧可直接改指令代码；默认值按 3.4 生成。</li>
+    <li>找不到？底部输入新组件名称 →「新建并关联」：全局创建组件（分类为空），并立即建立当前型号的关联。</li>
+    <li>「添加所选」→ 仅新增未关联项；提示「已添加 N 条适配关系」，若全已存在则「没有新增适配关系」。</li>
+    <li>抽屉内「移除」即时生效，不弹确认；提示「已解除适配关系，组件资料保留」。</li>
+  </ol>
+
+  <h3>5.3 关联型号（反向）</h3>
+  <p>组件行点「管理适配」→ 抽屉列出使用该组件的型号（品牌 / 型号 / 指令代码 / 移除）。「＋ 添加型号」的选择器支持<b>品牌筛选</b>与跨品牌多选，同样排除已关联项。其余规则与 5.2 对称。</p>
+
+  <h3>5.4 指令代码行内编辑</h3>
+  <div class="spec">
+    <div class="row"><div class="k">进入</div><div class="v">点击表格里的指令代码文本 → 变为输入框 + 「确认 / 取消」，自动聚焦并全选</div></div>
+    <div class="row"><div class="k">键盘</div><div class="v">Enter 保存；Esc 取消并还原</div></div>
+    <div class="row"><div class="k">校验</div><div class="v">空值拦截，提示「指令代码不能为空」；保存成功提示「指令代码已更新」</div></div>
+    <div class="row"><div class="k">范围</div><div class="v">只改当前「型号 × 组件」这一条关系，不影响其他型号</div></div>
+  </div>
+
+  <h3>5.5 图片上传</h3>
+  <ol>
+    <li>点方框或「选择图片」→ 唤起文件选择，仅 <code>image/*</code>。</li>
+    <li>非图片文件 → 提示「请选择图片文件」。</li>
+    <li>读取后按短边居中裁切为正方形，输出最长边 512px 的 PNG。</li>
+    <li>预览立即更新，提示「图片已裁切为 1:1 方形」；读取失败提示「图片读取失败」。</li>
+    <li>「移除图片」清空，回到占位态。</li>
+    <li>图片在点「保存」前只存在于编辑草稿里；取消则丢弃。</li>
+  </ol>
+
+  <h3>5.6 保存语义</h3>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th style="width:190px">操作</th><th>生效时机</th><th style="width:220px">未保存就关闭</th></tr></thead>
+      <tbody>
+        <tr><td>品牌 / 型号基本信息</td><td>点「保存」后</td><td>丢弃</td></tr>
+        <tr><td>组件名称 / 分类</td><td>点「保存」后</td><td>丢弃</td></tr>
+        <tr><td>数据点的增 / 改 / 删 / 复制</td><td>先进入组件弹窗的草稿，<b>点组件「保存」才落库</b></td><td>整批丢弃</td></tr>
+        <tr><td>数据点「启用」勾选</td><td>即时改草稿并重绘，仍需组件保存</td><td>丢弃</td></tr>
+        <tr><td>适配关系增删</td><td>即时生效，无草稿</td><td>已生效（不可撤销）</td></tr>
+        <tr><td>指令代码</td><td>回车/确认即时生效</td><td>已生效</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="note warn">
+    <div class="ic">!</div>
+    <p><b>两套语义并存，容易误操作。</b>组件弹窗里改了半天数据点，点右上角 × 就全没了；而抽屉里点「移除」却立刻生效、无法撤销。建议：有关联变更时给出「未保存」提示，或把移除改成可撤销的 toast（带「撤销」）。</p>
+  </div>
+
+  <h3>5.7 提示文案</h3>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th style="width:150px">类型</th><th>文案</th></tr></thead>
+      <tbody>
+        <tr><td>成功</td><td>品牌创建成功 / 型号创建成功 / 组件创建成功 / 已更新 / 数据点已保存 / 已复制 N 个数据点 / 已添加 N 条适配关系 / 指令代码已更新 / 图片已裁切为 1:1 方形 / 型号已删除，组件资料保持不变 / 已解除适配关系，组件资料保留</td></tr>
+        <tr><td>校验失败</td><td>名称必填 / 请选择品牌 / 品牌名称已存在 / 同品牌下已存在同名型号 / 组件名称已存在 / 数据点名称必填 / 标识 code 必填 / 标识 code 需以字母开头，仅含字母/数字/下划线 / 标识 code 在组件内已存在 / 最小值不能大于最大值 / 枚举型至少需要一个枚举值 / 指令代码不能为空 / 请输入枚举值 / 组件名称必填 / 组件名称已存在，请直接选择该组件 / 请选择要复制的数据点</td></tr>
+        <tr><td>读取失败</td><td>请选择图片文件 / 图片读取失败</td></tr>
+        <tr><td>空操作</td><td>没有新增适配关系</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<section id="s6">
+  <div class="sec-head"><span class="sec-num">06</span><h2>校验与异常</h2><span class="hint">边界条件</span></div>
+
+  <h3>6.1 校验规则汇总</h3>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th style="width:190px">字段 / 动作</th><th>规则</th><th style="width:120px">失败表现</th></tr></thead>
+      <tbody>
+        <tr><td>名称（三类）</td><td>去空格后非空；≤ 50 字；按 3.2 判重</td><td>toast + 不关闭弹窗</td></tr>
+        <tr><td>型号所属品牌</td><td>必选，选项非空</td><td>toast「请选择品牌」</td></tr>
+        <tr><td>数据点 code</td><td><code>^[A-Za-z][A-Za-z0-9_]*$</code>；组件内唯一</td><td>toast</td></tr>
+        <tr><td>数字型 min / max</td><td>都填时 min ≤ max；step、scale 为正数</td><td>toast</td></tr>
+        <tr><td>状态型枚举</td><td>至少 1 个；默认值必须在枚举列表内</td><td>toast</td></tr>
+        <tr><td>指令代码</td><td>非空；建议限字母数字下划线连字符</td><td>toast</td></tr>
+        <tr><td>删除品牌</td><td>型号数必须为 0</td><td>拦截弹窗</td></tr>
+        <tr><td>删除组件</td><td>适配型号数必须为 0</td><td>拦截弹窗</td></tr>
+        <tr><td>复制数据点</td><td>必须选源组件且至少勾 1 条</td><td>toast</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>6.2 异常与空状态</h3>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th style="width:210px">场景</th><th>表现</th></tr></thead>
+      <tbody>
+        <tr><td>列表无任何数据</td><td>表格内居中灰字，带行动指引（「添加第一个品牌 / 一个型号 / 第一个组件」）</td></tr>
+        <tr><td>搜索 / 筛选无结果</td><td>居中「未找到匹配结果。」，保留筛选栏</td></tr>
+        <tr><td>删除被拦截</td><td>弹窗标题「无法删除品牌 / 无法删除组件」，正文给出具体数量与下一步，只提供「知道了」</td></tr>
+        <tr><td>抽屉 / 选择器为空</td><td>「暂无适配组件。」「暂无适配型号。」「没有可添加的组件。」「没有可添加的型号。」</td></tr>
+        <tr><td>适配浏览数据缺失</td><td>URL 里的型号 / 组件不存在时，自动回退到上一层，不白屏</td></tr>
+        <tr><td>图片读取失败</td><td>toast 提示，保留原图，不清空</td></tr>
+        <tr><td>刷新页面</td><td><b>所有改动丢失</b>——原型数据只在内存里，没有持久化</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>6.3 并发与一致性（后端落地时必须处理）</h3>
+  <ul>
+    <li><b>名称唯一性</b>：前端判重只能挡住同一会话，后端必须加唯一索引（品牌名、组件名全局唯一；型号名按 brandId 唯一）。</li>
+    <li><b>关联并发</b>：两个人同时给同一型号加同一组件，后端用 (modelId, componentId) 联合主键或唯一索引兜底，重复时幂等返回。</li>
+    <li><b>删除与引用</b>：删除品牌 / 组件时，后端要在事务里再校验一次引用数，不能只信前端弹窗。</li>
+    <li><b>删除型号</b>：级联删关联必须在同一事务内；组件资料不得被误删。</li>
+    <li><b>更新时间</b>：新增 / 编辑 / 新增关联时刷新；<b>移除关联时也应刷新</b>（现状没刷新）。</li>
+  </ul>
+</section>
+
+<!-- ============================================================ -->
+<section id="s7">
+  <div class="sec-head"><span class="sec-num">07</span><h2>权限与审计</h2><span class="hint">现状是「都能改」</span></div>
+
+  <p>现状：这一层<b>没有任何角色隔离</b>。只要进得了后台，就能新增、编辑、删除品牌型号组件，也能改指令代码。原型阶段可以接受，上线前必须补。</p>
+
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th style="width:150px">角色</th><th style="width:110px">查看</th><th style="width:110px">新增 / 编辑</th><th style="width:110px">删除</th><th>说明</th></tr></thead>
+      <tbody>
+        <tr><td>平台管理员</td><td><span class="tag ok">✓</span></td><td><span class="tag ok">✓</span></td><td><span class="tag ok">✓</span></td><td>主数据唯一维护方</td></tr>
+        <tr><td>运维 / 实施</td><td><span class="tag ok">✓</span></td><td><span class="tag no">建议只读</span></td><td><span class="tag no">—</span></td><td>需要查适配关系，但不该改结构</td></tr>
+        <tr><td>租户管理员</td><td><span class="tag ok">✓</span></td><td><span class="tag no">—</span></td><td><span class="tag no">—</span></td><td>只读自己设备涉及的品牌型号</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h4>审计日志（建议字段）</h4>
+  <pre><span class="k">who</span>      操作人 + 角色
+<span class="k">when</span>     时间
+<span class="k">action</span>   create / update / delete / link / unlink / cmd_change
+<span class="k">object</span>   brand | model | component | point | link
+<span class="k">target</span>   对象 ID + 名称（删除后仍可追溯）
+<span class="k">diff</span>     变更前后（至少记录名称、分类、指令代码）</pre>
+  <p class="small">最低要求：删除型号、删除关联、改指令代码这三类必须留痕，因为它们会直接影响下发。</p>
+</section>
+
+<!-- ============================================================ -->
+<section id="s8">
+  <div class="sec-head"><span class="sec-num">08</span><h2>已知问题与差距</h2><span class="hint">按优先级</span></div>
+
+  <p>下面这些是逐行读实现 + 页面实测得到的，不是猜测。P0 建议在下一版就修。</p>
+
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th style="width:70px">优先级</th><th style="width:220px">问题</th><th>现状</th><th style="width:300px">建议</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><span class="tag p0">P0</span></td>
+          <td>品牌删除无条件拦截</td>
+          <td>不管品牌下有几个型号，一律弹「无法删除品牌」；0 个型号时显示「存在 0 个型号」，仍然删不掉</td>
+          <td>数量为 0 时改为「确认删除」；大于 0 才拦截</td>
+        </tr>
+        <tr>
+          <td><span class="tag p0">P0</span></td>
+          <td>组件删除无条件拦截</td>
+          <td>同上，0 个适配型号也删不掉</td>
+          <td>同上</td>
+        </tr>
+        <tr>
+          <td><span class="tag p0">P0</span></td>
+          <td>数据点删除无确认、无引用检查</td>
+          <td>表格里点「删除」立即从草稿移除；若该数据点已下发到设备，物模型会出现悬空字段</td>
+          <td>删除前检查是否已被设备/参数引用；至少加二次确认</td>
+        </tr>
+        <tr>
+          <td><span class="tag p1">P1</span></td>
+          <td>数据不持久</td>
+          <td>全部存在内存，刷新即恢复初始 4/6/11；图片是 dataURL，也不落库</td>
+          <td>接后端；图片走对象存储，表里只存 URL</td>
+        </tr>
+        <tr>
+          <td><span class="tag p1">P1</span></td>
+          <td>型号删除不检查设备占用</td>
+          <td>只要有权限就能删，即使该型号下已有在线设备</td>
+          <td>与机器资产联动：有设备时禁止删或要求先迁移</td>
+        </tr>
+        <tr>
+          <td><span class="tag p1">P1</span></td>
+          <td>列表无分页 / 无排序</td>
+          <td>全量渲染，按录入顺序；组件多了以后难找</td>
+          <td>补分页 + 按名称 / 更新时间排序</td>
+        </tr>
+        <tr>
+          <td><span class="tag p1">P1</span></td>
+          <td>移除关联不可撤销</td>
+          <td>点「移除」立即生效，只给一条 toast</td>
+          <td>toast 带「撤销」，或改为二次确认</td>
+        </tr>
+        <tr>
+          <td><span class="tag p2">P2</span></td>
+          <td>移除关联不刷新「更新时间」</td>
+          <td>新增关系会刷新，移除不会，时间线不准</td>
+          <td>两个方向都刷新</td>
+        </tr>
+        <tr>
+          <td><span class="tag p2">P2</span></td>
+          <td>组件分类筛选只到一级</td>
+          <td>只能选「料道 / 清洗 / 非料道」，选不了「料道 · 豆仓」</td>
+          <td>补二级联动，或列表加子类列</td>
+        </tr>
+        <tr>
+          <td><span class="tag p2">P2</span></td>
+          <td>组件没有图片</td>
+          <td>品牌、型号都有 1:1 图，组件没有；列表首列是名称</td>
+          <td>统一字段，或明确「组件不需要图」</td>
+        </tr>
+        <tr>
+          <td><span class="tag p2">P2</span></td>
+          <td>切换标签清空筛选</td>
+          <td>在型号页筛了 WSD，去组件页再回来，筛选没了</td>
+          <td>按标签分别记忆筛选状态</td>
+        </tr>
+        <tr>
+          <td><span class="tag p2">P2</span></td>
+          <td>品牌「型号数量」不可点</td>
+          <td>型号的组件数量可点开抽屉，品牌的型号数量只是数字</td>
+          <td>点击跳到型号页并带上品牌筛选</td>
+        </tr>
+        <tr>
+          <td><span class="tag p2">P2</span></td>
+          <td>无导入 / 导出 / 批量</td>
+          <td>只能一条条录；初始化 30 多个型号会很痛苦</td>
+          <td>补 CSV 导入、列表导出、批量关联</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="note danger">
+    <div class="ic">!</div>
+    <p><b>最该先修的是「能增不能删」。</b>主数据模块如果删不掉错录的品牌和组件，实际使用第一周就会堆满脏数据；而维护人员没有别的入口清理。这一条不修，后面补分页、补图片都没有意义。</p>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<section id="s9">
+  <div class="sec-head"><span class="sec-num">09</span><h2>验收标准</h2><span class="hint">能逐条点</span></div>
+
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th style="width:60px">编号</th><th style="width:200px">场景</th><th>期望结果</th></tr></thead>
+      <tbody>
+        <tr><td class="num">A1</td><td>新增品牌</td><td>填名称保存后，列表出现该品牌，「型号数量」为 0，更新时间 = 今天</td></tr>
+        <tr><td class="num">A2</td><td>品牌重名</td><td>输入已存在的名称（含大小写差异、首尾空格），保存被拦截并提示「品牌名称已存在」</td></tr>
+        <tr><td class="num">A3</td><td>品牌名为空</td><td>提示「名称必填」，弹窗不关闭</td></tr>
+        <tr><td class="num">A4</td><td>上传非图片</td><td>提示「请选择图片文件」，预览不变</td></tr>
+        <tr><td class="num">B1</td><td>新增型号</td><td>选品牌 + 填名称后保存，列表出现，组件数量为 0</td></tr>
+        <tr><td class="num">B2</td><td>跨品牌同名型号</td><td>WSD 下已有「1008」，在 TCN 下再建「1008」应成功</td></tr>
+        <tr><td class="num">B3</td><td>同品牌重名型号</td><td>在 WSD 下再建「1008」被拦截</td></tr>
+        <tr><td class="num">B4</td><td>删除型号</td><td>确认后型号消失，其关联记录一并清除，组件列表数量不变</td></tr>
+        <tr><td class="num">C1</td><td>新增组件</td><td>填名称、选分类保存后，出现在组件库，型号数量 0，适配型号显示「暂无适配型号」</td></tr>
+        <tr><td class="num">C2</td><td>组件分类展示</td><td>选「料道 · 豆仓」，列表徽标显示「料道 · 豆仓」且为蓝色</td></tr>
+        <tr><td class="num">C3</td><td>数据点 code 非法</td><td>输入 <code>1grind</code> 或 <code>grind-time</code>，保存被拦截并给出规则提示</td></tr>
+        <tr><td class="num">C4</td><td>数据点 code 重复</td><td>同一组件内再加 <code>grind_time</code>（大小写不同也算），被拦截</td></tr>
+        <tr><td class="num">C5</td><td>min &gt; max</td><td>最小值 100、最大值 10，保存被拦截并提示</td></tr>
+        <tr><td class="num">C6</td><td>枚举为空</td><td>状态型不填枚举值，保存被拦截</td></tr>
+        <tr><td class="num">C7</td><td>复制数据点</td><td>从磨豆电机复制 4 条到新组件，得到 4 条独立副本；再次复制同名 code 自动加 <code>_1</code></td></tr>
+        <tr><td class="num">C8</td><td>未保存关闭</td><td>组件弹窗加完数据点后点 ×，再打开该组件，数据点不增加</td></tr>
+        <tr><td class="num">D1</td><td>给型号加组件</td><td>抽屉内勾选 2 个组件并保存，列表组件数量 +2，抽屉同步刷新</td></tr>
+        <tr><td class="num">D2</td><td>重复添加</td><td>选择器里看不到已关联组件；即使构造重复提交，也只提示「没有新增适配关系」</td></tr>
+        <tr><td class="num">D3</td><td>行内新建组件</td><td>输入新名称点「新建并关联」，组件库 +1 且当前型号立即关联，指令代码为默认值</td></tr>
+        <tr><td class="num">D4</td><td>改指令代码</td><td>点单元格改成 <code>power_B</code>，Enter 后显示新值；刷新后（接后端）仍为新值；其他型号不受影响</td></tr>
+        <tr><td class="num">D5</td><td>移除关联</td><td>点「移除」后该行消失，组件库中的组件仍在，其他型号的关联不受影响</td></tr>
+        <tr><td class="num">E1</td><td>删除有型号的品牌</td><td>弹「无法删除品牌」，显示正确型号数，只有「知道了」</td></tr>
+        <tr><td class="num">E2</td><td>删除被引用的组件</td><td>弹「无法删除组件」，显示正确引用数</td></tr>
+        <tr><td class="num">E3</td><td>删除空品牌 / 空组件</td><td><b>（修复后）</b>二次确认后成功删除</td></tr>
+        <tr><td class="num">F1</td><td>适配浏览闭环</td><td>品牌 → 型号 → 组件 →「查适配品牌」→ 组件维度 →「看该型号组件」→ 回到品牌维度同一型号，层级正确</td></tr>
+        <tr><td class="num">F2</td><td>面包屑回退</td><td>点面包屑上级可逐级返回，当前级不可点</td></tr>
+        <tr><td class="num">F3</td><td>无效深链</td><td>访问不存在的型号/组件时回退到上一层，不白屏、不报错</td></tr>
+        <tr><td class="num">G1</td><td>筛选计数</td><td>搜索后「共 N 项」等于结果条数</td></tr>
+        <tr><td class="num">G2</td><td>空结果</td><td>搜索不存在的名称，显示「未找到匹配结果。」</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<section id="s10">
+  <div class="sec-head"><span class="sec-num">10</span><h2>待确认</h2><span class="hint">需要你拍板</span></div>
+
+  <div class="checks">
+    <div class="check"><i></i><div><div class="c-t">品牌 / 型号要不要启用停用</div><div class="c-d">现在只有增删改。停售机型如果直接删，会连带清掉历史关联；建议加「状态」字段，停用后不出现在新增设备的下拉里。</div></div></div>
+    <div class="check"><i></i><div><div class="c-t">指令代码要不要全局唯一</div><div class="c-d">现在只保证非空、按关系存。如果下发网关按「指令代码」路由，同名会串台；如果按「型号 + 代码」定位，则无需唯一。这决定后端要不要加唯一索引。</div></div></div>
+    <div class="check"><i></i><div><div class="c-t">组件是否要版本</div><div class="c-d">组件资料一改，所有引用它的型号同时变。若不同批次设备用的硬件不同，需要「组件版本 + 型号锁定版本」，否则改一个水泵会影响全部机型。</div></div></div>
+    <div class="check"><i></i><div><div class="c-t">型号下已有设备时能不能删</div><div class="c-d">现在能。删完设备会变成「找不到型号」的孤儿。建议改成：有设备则禁止删除，只允许停用。</div></div></div>
+    <div class="check"><i></i><div><div class="c-t">删除品牌要不要支持「连同型号一起删」</div><div class="c-d">现在强制先删型号，品牌多了会很繁琐。可提供「级联删除」但要求输入品牌名二次确认。</div></div></div>
+    <div class="check"><i></i><div><div class="c-t">组件分类要不要三级</div><div class="c-d">现在是「料道 / 子类」两级。BIB、冰、液体是否还需要再分（如「冰 · 冰块 / 冰 · 冰沙」）？这会影响筛选器和报表分组。</div></div></div>
+    <div class="check"><i></i><div><div class="c-t">数据点要不要读写方向与上报频率</div><div class="c-d">现在只有类型和范围。物模型通常还需要 read/write、上报周期、是否必报。要和 IoT 平台对齐后再定字段。</div></div></div>
+    <div class="check"><i></i><div><div class="c-t">BMW 演示数据怎么处理</div><div class="c-d">「档把 / 方向盘 / 后视镜」明显是分类压力测试。上线前删除，还是保留成「非料道示例」？</div></div></div>
+  </div>
+
+  <p class="small" style="margin-top:22px">—— 本文只描述 <code>#/devicecfg/*</code>。组件参数、配方、商品配方、清洗见另一份文档，不在本文范围内。</p>
+</section>
+
+</div>
+</body>
+</html>
